@@ -3,11 +3,11 @@
 #include "pid.h"
 #include "cycle.h"
 
-short DUTY_MAX = 4000;  // ????
-short DUTY_MIN = 0;     // ????
-short speed1 = 0, speed2 = 0; // ???1?2
+short DUTY_MAX = 4000;  // 电机最大值限幅
+short DUTY_MIN = 0;     // 电机最小值限幅
+short speed1 = 0, speed2 = 0; // 定义编码器值获取变量
 
-// ??????
+// 电机控制
 void motor_ctrl(short Lmotor, short Rmotor){
     if(Lmotor >= 0){
         Lmotor = range_protect(Lmotor, DUTY_MIN, DUTY_MAX);
@@ -31,12 +31,12 @@ void motor_ctrl(short Lmotor, short Rmotor){
     }
 }
 
-// ???????
+// 获取编码器数据
 /*
-    ?????1 -> TIM5_ENCODER
-    ?????2 -> TIM6_ENCODER
-    ???1?? -> TIM5_ENCODER_CH1_P10_3 || TIM5_ENCODER_CH2_P10_1
-    ???2?? -> TIM6_ENCODER_CH1_P20_3 || TIM6_ENCODER_CH2_P20_0
+    编码器通道1 -> TIM5_ENCODER
+    编码器通道2 -> TIM6_ENCODER
+    编码器1引脚 -> TIM5_ENCODER_CH1_P10_3 || TIM5_ENCODER_CH2_P10_1
+    编码器2引脚 -> TIM6_ENCODER_CH1_P20_3 || TIM6_ENCODER_CH2_P20_0
 */
 void get_motor_speed(void){
     speed1 = encoder_get_count(TIM5_ENCODER);
@@ -50,7 +50,7 @@ void get_motor_speed(void){
 }
 
 
-// ????
+// 快速停车
 void Quick_Break(void)
 {
     short speed_now = (speed1 + speed2) / 2;

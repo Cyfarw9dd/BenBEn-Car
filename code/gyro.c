@@ -17,7 +17,7 @@ float Real_Gyro_Y = 0;
 void Get_IcmData(void){
     icm20602_get_acc();
     icm20602_get_gyro();
-    Data_steepest();                    //鍘熷鏁版嵁姊害涓嬮檷婊ゆ尝.
+    Data_steepest();                    
     
     GYRO.X = icm20602_gyro_x;
     GYRO.Y = icm20602_gyro_y;
@@ -53,9 +53,9 @@ void steepest_descend(int32 arr[],unsigned char len,_steepest_st *steepest,unsig
 
     arr[ (steepest->cnt) ] = in;
 
-    step = (float)(in - steepest->lst_out)/step_num ;//姊害
+    step = (float)(in - steepest->lst_out)/step_num ;
 
-    if(absolute(step)<1)//鏁村舰鏁版嵁<1鐨勬湁鏁堝垽瀹�
+    if(absolute(step)<1)
     {
         if(absolute(step)*step_num<2)
         {
@@ -76,9 +76,9 @@ void steepest_descend(int32 arr[],unsigned char len,_steepest_st *steepest,unsig
 //          j = steepest->cnt + i + 1;
 //          if( j >= len )
 //          {
-//              j = j - len; //椤哄簭鎺掑垪
+//              j = j - len; 
 //          }
-            pow_sum += my_pow(arr[i] - start_point );// /step_num;//闄ゆ硶鍑忓皬姣斾緥**
+            pow_sum += my_pow(arr[i] - start_point );
 
             //start_point += pn *(step_slope_factor *step/len);
         }
@@ -89,13 +89,13 @@ void steepest_descend(int32 arr[],unsigned char len,_steepest_st *steepest,unsig
             {
                 on = 0;
             }
-            updw = 1;//涓婂崌浜�
+            updw = 1;
             pn = (pn == 1 )? -1:1;
 
         }
         else
         {
-            updw = 0; //姝ｅ湪涓嬮檷
+            updw = 0; 
             if(step_slope_factor<step_num)
             {
                 step_slope_factor++;
@@ -104,14 +104,14 @@ void steepest_descend(int32 arr[],unsigned char len,_steepest_st *steepest,unsig
 
         steepest->lst_pow_sum = pow_sum;
         pow_sum = 0;
-        start_point += pn *step;//璋冩暣
+        start_point += pn *step;
 
-        if(++step_cnt > step_num)//闄愬埗璁＄畻娆℃暟
+        if(++step_cnt > step_num)
         {
             on = 0;
         }
             //////
-            if(step_slope_factor>=2)//闄愬埗涓嬮檷娆℃暟1娆★紝鑺傜渷鏃堕棿锛屼絾浼氬澶ф粸鍚庯紝鑻pu鏃堕棿鍏呰鍙笉鐢ㄣ��
+            if(step_slope_factor>=2)
             {
                 on = 0;
 
@@ -168,12 +168,12 @@ void Angle_Calcu(void)
 //    Gyro_y  = gyroy;
 //    Gyro_z  = gyroz;
 
-        Accel_x = MPU_ACC.X;
-        Accel_y = MPU_ACC.Y;
-        Accel_z = MPU_ACC.Z;
-        Gyro_x  = GYRO.X;
-        Gyro_y  = GYRO.Y;
-        Gyro_z  = GYRO.Z;
+    Accel_x = MPU_ACC.X;
+    Accel_y = MPU_ACC.Y;
+    Accel_z = MPU_ACC.Z;
+    Gyro_x  = GYRO.X;
+    Gyro_y  = GYRO.Y;
+    Gyro_z  = GYRO.Z;
     if(Accel_x<32764) accx=Accel_x/16384;
     else              accx=1-(Accel_x-49152)/16384;
     if(Accel_y<32764) accy=Accel_y/16384;

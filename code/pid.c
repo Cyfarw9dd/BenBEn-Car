@@ -58,7 +58,7 @@ int PID_Realize(PID *sptr, float *PID, int NowData, int Point)
 {
 
     int iError,
-         Realize;
+        Realize;
 
     iError = Point - NowData;
     sptr->SumError += PID[KI] * iError;
