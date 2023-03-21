@@ -3,31 +3,30 @@
 #include "pid.h"
 #include "cycle.h"
 
-short DUTY_MAX = 4000;  // 电机最大值限幅
-short DUTY_MIN = 0;     // 电机最小值限幅
+
 short speed1 = 0, speed2 = 0; // 定义编码器值获取变量
 
 // 电机控制
 void motor_ctrl(short Lmotor, short Rmotor){
     if(Lmotor >= 0){
-        Lmotor = range_protect(Lmotor, DUTY_MIN, DUTY_MAX);
-        pwm_set_duty(ATOM0_CH4_P02_4, Lmotor); 
-        pwm_set_duty(ATOM0_CH5_P02_5, 0);
+        Lmotor = range_protect(Lmotor, MOTOR_MIN, MOTOR_MAX);
+        pwm_set_duty(PWM_CH1, Lmotor); 
+        pwm_set_duty(PWM_CH2, 0);
     }
     else{
-        Lmotor = range_protect(-Lmotor, DUTY_MIN, DUTY_MAX);
-        pwm_set_duty(ATOM0_CH4_P02_4, 0);      
-        pwm_set_duty(ATOM0_CH5_P02_5, Lmotor);
+        Lmotor = range_protect(-Lmotor, MOTOR_MIN, MOTOR_MAX);
+        pwm_set_duty(PWM_CH1, 0);      
+        pwm_set_duty(PWM_CH2, Lmotor);
     }
     if(Rmotor >= 0){
-        Rmotor = range_protect(Rmotor, DUTY_MIN, DUTY_MAX);
-        pwm_set_duty(ATOM0_CH6_P02_6, Rmotor); 
-        pwm_set_duty(ATOM0_CH7_P02_7, 0);
+        Rmotor = range_protect(Rmotor, MOTOR_MIN, MOTOR_MAX);
+        pwm_set_duty(PWM_CH3, Rmotor); 
+        pwm_set_duty(PWM_CH4, 0);
     }
     else{
-        Rmotor = range_protect(-Rmotor, DUTY_MIN, DUTY_MAX);
-        pwm_set_duty(ATOM0_CH6_P02_6, 0);      
-        pwm_set_duty(ATOM0_CH7_P02_7, Rmotor);
+        Rmotor = range_protect(-Rmotor, MOTOR_MIN, MOTOR_MAX);
+        pwm_set_duty(PWM_CH3, 0);      
+        pwm_set_duty(PWM_CH4, Rmotor);
     }
 }
 
@@ -39,11 +38,11 @@ void motor_ctrl(short Lmotor, short Rmotor){
     编码器2引脚 -> TIM6_ENCODER_CH1_P20_3 || TIM6_ENCODER_CH2_P20_0
 */
 void get_motor_speed(void){
-    speed1 = encoder_get_count(TIM5_ENCODER);
-    speed2 = -encoder_get_count(TIM6_ENCODER);
+    speed1 = encoder_get_count(ENCODER_DIR_L);
+    speed2 = -encoder_get_count(ENCODER_DIR_R);
 
-    encoder_clear_count(TIM5_ENCODER);
-    encoder_clear_count(TIM6_ENCODER);
+    encoder_clear_count(ENCODER_DIR_L);
+    encoder_clear_count(ENCODER_DIR_R);
     tft180_show_int(0, 66, speed1, 5);
     tft180_show_int(0, 86, speed2, 5);
     // systick_delay_ms(STM0, 100);

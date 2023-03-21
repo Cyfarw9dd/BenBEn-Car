@@ -4,8 +4,6 @@
 #include "image.h"
 #include "gyro.h"
 
-#define MOTOR_MAX 1500
-#define DUTY_EXPECTATION 4000
 
 short Left_Increase = 0;
 short Right_Increase = 0;
@@ -20,14 +18,7 @@ int num = 0;
 unsigned char data_array[4];
 unsigned char truth;
 
-// unsigned short adc_result;
-// float voltage_result;
-// float voltage_cap;
 
-
-/*
-    閫熷害鐜鐞嗗嚱鏁�
-*/
 void Speed_cycle(short expect){
     get_motor_speed();
     short Expect = 0;
@@ -44,9 +35,6 @@ void Speed_cycle(short expect){
 }
 
 
-/*
-    閫氳繃褰撳墠缂栫爜鍣ㄦ暟鍊兼祴绠楀綋鍓嶉�熷害
-*/
 int Speed_deal(void){
     //get_motor_speed();
     int speed_now = (speed1 + speed2) / 2;
@@ -56,7 +44,6 @@ int Speed_deal(void){
 }
 
 
-// 杞悜鐜�
 void Turn_cycle_ver2(short theory_duty){ //1600
     cal_curvature();
     short Prospect_Parameter = PID_Realize_for_ProspectErr(&Prospect_PID, Prospect);
@@ -75,8 +62,8 @@ void Turn_cycle_ver2(short theory_duty){ //1600
 void Turn_cycle_ver3(void){
     int Direct_Parameter = calculate_pid((one_curvature(centerline[105], 105))*100);
     Direct_Last = Direct_Last * 0.2 + Direct_Parameter * 0.8;
-    LMotor_Duty = DUTY_MAX + Direct_Last * 10000;
-    RMotor_Duty = DUTY_MAX - Direct_Last * 10000;
+    LMotor_Duty = MOTOR_EXPECTATION + Direct_Last * 10000;
+    RMotor_Duty = MOTOR_EXPECTATION - Direct_Last * 10000;
 
     motor_ctrl(LMotor_Duty, RMotor_Duty);
 }

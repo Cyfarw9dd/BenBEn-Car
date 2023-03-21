@@ -52,10 +52,13 @@ void Camera(void){
 
         Searching_for_boundaries(&image_deal[0]);         //寻找赛道边界 
         Deal_Road_Characteristics(&image_deal[0]);        //处理赛道特征，如计算左右半边赛道宽度等       
-        // Turn_cycle_ver2(1800);                            //转向环，传入1800的pwm
+        Turn_cycle_ver2(1800);                            //转向环，传入1800的pwm
         // Pokemon_Go();                                     //元素判断
         Hightlight_Lines(&image_deal[0]);                 //高亮左右边界以及中线
-        // tft180_show_binary_image(0, 0, &image_deal[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5);
+        tft180_show_gray_image(0, 0, &image_deal[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+
+        // 问题大概率出在了屏幕显示二值化图像的这个地方，也有可能是合宙的tft屏的原因
+
         mt9v03x_finish_flag = 0;                          //标志位归0，一定要归0！不归0的话图像只处理起始帧
     }
 }

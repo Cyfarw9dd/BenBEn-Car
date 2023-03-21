@@ -263,7 +263,7 @@ int calculate_pid(float a){
 
     pid.err_last = pid.err;
 
-    t = DUTY_MAX + pid.voltage;
+    t = MOTOR_EXPECTATION + pid.voltage;
 
     /*if(t<0)             t=-t;
     if(t>9999)      t=9998;*/
