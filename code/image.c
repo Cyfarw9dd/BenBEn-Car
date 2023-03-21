@@ -52,7 +52,7 @@ void Camera(void){
 
         Searching_for_boundaries(&image_deal[0]);         //寻找赛道边界 
         Deal_Road_Characteristics(&image_deal[0]);        //处理赛道特征，如计算左右半边赛道宽度等       
-        Turn_cycle_ver2(1800);                            //转向环，传入1800的pwm
+        Turn_cycle_ver2(1800);                            
         // Pokemon_Go();                                     //元素判断
         Hightlight_Lines(&image_deal[0]);                 //高亮左右边界以及中线
         tft180_show_gray_image(0, 0, &image_deal[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
