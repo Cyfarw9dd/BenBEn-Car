@@ -556,49 +556,5 @@ void Judging_Slope(void){
     }
 }
 
-/*
-    元素处理主函数，整合了不同元素的判断
-    由于在赛前的时候还没有完全解决不同元素之间的冲突的问题，在这里就把这些元素的调用给注释掉了
-    WireNum那块是无线充电用的，可以忽略
-    入元素前设置了减速措施，但效果并 不是很好
-    目前比较稳定的主要是三岔以及十字回环，可以参考参考
-*/
 
-//void Pokemon_Go(void){
-//    short Slow_Down = 1500;
-//    // if(WireNum == 3){
-//    //     while(1){
-//    //         motor_ctrl(1900, 1900);
-//    //         systick_delay_ms(STM0, 100);
-//    //         break;
-//    //     }
-//
-//    // }
-//    Judging_Divergence(&image_deal[0]);
-//    Judging_P_Crossing_ver2(&image_deal[0]);
-//    // Judging_StartLine(&image_deal[0]);
-//    // Judging_Slope();
-//    // Judging_RoundAbout(&image_deal[0]);
-//    if(Divergence_point_flag){
-//        Deal_Road_Characteristics(&image_deal[0]);
-//        DUTY_MAX = 1600;
-//        Turn_cycle_ver2(Slow_Down);
-//    }
-//    // else if(P_Crossing_PointFlag_L >= 3 || P_Crossing_PointFlag_R >= 3){
-//    //     Deal_Road_Characteristics(&image_deal[0]);
-//    //     DUTY_MAX = 2000;
-//    //     Turn_cycle_ver2(Slow_Down);
-//    // }
-//    else if(Upslope_PointFlag){
-//        // DUTY_MAX = 5000;
-//        // motor_ctrl(DUTY_MAX, DUTY_MAX);
-//    }
-//    else if(Downslope_PointFlag){
-//        // motor_ctrl(0, 0);
-//    }
-//    else{
-//        DUTY_MAX = 1900;
-//        Turn_cycle_ver2(DUTY_MAX);
-//    }
-//}
 

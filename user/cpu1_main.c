@@ -40,12 +40,6 @@
 #pragma section all "cpu1_dsram"
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU1的RAM中
 
-/*
-  屏幕报错 -> IfxCpu_Trap.c 
-  line -> 182
-  使用了未初始化的外设，或者内存访问失败
-*/
-
 // **************************** 代码区域 ****************************
 
 void core1_main(void)

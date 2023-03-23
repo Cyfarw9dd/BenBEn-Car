@@ -52,8 +52,6 @@ typedef struct
     S_FLOAT_XYZ Gyro_deg;
 }_sensor_st;//__attribute__((packed))
 
-void Get_IcmData(void);
-
 void steepest_descend(int arr[], unsigned char len, _steepest_st *steepest, unsigned char step_num, int in);
 
 void Data_steepest(void);
@@ -66,5 +64,8 @@ void Kalman_Filter_X(float Accel,float Gyro);
 
 void Kalman_Filter_Y(float Accel,float Gyro);
 
+void Get_IcmData(void);
+
+void AngleGet(void);
 
 #endif /* CODE_GYRO_H_ */

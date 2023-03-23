@@ -8,26 +8,22 @@ _steepest_st steepest_gz;
 _steepest_st steepest_gy;
 _sensor_st sensor;
 S_INT16_XYZ GYRO, MPU_ACC;
+S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
 int steepest_gz_arr[2];
 int steepest_gy_arr[2];
 float Real_Gyro_Z = 0;
 float Real_Gyro_Y = 0;
 
+// 零点漂移
+float GyroX_Zero = 10;
+float GyroY_Zero = 10;
+float GyroZ_Zero = 10;
 
-void Get_IcmData(void){
-    icm20602_get_acc();
-    icm20602_get_gyro();
-    Data_steepest();                    
-    
-    GYRO.X = icm20602_gyro_x;
-    GYRO.Y = icm20602_gyro_y;
-    GYRO.Z = icm20602_gyro_z;
-    MPU_ACC.X = icm20602_acc_x;
-	MPU_ACC.Y = icm20602_acc_y;
-	MPU_ACC.Z = icm20602_acc_z;
-    Real_Gyro_Z = sensor.Gyro_deg.Z;
-    Real_Gyro_Y = sensor.Gyro_deg.Y;
-}
+
+// 加速度计返回的加速度不是一般意义的加速度
+// 只用加速度计就能得到车身的俯仰角，且是对地的绝对角度
+// 但因为加速度计的不稳定，叠加在重力测量信号上使输出信号不能很好的反映车模的倾角
+
 
 
 void steepest_descend(int32 arr[],unsigned char len,_steepest_st *steepest,unsigned char step_num,int32 in){
@@ -280,4 +276,57 @@ void Kalman_Filter_Y(float Accel,float Gyro)
     Q_bias  += K_1 * Angle_err;
     Gyro_y   = Gyro - Q_bias;
 }
+
+
+// 获取icm20602的数据
+// 获取角速度计，加速度计的原始数据并赋值，需在程序的开始的时候实时运行
+void Get_IcmData(void){
+    icm20602_get_acc();
+    icm20602_get_gyro();
+    // Data_steepest();                    
+    
+    GYRO.X = icm20602_gyro_x;
+    GYRO.Y = icm20602_gyro_y;
+    GYRO.Z = icm20602_gyro_z;
+    MPU_ACC.X = icm20602_acc_x;
+	MPU_ACC.Y = icm20602_acc_y;
+	MPU_ACC.Z = icm20602_acc_z;
+    // add
+    GYRO_REAL.X = icm20602_gyro_x;
+    GYRO_REAL.Y = icm20602_gyro_y;
+    GYRO_REAL.Z = icm20602_gyro_z;
+    REAL_ACC.X = icm20602_acc_x;
+    REAL_ACC.Y = icm20602_acc_y;
+    REAL_ACC.Z = icm20602_acc_z;
+
+
+    Real_Gyro_Z = sensor.Gyro_deg.Z;
+    Real_Gyro_Y = sensor.Gyro_deg.Y;
+}
+
  
+
+// 互补滤波角度计算
+void AngleGet(void)
+{
+    int Angle_acc, Angle_ratio;
+    float dt = 0.0001249;//Gy 2ms时间积分系数
+    double angle_ratio;//加速度比值
+    Anglefiltering();//入口滤波，算数平均
+
+        /***以下为加速度计取反正切得到角度***/
+    angle_ratio = ((double)REAL_ACC.X) / (REAL_ACC.Z + 0.1);
+    Angle_acc = (float)atan(angle_ratio) * 57.29578049;  //加速度计得到的角
+    if(Angle_acc > 89)
+        Angle_acc = 89;
+    if(Angle_acc < -89)
+        Angle_acc = -89;
+    
+        /***以下为角速度计积分，同融合加速度，得到角度***/
+    float GY = (float)(GYRO_REAL.Y);
+    GY = GYRO_REAL.Y - GyroY_Zero; //去零漂之后的陀螺仪采集值
+
+    float Angle = (float)(Angle-(float)(GY * dt));
+    Angle = Angle + (Angle_acc-Angle)*0.001; 
+    //相当于Angle = Angle*(1-0.00105) + Angle_acc*0.001
+}
