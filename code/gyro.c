@@ -308,16 +308,16 @@ void Get_IcmData(void){
 // 转角值 = 图像or电感计算出的偏差值 * KP + (本次偏差 - 上次偏差) * KD + 陀螺仪数值 * GKD
 
 // 入口滤波，算数平均
-void Anglefiltering(void){
+// void Anglefiltering(void){
     
-}
+// }
 
 // 互补滤波角度计算
 void AngleGet(void){
     int Angle_acc, Angle_ratio;
     float dt = 0.0001249;   //Gy 2ms时间积分系数
     double angle_ratio;     //加速度比值
-    Anglefiltering();       //入口滤波，算数平均
+    // Anglefiltering();       //入口滤波，算数平均
 
     //以下为加速度计取反正切得到角度
 
@@ -335,5 +335,6 @@ void AngleGet(void){
 
     float Angle = (float)(Angle-(float)(GY * dt));
     Angle = Angle + (Angle_acc-Angle)*0.001; 
-    //相当于Angle = Angle*(1-0.00105) + Angle_acc*0.001
+    //相当于Angle = Angle*(1-0.00105) + Angle_acc*0.
 }   
+
