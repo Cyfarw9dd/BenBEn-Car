@@ -10,23 +10,23 @@ short speed1 = 0, speed2 = 0; // 定义编码器值获取变量
 void motor_ctrl(short Lmotor, short Rmotor){
     if(Lmotor >= 0){
         Lmotor = range_protect(Lmotor, MOTOR_MIN, MOTOR_MAX);
-        pwm_set_duty(PWM_CH1, Lmotor); 
-        pwm_set_duty(PWM_CH2, 0);
+        pwm_set_duty(PWM_CH1, 0); 
+        pwm_set_duty(PWM_CH2, Lmotor);
     }
     else{
         Lmotor = range_protect(-Lmotor, MOTOR_MIN, MOTOR_MAX);
-        pwm_set_duty(PWM_CH1, 0);      
-        pwm_set_duty(PWM_CH2, Lmotor);
+        pwm_set_duty(PWM_CH1, Lmotor);      
+        pwm_set_duty(PWM_CH2, 0);
     }
     if(Rmotor >= 0){
         Rmotor = range_protect(Rmotor, MOTOR_MIN, MOTOR_MAX);
-        pwm_set_duty(PWM_CH3, Rmotor); 
-        pwm_set_duty(PWM_CH4, 0);
+        pwm_set_duty(PWM_CH3, 0); 
+        pwm_set_duty(PWM_CH4, Rmotor);
     }
     else{
         Rmotor = range_protect(-Rmotor, MOTOR_MIN, MOTOR_MAX);
-        pwm_set_duty(PWM_CH3, 0);      
-        pwm_set_duty(PWM_CH4, Rmotor);
+        pwm_set_duty(PWM_CH3, Rmotor);      
+        pwm_set_duty(PWM_CH4, 0);
     }
 }
 
@@ -58,3 +58,25 @@ void Quick_Break(void)
     else
         motor_ctrl(0,0);
 }
+
+
+    // if(Lmotor >= 0){
+    //     Lmotor = range_protect(Lmotor, MOTOR_MIN, MOTOR_MAX);
+    //     pwm_set_duty(PWM_CH1, Lmotor); 
+    //     pwm_set_duty(PWM_CH2, 0);
+    // }
+    // else{
+    //     Lmotor = range_protect(-Lmotor, MOTOR_MIN, MOTOR_MAX);
+    //     pwm_set_duty(PWM_CH1, 0);      
+    //     pwm_set_duty(PWM_CH2, Lmotor);
+    // }
+    // if(Rmotor >= 0){
+    //     Rmotor = range_protect(Rmotor, MOTOR_MIN, MOTOR_MAX);
+    //     pwm_set_duty(PWM_CH3, Rmotor); 
+    //     pwm_set_duty(PWM_CH4, 0);
+    // }
+    // else{
+    //     Rmotor = range_protect(-Rmotor, MOTOR_MIN, MOTOR_MAX);
+    //     pwm_set_duty(PWM_CH3, 0);      
+    //     pwm_set_duty(PWM_CH4, Rmotor);
+    // }

@@ -11,12 +11,12 @@
 #define ENCODER_DIR_PULSE_R               (TIM6_ENCODER_CH1_P20_3)               // PULSE 对应的引脚
 #define ENCODER_DIR_DIR_R                 (TIM6_ENCODER_CH2_P20_0)               // DIR 对应的引脚
 
-#define ENCODER_PIT                       (CCU60_CH0 )
+#define ENCODER_PIT                        (CCU60_CH0 )
 
-#define PWM_CH1                            (ATOM0_CH4_P02_4)                     // PWM引脚1
-#define PWM_CH2                            (ATOM0_CH5_P02_5)                     // PWM引脚2
-#define PWM_CH3                            (ATOM0_CH6_P02_6)                     // PWM引脚3
-#define PWM_CH4                            (ATOM0_CH7_P02_7)                     // PWM引脚4
+#define PWM_CH1                            (ATOM0_CH1_P21_3)                     // PWM引脚1
+#define PWM_CH2                            (ATOM0_CH0_P21_2)                     // PWM引脚2
+#define PWM_CH3                            (ATOM0_CH3_P21_5)                     // PWM引脚3
+#define PWM_CH4                            (ATOM0_CH2_P21_4)                     // PWM引脚4
 
 #define MOTOR_MAX 4000                                                           // 电机限幅最大值
 #define MOTOR_MIN 0                                                              // 电机限幅最小值

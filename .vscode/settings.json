@@ -6,6 +6,7 @@
         "image.h": "c",
         "zf_device_icm20602.h": "c",
         "gyro.h": "c",
-        "zf_common_typedef.h": "c"
+        "zf_common_typedef.h": "c",
+        "pid.h": "c"
     }
 }

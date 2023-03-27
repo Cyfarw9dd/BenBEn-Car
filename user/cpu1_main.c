@@ -37,11 +37,11 @@
 #include "image.h"
 #include "control.h"
 #include "pid.h"
+#include "cycle.h"
 #pragma section all "cpu1_dsram"
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU1的RAM中
 
 // **************************** 代码区域 ****************************
-
 void core1_main(void)
 {
     disable_Watchdog();                     // 关闭看门狗
@@ -49,13 +49,13 @@ void core1_main(void)
     // 此处编写用户代码 例如外设初始化代码等
     mt9v03x_init();
     tft180_init();
-    icm20602_init();
+    // icm20602_init();
     wireless_uart_init();
 
-    pwm_init(ATOM0_CH4_P02_4, 50, 0);
-    pwm_init(ATOM0_CH5_P02_5, 50, 0);
-    pwm_init(ATOM0_CH6_P02_6, 50, 0);
-    pwm_init(ATOM0_CH7_P02_7, 50, 0);
+    pwm_init(ATOM0_CH0_P21_2, 17 * 1000, 0);
+    pwm_init(ATOM0_CH1_P21_3, 17 * 1000, 0);
+    pwm_init(ATOM0_CH2_P21_4, 17 * 1000, 0);
+    pwm_init(ATOM0_CH3_P21_5, 17 * 1000, 0);
 
     encoder_dir_init(ENCODER_DIR_L, ENCODER_DIR_PULSE_L, ENCODER_DIR_DIR_L);
     encoder_dir_init(ENCODER_DIR_R, ENCODER_DIR_PULSE_R, ENCODER_DIR_DIR_R);
@@ -67,8 +67,15 @@ void core1_main(void)
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
+
         Camera();
+
+        // 以下为常用的测试代码
+        // get_motor_speed();
+        // motor_ctrl(0, 3000); // (0, 3000)向右转，(3000, 0)向左转
         // tft180_show_gray_image(0 ,0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        tft180_show_int(0, 90, LMotor_Duty, 5);
+        tft180_show_int(0, 110, RMotor_Duty, 5);
         // 此处编写需要循环执行的代码
     }
 }

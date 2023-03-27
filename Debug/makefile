@@ -100,24 +100,26 @@ RM := rm -rf
 -include libraries/infineon_libraries/Infra/Platform/Tricore/Compilers/subdir.mk
 -include code/subdir.mk
 -include subdir.mk
+-include objects.mk
+
 ifneq ($(MAKECMDGOALS),clean)
-ifneq ($(strip $(C++_DEPS)),)
--include $(C++_DEPS)
-endif
 ifneq ($(strip $(CC_DEPS)),)
 -include $(CC_DEPS)
 endif
-ifneq ($(strip $(CPP_DEPS)),)
--include $(CPP_DEPS)
+ifneq ($(strip $(C++_DEPS)),)
+-include $(C++_DEPS)
+endif
+ifneq ($(strip $(C_UPPER_DEPS)),)
+-include $(C_UPPER_DEPS)
 endif
 ifneq ($(strip $(CXX_DEPS)),)
 -include $(CXX_DEPS)
 endif
+ifneq ($(strip $(CPP_DEPS)),)
+-include $(CPP_DEPS)
+endif
 ifneq ($(strip $(C_DEPS)),)
 -include $(C_DEPS)
-endif
-ifneq ($(strip $(C_UPPER_DEPS)),)
--include $(C_UPPER_DEPS)
 endif
 endif
 
@@ -146,14 +148,14 @@ all: main-build
 main-build: BEN_ben\ ver1.01.elf secondary-outputs
 
 # Tool invocations
-BEN_ben\ ver1.01.elf: $(OBJS) makefile $(OPTIONAL_TOOL_DEPS)
+BEN_ben\ ver1.01.elf: $(OBJS) makefile objects.mk $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: TASKING Linker'
-	cctc --lsl-file="../Lcf_Tasking_Tricore_Tc.lsl" -Wl-Oc -Wl-OL -Wl-Ot -Wl-Ox -Wl-Oy "D:\BenBen\BEN_ben ver1.01\libraries\zf_device\zf_device_config.a" -Wl--map-file="BEN_ben ver1.01.map" -Wl-mc -Wl-mf -Wl-mi -Wl-mk -Wl-ml -Wl-mm -Wl-md -Wl-mr -Wl-mu --no-warnings= -Wl--error-limit=42 -lcs_fpu -lfp_fpu -lrt --lsl-core=vtc --exceptions --strict --anachronisms --force-c++ -Ctc26xb -o"BEN_ben ver1.01.elf" -Wl-o"BEN_ben ver1.01.hex:IHEX" $(OBJS)
+	cctc -lrt -lfp_fpu -lcs_fpu  -Wl-Oc -Wl-OL -Wl-Ot -Wl-Ox -Wl-Oy "D:\BenBen\BEN_ben ver1.01\libraries\zf_device\zf_device_config.a" -Wl--map-file="BEN_ben ver1.01.map" -Wl-mc -Wl-mf -Wl-mi -Wl-mk -Wl-ml -Wl-mm -Wl-md -Wl-mr -Wl-mu --no-warnings= -Wl--error-limit=42 --exceptions --strict --anachronisms --force-c++ -Ctc26xb   -o"BEN_ben ver1.01.elf" -Wl-o"BEN_ben ver1.01.hex:IHEX" --lsl-core=vtc  --lsl-file=../Lcf_Tasking_Tricore_Tc.lsl $(OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-BEN_ben\ ver1.01.siz: BEN_ben\ ver1.01.elf makefile $(OPTIONAL_TOOL_DEPS)
+BEN_ben\ ver1.01.siz: BEN_ben\ ver1.01.elf makefile objects.mk $(OPTIONAL_TOOL_DEPS)
 	@echo 'Invoking: Print Size'
 	elfsize  "BEN_ben ver1.01.elf"
 	@echo 'Finished building: $@'

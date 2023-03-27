@@ -24,4 +24,9 @@
 
     @Cyfarw9dd 2023.3.25
     移植到了1.80版本的ADS
+
+    gpio_get_level 读取电平状态 -> 拨码开关，ADC
+    gpio_set_level 输出电平状态 -> 按键开关，蜂鸣器
+    蜂鸣器好像不行，蜂鸣器或许需要pwm输出
+
 */
