@@ -68,7 +68,7 @@ void core1_main(void)
     {
         // 此处编写需要循环执行的代码
 
-        Camera();
+        image_process();
 
         // 以下为常用的测试代码
         // get_motor_speed();
