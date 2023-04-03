@@ -1077,7 +1077,7 @@ void search_l_r(unsigned short break_flag, unsigned char(*image)[image_w], unsig
 		}
 		if ((points_r[r_data_statics][1] < points_l[l_data_statics - 1][1]))
 		{
-			printf("\n如果左边比右边高了，左边等待右边\n");	
+			// printf("\n如果左边比右边高了，左边等待右边\n");	
 			continue;//如果左边比右边高了，左边等待右边
 		}
 		if (dir_l[l_data_statics - 1] == 7
@@ -1291,18 +1291,18 @@ void image_process(void)
 unsigned short i;
 unsigned char hightest = 0;//定义一个最高行，tip：这里的最高指的是y值的最小
 /*这是离线调试用的*/
-Get_image(mt9v03x_image[0]);
+Get_image(&mt9v03x_image[0]);
 turn_to_bin();
 /*提取赛道边界*/
-image_filter(bin_image);//滤波
-image_draw_rectan(bin_image);//预处理
+image_filter(&bin_image[0]);//滤波
+image_draw_rectan(&bin_image[0]);//预处理
 //清零
 data_stastics_l = 0;
 data_stastics_r = 0;
 if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找到就一直找
 {
 	// printf("正在开始八领域\n");
-	search_l_r((unsigned short)USE_num, bin_image, &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
+	search_l_r((unsigned short)USE_num, &bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
 	// printf("八邻域已结束\n");
 	// 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
 	get_left(data_stastics_l);
@@ -1315,25 +1315,25 @@ if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找
 //显示图像   改成你自己的就行 等后期足够自信了，显示关掉，显示屏挺占资源的
 tft180_show_gray_image(0, 0, &bin_image[0], image_w, image_h, image_w / 1.5, image_h / 1.5, 0);
 
-	//根据最终循环次数画出边界点
-	for (i = 0; i < data_stastics_l; i++)
-	{
-		tft180_draw_point(points_l[i][0]+2, points_l[i][1], uesr_BLUE);//显示起点
-	}
-	for (i = 0; i < data_stastics_r; i++)
-	{
-		tft180_draw_point(points_r[i][0]-2, points_r[i][1], uesr_RED);//显示起点
-	}
+	// //根据最终循环次数画出边界点
+	// for (i = 0; i < data_stastics_l; i++)
+	// {
+	// 	tft180_draw_point(points_l[i][0]+2, points_l[i][1], uesr_BLUE);//显示起点
+	// }
+	// for (i = 0; i < data_stastics_r; i++)
+	// {
+	// 	tft180_draw_point(points_r[i][0]-2, points_r[i][1], uesr_RED);//显示起点
+	// }
 
-	for (i = hightest; i < image_h-1; i++)
-	{
-		center_line[i] = (l_border[i] + r_border[i]) >> 1;//求中线
-		//求中线最好最后求，不管是补线还是做状态机，全程最好使用一组边线，中线最后求出，不能干扰最后的输出
-		//当然也有多组边线的找法，但是个人感觉很繁琐，不建议
-		tft180_draw_point(center_line[i], i, uesr_GREEN);//显示起点 显示中线	
-		tft180_draw_point(l_border[i], i, uesr_GREEN);//显示起点 显示左边线
-		tft180_draw_point(r_border[i], i, uesr_GREEN);//显示起点 显示右边线
-	}
+	// for (i = hightest; i < image_h-1; i++)
+	// {
+	// 	center_line[i] = (l_border[i] + r_border[i]) >> 1;//求中线
+	// 	//求中线最好最后求，不管是补线还是做状态机，全程最好使用一组边线，中线最后求出，不能干扰最后的输出
+	// 	//当然也有多组边线的找法，但是个人感觉很繁琐，不建议
+	// 	tft180_draw_point(center_line[i], i, uesr_GREEN);//显示起点 显示中线	
+	// 	tft180_draw_point(l_border[i], i, uesr_GREEN);//显示起点 显示左边线
+	// 	tft180_draw_point(r_border[i], i, uesr_GREEN);//显示起点 显示右边线
+	// }
 
 
 }
