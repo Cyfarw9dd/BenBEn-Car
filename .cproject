@@ -1222,7 +1222,6 @@
 		</configuration>
 		<configuration configurationName="Debug">
 			<resource resourceType="PROJECT" workspacePath="/BEN_ben ver1.01"/>
-			<resource resourceType="PROJECT" workspacePath="/E13_dual_core_demo"/>
 		</configuration>
 		<configuration configurationName="Release">
 			<resource resourceType="PROJECT" workspacePath="/E13_dual_core_demo"/>

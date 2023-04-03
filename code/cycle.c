@@ -52,8 +52,8 @@ void Turn_cycle_ver2(short theory_duty){ //1600
     // short Direct_Parameter = -PID_Realize(&Direct_PID, Direct, (int32)(Real_Gyro_Z * 10),(int32)Union_result);
 
     Direct_Last = Direct_Last * 0.2 + Prospect_Parameter * 0.8;
-    LMotor_Duty = theory_duty + Direct_Last * 9;
-    RMotor_Duty = theory_duty - Direct_Last * 9;
+    LMotor_Duty = theory_duty - Direct_Last * 5;
+    RMotor_Duty = theory_duty + Direct_Last * 5;
     motor_ctrl(LMotor_Duty, RMotor_Duty);
 }
 

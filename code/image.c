@@ -261,9 +261,9 @@ float one_curvature(int x1, int y1) // one_curvature(centerline[30], 30)
 */
 
 void cal_curvature(void){
-    int prospect = 5;            // 摄像头高度为20cm，自定义前瞻行数15 || 当前摄像头高度为10cm，将前瞻行数更改为5
+    int prospect = 7;            // 摄像头高度为20cm，自定义前瞻行数15 || 当前摄像头高度为10cm，将前瞻行数更改为5
 
-    near = (centerline[119] + centerline[119 - 1] + centerline[119 - 2]) / 3;
+    near = (centerline[100] + centerline[100 - 1] + centerline[100 - 2]) / 3;
     middle = (centerline[119 - prospect] + centerline[119 - prospect - 1] + centerline[119 - prospect - 2]) / 3;
     further = (centerline[119 - prospect * 2] + centerline[119 - prospect * 2 - 1] + centerline[119 - prospect * 2 - 2]) / 3;
 
@@ -1301,9 +1301,9 @@ data_stastics_l = 0;
 data_stastics_r = 0;
 if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找到就一直找
 {
-	printf("正在开始八领域\n");
+	// printf("正在开始八领域\n");
 	search_l_r((unsigned short)USE_num, bin_image, &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
-	printf("八邻域已结束\n");
+	// printf("八邻域已结束\n");
 	// 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
 	get_left(data_stastics_l);
 	get_right(data_stastics_r);
@@ -1313,7 +1313,7 @@ if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找
 
 
 //显示图像   改成你自己的就行 等后期足够自信了，显示关掉，显示屏挺占资源的
-tft180_show_gray_image(0, 0, &bin_image[0], image_w, image_h, image_w / 1.75, image_h / 1.75, 0);
+tft180_show_gray_image(0, 0, &bin_image[0], image_w, image_h, image_w / 1.5, image_h / 1.5, 0);
 
 	//根据最终循环次数画出边界点
 	for (i = 0; i < data_stastics_l; i++)

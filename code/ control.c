@@ -39,7 +39,7 @@ void motor_ctrl(short Lmotor, short Rmotor){
 */
 void get_motor_speed(void){
     speed1 = encoder_get_count(ENCODER_DIR_L);
-    speed2 = -encoder_get_count(ENCODER_DIR_R);
+    speed2 = encoder_get_count(ENCODER_DIR_R);
 
     encoder_clear_count(ENCODER_DIR_L);
     encoder_clear_count(ENCODER_DIR_R);
@@ -59,24 +59,3 @@ void Quick_Break(void)
         motor_ctrl(0,0);
 }
 
-
-    // if(Lmotor >= 0){
-    //     Lmotor = range_protect(Lmotor, MOTOR_MIN, MOTOR_MAX);
-    //     pwm_set_duty(PWM_CH1, Lmotor); 
-    //     pwm_set_duty(PWM_CH2, 0);
-    // }
-    // else{
-    //     Lmotor = range_protect(-Lmotor, MOTOR_MIN, MOTOR_MAX);
-    //     pwm_set_duty(PWM_CH1, 0);      
-    //     pwm_set_duty(PWM_CH2, Lmotor);
-    // }
-    // if(Rmotor >= 0){
-    //     Rmotor = range_protect(Rmotor, MOTOR_MIN, MOTOR_MAX);
-    //     pwm_set_duty(PWM_CH3, Rmotor); 
-    //     pwm_set_duty(PWM_CH4, 0);
-    // }
-    // else{
-    //     Rmotor = range_protect(-Rmotor, MOTOR_MIN, MOTOR_MAX);
-    //     pwm_set_duty(PWM_CH3, 0);      
-    //     pwm_set_duty(PWM_CH4, Rmotor);
-    // }
