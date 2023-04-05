@@ -48,14 +48,14 @@ void Camera(void){
     if(mt9v03x_finish_flag){                              //mt9v03x_finish_flag为图像处理结束的标志位，在逐飞库中有着详细定义
         image_threshold = GetOSTU(mt9v03x_image[0]);      //通过大津法来得到原始灰度图像的阈值
         lcd_binaryzation032_zoom(mt9v03x_image[0], image_deal[0], MT9V03X_W , MT9V03X_H, image_threshold); //将二值化后的图像存放到image_deal[120][188]里
-        // Get_IcmData();                                    //获取陀螺仪数据
-
+        Get_IcmData();                                    //获取陀螺仪数据
+        image_filter(&image_deal[0]);
         Searching_for_boundaries(&image_deal[0]);         //寻找赛道边界 
-        Deal_Road_Characteristics(&image_deal[0]);        //处理赛道特征，如计算左右半边赛道宽度等       
-        Turn_cycle_ver2(1900);                            
+        Deal_Road_Characteristics(&image_deal[0]);        //处理赛道特征，如计算左右半边赛道宽度等 
+        Hightlight_Lines(&image_deal[0]);                 //高亮左右边界以及中线      
+        Turn_cycle(1800);                            
         // Pokemon_Go();                                     //元素判断
-        Hightlight_Lines(&image_deal[0]);                 //高亮左右边界以及中线
-        tft180_show_gray_image(0, 0, &image_deal[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        // tft180_show_gray_image(0, 0, &image_deal[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
 
         mt9v03x_finish_flag = 0;                          //标志位归0，一定要归0！不归0的话图像只处理起始帧
     }
@@ -261,9 +261,10 @@ float one_curvature(int x1, int y1) // one_curvature(centerline[30], 30)
 */
 
 void cal_curvature(void){
-    int prospect = 15;            // 摄像头高度为20cm，自定义前瞻行数15 || 当前摄像头高度为10cm，将前瞻行数更改为5
+    int prospect = 18;            // 摄像头高度为20cm，自定义前瞻行数15 
 
     near = (centerline[119] + centerline[119 - 1] + centerline[119 - 2]) / 3;
+    // near = near * 1.05;
     middle = (centerline[119 - prospect] + centerline[119 - prospect - 1] + centerline[119 - prospect - 2]) / 3;
     further = (centerline[119 - prospect * 2] + centerline[119 - prospect * 2 - 1] + centerline[119 - prospect * 2 - 2]) / 3;
 
@@ -279,7 +280,7 @@ void cal_curvature(void){
     else{
         Prospect_Err = ((middle - further) + (near - middle)) / 2;
     }
-    Bottom_Err = near - 94;
+    Bottom_Err = centerline[90] - 94;
 }
 
 

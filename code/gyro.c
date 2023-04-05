@@ -281,23 +281,23 @@ void Kalman_Filter_Y(float Accel,float Gyro)
 // 获取icm20602的数据
 // 获取角速度计，加速度计的原始数据并赋值，需在程序的开始的时候实时运行
 void Get_IcmData(void){
-    icm20602_get_acc();
-    icm20602_get_gyro();
+    imu660ra_get_acc();
+    imu660ra_get_gyro();
     // Data_steepest();                    
     
-    GYRO.X = icm20602_gyro_x;
-    GYRO.Y = icm20602_gyro_y;
-    GYRO.Z = icm20602_gyro_z;
-    MPU_ACC.X = icm20602_acc_x;
-	MPU_ACC.Y = icm20602_acc_y;
-	MPU_ACC.Z = icm20602_acc_z;
+    GYRO.X = imu660ra_gyro_x;
+    GYRO.Y = imu660ra_gyro_y;
+    GYRO.Z = imu660ra_gyro_z;
+    MPU_ACC.X = imu660ra_acc_x;
+	MPU_ACC.Y = imu660ra_acc_y;
+	MPU_ACC.Z = imu660ra_acc_z;
     // add
-    GYRO_REAL.X = icm20602_gyro_x;
-    GYRO_REAL.Y = icm20602_gyro_y;
-    GYRO_REAL.Z = icm20602_gyro_z;
-    REAL_ACC.X = icm20602_acc_x;
-    REAL_ACC.Y = icm20602_acc_y;
-    REAL_ACC.Z = icm20602_acc_z;
+    GYRO_REAL.X = imu660ra_gyro_x;
+    GYRO_REAL.Y = imu660ra_gyro_y;
+    GYRO_REAL.Z = imu660ra_gyro_z;
+    REAL_ACC.X = imu660ra_acc_x;
+    REAL_ACC.Y = imu660ra_acc_y;
+    REAL_ACC.Z = imu660ra_acc_z;
 
 
     Real_Gyro_Z = sensor.Gyro_deg.Z;

@@ -23,5 +23,7 @@ void Turn_cycle_ver3(void);
 
 void Turn_cycle_ForPCrossing(short theory_duty);
 
+void Turn_cycle(short Theory_Duty);
+
 
 #endif /* CODE_CYCLE_H_ */

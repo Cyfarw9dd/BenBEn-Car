@@ -8,8 +8,10 @@ extern float Real_Gyro_Y;
 
 extern float Angle_X_Final;
 extern float Angle_Y_Final;
+// extern S_FLOAT_XYZ GYRO_REAL;
+// extern S_INT16_XYZ GYRO;
 #define my_pow(a) ((a)*(a))
-//extern S_INT16_XYZ GYRO, MPU_ACC;
+
 
 typedef struct
 {

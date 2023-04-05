@@ -38,10 +38,13 @@
 #include "control.h"
 #include "pid.h"
 #include "cycle.h"
+#include "gyro.h"
 #pragma section all "cpu1_dsram"
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU1的RAM中
 
 // **************************** 代码区域 ****************************
+
+extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
 void core1_main(void)
 {
     disable_Watchdog();                     // 关闭看门狗
@@ -49,7 +52,7 @@ void core1_main(void)
     // 此处编写用户代码 例如外设初始化代码等
     mt9v03x_init();
     tft180_init();
-    // icm20602_init();
+    imu660ra_init();
     wireless_uart_init();
 
     pwm_init(ATOM0_CH0_P21_2, 17 * 1000, 0);
@@ -76,8 +79,8 @@ void core1_main(void)
         // get_motor_speed();
         // motor_ctrl(3000, 3000);   // (0, 3000)向右转，(3000, 0)向左转
         // tft180_show_gray_image(0 ,0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        // tft180_show_int(0, 90, LMotor_Duty, 5);
-        // tft180_show_int(0, 110, RMotor_Duty, 5);
+        tft180_show_int(0, 90, GYRO_REAL.X, 5);
+        tft180_show_int(0, 110, GYRO_REAL.Y, 5);
         // 此处编写需要循环执行的代码
     }
 }
