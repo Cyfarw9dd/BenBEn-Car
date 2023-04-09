@@ -71,7 +71,6 @@ void core1_main(void)
     {
         // 此处编写需要循环执行的代码
 
-        // image_process();
         Camera();
 
         // 以下为常用的测试代码

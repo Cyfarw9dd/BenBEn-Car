@@ -85,6 +85,8 @@ void get_left(unsigned short total_L);
 
 void get_right(unsigned short total_R);
 
+void get_centerline_ver2(void);
+
 void image_filter(unsigned char(*bin_image)[image_w]); //形态学滤波，简单来说就是膨胀和腐蚀的思想;
 
 void image_draw_rectan(unsigned char(*image)[image_w]);

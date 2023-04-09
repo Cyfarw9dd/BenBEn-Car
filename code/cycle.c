@@ -51,19 +51,23 @@ void Turn_cycle_ver2(short theory_duty){ //1600
     short Union_result = Prospect_Parameter + Bottom_Parameter;
     // short Direct_Parameter = -PID_Realize(&Direct_PID, Direct, (int32)(Real_Gyro_Z * 10),(int32)Union_result);
 
-    Direct_Last = Direct_Last * 0.2+ Prospect_Parameter * 0.8;
-    LMotor_Duty = theory_duty - Direct_Last * 7;
-    RMotor_Duty = theory_duty + Direct_Last * 7;
+    Direct_Last = Direct_Last * 0.2 + Prospect_Parameter * 0.8;
+    LMotor_Duty = theory_duty + Direct_Last * 12;
+    RMotor_Duty = theory_duty - Direct_Last * 12;
     motor_ctrl(LMotor_Duty, RMotor_Duty);
 }
 
 
 
-void Turn_cycle_ver3(void){
-    int Direct_Parameter = calculate_pid((one_curvature(centerline[105], 105))*100);
+void Turn_cycle_ver3(short Theory_Duty){
+    unsigned char x;
+    unsigned char y;
+    x = (centerline[119] + centerline[119 - 1] + centerline[119 - 2] + centerline[119 -3] + centerline[119 - 4]) / 5;
+    y = 119 + 118 + 117 + 116 + 115;
+    int Direct_Parameter = calculate_pid((one_curvature(x, y))*100);
     Direct_Last = Direct_Last * 0.2 + Direct_Parameter * 0.8;
-    LMotor_Duty = MOTOR_EXPECTATION + Direct_Last * 10000;
-    RMotor_Duty = MOTOR_EXPECTATION - Direct_Last * 10000;
+    LMotor_Duty = Theory_Duty + Direct_Last * 10000;
+    RMotor_Duty = Theory_Duty - Direct_Last * 10000;
 
     motor_ctrl(LMotor_Duty, RMotor_Duty);
 }
@@ -78,15 +82,15 @@ void Turn_cycle_ForPCrossing(short theory_duty){ //1600
     // short Direct_Parameter = -PID_Realize(&Direct_PID, Direct, (int32)(Real_Gyro_Z * 10),(int32)Union_result);
 
     Direct_Last = Direct_Last * 0.2 + Union_result * 0.8;
-    LMotor_Duty = theory_duty + Direct_Last * 4;
-    RMotor_Duty = theory_duty - Direct_Last * 4;
+    LMotor_Duty = theory_duty - Direct_Last * 4;
+    RMotor_Duty = theory_duty + Direct_Last * 4;
 
     motor_ctrl(LMotor_Duty, RMotor_Duty);
 }
 
 extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
 #define TKD 1
-#define TGKD 1
+#define TGKD 0
 short Err, Last_Err;
 short Direct_Duty;
 void Turn_cycle(short Theory_Duty){
