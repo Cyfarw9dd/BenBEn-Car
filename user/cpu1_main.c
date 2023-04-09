@@ -82,7 +82,7 @@ void core1_main(void)
         // 以下为常用的测试代码
         
         // get_motor_speed();
-        motor_ctrl(3000, 3000);   // (0, 3000)向右转，(3000, 0)向左转
+        // motor_ctrl(3000, 3000);   // (0, 3000)向右转，(3000, 0)向左转
         // tft180_show_gray_image(0 ,0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
         tft180_show_int(0, 90, GYRO_REAL.Z, 5);
         tft180_show_int(0, 110, LMotor_Duty, 5);

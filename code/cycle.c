@@ -105,8 +105,8 @@ void Turn_cycle(short Theory_Duty){
     Direct_Duty = Now_Err + (Now_Err - Last_Err) * TKD + GYRO_REAL.Z * TGKD;
 
     // Direct_Last = Direct_Last * 0.2+ Prospect_Parameter * 0.8;
-    LMotor_Duty = Theory_Duty - Direct_Duty * 12;
-    RMotor_Duty = Theory_Duty + Direct_Duty * 12;
+    LMotor_Duty = Theory_Duty - Direct_Duty * 7;
+    RMotor_Duty = Theory_Duty + Direct_Duty * 7;
     Last_Err = Now_Err;
     LMotor_Duty = range_protect(LMotor_Duty, MOTOR_MIN, MOTOR_MAX);
     RMotor_Duty = range_protect(RMotor_Duty, MOTOR_MIN, MOTOR_MAX);
