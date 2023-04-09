@@ -70,4 +70,6 @@ void Get_IcmData(void);
 
 void AngleGet(void);
 
+void gyroOffsetInit(void);
+
 #endif /* CODE_GYRO_H_ */

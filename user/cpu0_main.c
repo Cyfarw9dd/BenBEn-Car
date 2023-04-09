@@ -11,6 +11,10 @@
 ********************************************************************************************************************/
 #include "zf_common_headfile.h"
 #include "control.h"
+#include "image.h"
+#include "pid.h"
+#include "cycle.h"
+#include "gyro.h"
 #pragma section all "cpu0_dsram"
 
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU0的RAM中
@@ -36,9 +40,20 @@ int core0_main(void)
     cpu_wait_event_ready();         // 等待所有核心初始化完毕
 	while (TRUE)
 	{
-        // 此处编写需要循环执行的代码
-		
-        // 此处编写需要循环执行的代码
+		// 此处编写需要循环执行的代码
+		if(!gpio_get_level(KEY1)){
+			Prospect[0] += 1;
+			system_delay_ms(300);
+		}
+		if(!gpio_get_level(KEY2)){
+			TKD += 1;
+			system_delay_ms(300);
+		}
+		if(!gpio_get_level(KEY3)){
+			TGKD -= 1;
+			system_delay_ms(300);
+		}
+		// 此处编写需要循环执行的代码
 	}
 }
 

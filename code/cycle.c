@@ -88,9 +88,13 @@ void Turn_cycle_ForPCrossing(short theory_duty){ //1600
     motor_ctrl(LMotor_Duty, RMotor_Duty);
 }
 
+
+
+// 陀螺仪向右转的时候Z轴数据为正，向左转的时候Z轴速度为负，初步判断KD值为负值
+
 extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
-#define TKD 1
-#define TGKD 0
+float TKD = 13;
+float TGKD = 0;
 short Err, Last_Err;
 short Direct_Duty;
 void Turn_cycle(short Theory_Duty){
@@ -101,8 +105,10 @@ void Turn_cycle(short Theory_Duty){
     Direct_Duty = Now_Err + (Now_Err - Last_Err) * TKD + GYRO_REAL.Z * TGKD;
 
     // Direct_Last = Direct_Last * 0.2+ Prospect_Parameter * 0.8;
-    LMotor_Duty = Theory_Duty - Direct_Duty * 7;
-    RMotor_Duty = Theory_Duty + Direct_Duty * 7;
+    LMotor_Duty = Theory_Duty - Direct_Duty * 12;
+    RMotor_Duty = Theory_Duty + Direct_Duty * 12;
     Last_Err = Now_Err;
+    LMotor_Duty = range_protect(LMotor_Duty, MOTOR_MIN, MOTOR_MAX);
+    RMotor_Duty = range_protect(RMotor_Duty, MOTOR_MIN, MOTOR_MAX);
     motor_ctrl(LMotor_Duty, RMotor_Duty);    
 }

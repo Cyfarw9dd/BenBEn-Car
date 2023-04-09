@@ -48,13 +48,12 @@ void Camera(void){
     if(mt9v03x_finish_flag){                              //mt9v03x_finish_flag为图像处理结束的标志位，在逐飞库中有着详细定义
         image_threshold = GetOSTU(mt9v03x_image[0]);      //通过大津法来得到原始灰度图像的阈值
         lcd_binaryzation032_zoom(mt9v03x_image[0], image_deal[0], MT9V03X_W , MT9V03X_H, image_threshold); //将二值化后的图像存放到image_deal[120][188]里
-        Get_IcmData();                                    //获取陀螺仪数据
         // image_filter(&image_deal[0]);
         // image_process();
         Searching_for_boundaries(&image_deal[0]);         //寻找赛道边界
         // get_centerline_ver2(); 
         Deal_Road_Characteristics(&image_deal[0]);        //处理赛道特征，如计算左右半边赛道宽度等       
-        Turn_cycle_ver2(2000);    
+        Turn_cycle(2000);    
         Hightlight_Lines(&image_deal[0]);                 //高亮左右边界以及中线                        
         // Pokemon_Go();                                     //元素判断
         tft180_show_gray_image(0, 0, &image_deal[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
@@ -263,12 +262,12 @@ float one_curvature(int x1, int y1) // one_curvature(centerline[30], 30)
 */
 
 void cal_curvature(void){
-    int prospect = 10;            // 摄像头高度为20cm，自定义前瞻行数15 
+    int prospect = 15;            // 摄像头高度为20cm，自定义前瞻行数15 
 
     near = (centerline[119] + centerline[119 - 1] + centerline[119 - 2]) / 3;
     middle = (centerline[119 - prospect] + centerline[119 - prospect - 1] + centerline[119 - prospect - 2]) / 3;
     // middle = middle * 1.05;
-    near = near * 1.05;
+    // near = near * 1.05;
     further = (centerline[119 - prospect * 2] + centerline[119 - prospect * 2 - 1] + centerline[119 - prospect * 2 - 2]) / 3;
 
     if(further < middle && middle < near){

@@ -292,12 +292,12 @@ void Get_IcmData(void){
 	MPU_ACC.Y = imu660ra_acc_y;
 	MPU_ACC.Z = imu660ra_acc_z;
     // add
-    GYRO_REAL.X = imu660ra_gyro_x;
-    GYRO_REAL.Y = imu660ra_gyro_y;
-    GYRO_REAL.Z = imu660ra_gyro_z;
-    REAL_ACC.X = imu660ra_acc_x;
-    REAL_ACC.Y = imu660ra_acc_y;
-    REAL_ACC.Z = imu660ra_acc_z;
+    // GYRO_REAL.X = imu660ra_gyro_x;
+    // GYRO_REAL.Y = imu660ra_gyro_y;
+    // GYRO_REAL.Z = imu660ra_gyro_z;
+    // REAL_ACC.X = imu660ra_acc_x;
+    // REAL_ACC.Y = imu660ra_acc_y;
+    // REAL_ACC.Z = imu660ra_acc_z;
 
 
     Real_Gyro_Z = sensor.Gyro_deg.Z;
@@ -338,3 +338,21 @@ void AngleGet(void){
     //相当于Angle = Angle*(1-0.00105) + Angle_acc*0.
 }   
 
+
+// 陀螺仪滤除零漂
+
+void gyroOffsetInit(void){
+    GYRO_REAL.X = 0;
+    GYRO_REAL.Y = 0;
+    GYRO_REAL.Z = 0;
+    for(unsigned char i = 0; i < 100; i++){
+        Get_IcmData();
+        GYRO_REAL.X += GYRO.X;
+        GYRO_REAL.Y += GYRO.Y;
+        GYRO_REAL.Z += GYRO.Z;
+        // system_delay_us(50);
+    }
+    GYRO_REAL.X /= 100;
+    GYRO_REAL.Y /= 100;
+    GYRO_REAL.Z /= 100;
+}

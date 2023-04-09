@@ -13,6 +13,8 @@ extern float CurrentVoltage, PresentVoltage, TempVoltage;
 
 extern unsigned char data_array[4];
 
+extern float TKD, TGKD;
+
 void Speed_cycle(short expect);
 
 int32 Speed_deal(void);
