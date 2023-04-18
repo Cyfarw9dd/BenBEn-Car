@@ -50,7 +50,7 @@ int core0_main(void)
 			system_delay_ms(300);
 		}
 		if(!gpio_get_level(KEY3)){
-			TGKD -= 1;
+			TGKD += 0.01;
 			system_delay_ms(300);
 		}
 		// 此处编写需要循环执行的代码

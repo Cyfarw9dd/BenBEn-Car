@@ -51,7 +51,6 @@ void Camera(void){
         // image_filter(&image_deal[0]);
         // image_process();
         Searching_for_boundaries(&image_deal[0]);         //寻找赛道边界
-        // get_centerline_ver2(); 
         Deal_Road_Characteristics(&image_deal[0]);        //处理赛道特征，如计算左右半边赛道宽度等       
         Turn_cycle(2000);    
         Hightlight_Lines(&image_deal[0]);                 //高亮左右边界以及中线                        

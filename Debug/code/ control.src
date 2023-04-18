@@ -1,6 +1,6 @@
 	; Module start
 	.compiler_version	"TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler v1.1r8 Build 22011964"
-	.compiler_invocation	"ctc -f cc4736a --dep-file=code/ control.d -c99 --fp-model=3cflnrSTz -D__CPU__=tc26xb -D__CPU_TC26XB__ --core=tc1.6.x --fp-model=+float -D__CPU__=tc26xb -ID:\\\\BenBen\\\\BEN_ben ver1.01 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\code -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Configurations -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Platform -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Platform\\\\Tricore -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Platform\\\\Tricore\\\\Compilers -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Sfr -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Sfr\\\\TC26B -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Sfr\\\\TC26B\\\\_Reg -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\If -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\If\\\\Ccu6If -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\StdIf -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Bsp -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Comm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\General -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Math -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Time -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\_Utilities -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Asclin -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Asclin\\\\Asc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Asclin\\\\Lin -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Asclin\\\\Spi -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Asclin\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\Icu -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\PwmBc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\PwmHl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\TPwm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\Timer -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\TimerWithTrigger -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cif -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cif\\\\Cam -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cif\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cpu -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cpu\\\\CStart -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cpu\\\\Irq -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cpu\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cpu\\\\Trap -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dma -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dma\\\\Dma -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dma\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dsadc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dsadc\\\\Dsadc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dsadc\\\\Rdc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dsadc\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dts -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dts\\\\Dts -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dts\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Emem -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Emem\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eray -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eray\\\\Eray -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eray\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eth -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eth\\\\Phy_Pef7071 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eth\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fce -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fce\\\\Crc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fce\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fft -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fft\\\\Fft -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fft\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Flash -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Flash\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gpt12 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gpt12\\\\IncrEnc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gpt12\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Atom -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Atom\\\\Pwm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Atom\\\\PwmHl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Atom\\\\Timer -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tim -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tim\\\\In -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tom -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tom\\\\Pwm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tom\\\\PwmHl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tom\\\\Timer -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Trig -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Hssl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Hssl\\\\Hssl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Hssl\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\I2c -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\I2c\\\\I2c -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\I2c\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Iom -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Iom\\\\Driver -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Iom\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Msc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Msc\\\\Msc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Msc\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Mtu -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Mtu\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Multican -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Multican\\\\Can -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Multican\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Port -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Port\\\\Io -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Port\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5\\\\Psi5 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5s -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5s\\\\Psi5s -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5s\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Qspi -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Qspi\\\\SpiMaster -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Qspi\\\\SpiSlave -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Qspi\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Scu -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Scu\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Sent -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Sent\\\\Sent -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Sent\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Smu -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Smu\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Src -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Src\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Stm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Stm\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Stm\\\\Timer -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Vadc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Vadc\\\\Adc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Vadc\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\_Impl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\_Lib -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\_Lib\\\\DataHandling -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\_Lib\\\\InternalMux -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\_PinMap -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\zf_common -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\zf_device -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\zf_driver -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\user -g2 -w544 -w557 -t4 --language=+volatile -N0 -O0 -Y0 -Z0 --compact-max-size=200 --misrac-version=2012 -o code/ control.src ../code/ control.c"
+	.compiler_invocation	"ctc -f cc23404a --dep-file=code/ control.d -c99 --fp-model=3cflnrSTz -D__CPU__=tc26xb -D__CPU_TC26XB__ --core=tc1.6.x --fp-model=+float -D__CPU__=tc26xb -ID:\\\\BenBen\\\\BEN_ben ver1.01 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\code -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Configurations -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Platform -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Platform\\\\Tricore -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Platform\\\\Tricore\\\\Compilers -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Sfr -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Sfr\\\\TC26B -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Sfr\\\\TC26B\\\\_Reg -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\If -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\If\\\\Ccu6If -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\StdIf -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Bsp -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Comm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\General -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Math -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\SysSe\\\\Time -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\\\_Utilities -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Asclin -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Asclin\\\\Asc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Asclin\\\\Lin -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Asclin\\\\Spi -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Asclin\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\Icu -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\PwmBc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\PwmHl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\TPwm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\Timer -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\TimerWithTrigger -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cif -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cif\\\\Cam -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cif\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cpu -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cpu\\\\CStart -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cpu\\\\Irq -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cpu\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Cpu\\\\Trap -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dma -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dma\\\\Dma -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dma\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dsadc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dsadc\\\\Dsadc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dsadc\\\\Rdc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dsadc\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dts -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dts\\\\Dts -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Dts\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Emem -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Emem\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eray -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eray\\\\Eray -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eray\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eth -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eth\\\\Phy_Pef7071 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Eth\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fce -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fce\\\\Crc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fce\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fft -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fft\\\\Fft -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Fft\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Flash -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Flash\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gpt12 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gpt12\\\\IncrEnc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gpt12\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Atom -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Atom\\\\Pwm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Atom\\\\PwmHl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Atom\\\\Timer -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tim -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tim\\\\In -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tom -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tom\\\\Pwm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tom\\\\PwmHl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Tom\\\\Timer -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Gtm\\\\Trig -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Hssl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Hssl\\\\Hssl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Hssl\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\I2c -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\I2c\\\\I2c -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\I2c\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Iom -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Iom\\\\Driver -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Iom\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Msc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Msc\\\\Msc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Msc\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Mtu -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Mtu\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Multican -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Multican\\\\Can -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Multican\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Port -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Port\\\\Io -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Port\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5\\\\Psi5 -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5s -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5s\\\\Psi5s -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Psi5s\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Qspi -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Qspi\\\\SpiMaster -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Qspi\\\\SpiSlave -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Qspi\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Scu -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Scu\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Sent -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Sent\\\\Sent -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Sent\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Smu -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Smu\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Src -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Src\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Stm -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Stm\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Stm\\\\Timer -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Vadc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Vadc\\\\Adc -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Vadc\\\\Std -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\_Impl -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\_Lib -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\_Lib\\\\DataHandling -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\_Lib\\\\InternalMux -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\_PinMap -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\zf_common -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\zf_device -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\zf_driver -ID:\\\\BenBen\\\\BEN_ben ver1.01\\\\user -g2 -w544 -w557 -t4 --language=+volatile -N0 -O0 -Y0 -Z0 --compact-max-size=200 --misrac-version=2012 -o code/ control.src ../code/ control.c"
 	.compiler_name		"ctc"
 	;source	'../code/ control.c'
 
@@ -16,93 +16,93 @@ $TC16X
 .L9:
 motor_ctrl:	.type	func
 	mov	d15,d5
-.L46:
+.L49:
 	jlt	d4,#0,.L2
-.L75:
+.L78:
 	mov	d5,#0
-.L45:
+.L48:
 	mov	d6,#2500
 	call	range_protect
-.L44:
+.L47:
 	mov	d8,d2
-.L49:
+.L52:
 	mov	d4,#4
-.L76:
+.L79:
 	mov	d5,#0
 	call	pwm_set_duty
-.L48:
-	mov	d4,#19
-.L77:
-	mov	d5,d8
-.L50:
-	call	pwm_set_duty
 .L51:
+	mov	d4,#19
+.L80:
+	mov	d5,d8
+.L53:
+	call	pwm_set_duty
+.L54:
 	j	.L3
 .L2:
 	rsub	d4,#0
 	extr	d4,d4,#0,#16
-.L52:
+.L55:
 	mov	d5,#0
-.L53:
+.L56:
 	mov	d6,#2500
 	call	range_protect
-.L54:
+.L57:
 	mov	d4,#4
-.L78:
+.L81:
 	mov	d5,d2
-.L56:
+.L59:
 	call	pwm_set_duty
-.L55:
+.L58:
 	mov	d4,#19
-.L79:
+.L82:
 	mov	d5,#0
 	call	pwm_set_duty
 .L3:
 	jlt	d15,#0,.L4
-.L80:
+.L83:
 	mov	d5,#0
-.L81:
+.L84:
 	mov	d6,#2500
 	mov	d4,d15
-.L57:
+.L60:
 	call	range_protect
-.L47:
+.L50:
 	mov	d15,d2
-.L59:
+.L62:
 	mov	d4,#26
-.L82:
+.L85:
 	mov	d5,#0
 	call	pwm_set_duty
-.L58:
-	mov	d4,#11
-.L83:
-	mov	d5,d15
 .L61:
+	mov	d4,#11
+.L86:
+	mov	d5,d15
+.L64:
 	call	pwm_set_duty
-.L62:
+.L65:
 	j	.L5
 .L4:
 	rsub	d15,#0
 	extr	d4,d15,#0,#16
-.L84:
+.L87:
 	mov	d5,#0
-.L85:
+.L88:
 	mov	d6,#2500
 	call	range_protect
-.L60:
-	mov	d4,#26
-.L86:
-	mov	d5,d2
-.L64:
-	call	pwm_set_duty
 .L63:
+	mov	d4,#26
+.L89:
+	mov	d5,d2
+.L67:
+	call	pwm_set_duty
+.L66:
 	mov	d4,#11
-.L87:
+.L90:
 	mov	d5,#0
 	call	pwm_set_duty
 .L5:
 	ret
-.L37:
+.L39:
 	
 __motor_ctrl_function_end:
 	.size	motor_ctrl,__motor_ctrl_function_end-motor_ctrl
@@ -119,50 +119,50 @@ __motor_ctrl_function_end:
 get_motor_speed:	.type	func
 	movh.a	a15,#@his(speed1)
 	lea	a15,[a15]@los(speed1)
-.L92:
-	mov	d4,#3
-	call	encoder_get_count
-.L93:
-	st.h	[a15],d2
-.L94:
-	movh.a	a15,#@his(speed2)
-	lea	a15,[a15]@los(speed2)
 .L95:
-	mov	d4,#4
+	mov	d4,#3
 	call	encoder_get_count
 .L96:
 	st.h	[a15],d2
 .L97:
-	mov	d4,#3
-	call	encoder_clear_count
+	movh.a	a15,#@his(speed2)
+	lea	a15,[a15]@los(speed2)
 .L98:
 	mov	d4,#4
-	call	encoder_clear_count
+	call	encoder_get_count
 .L99:
-	mov	d4,#0
+	st.h	[a15],d2
 .L100:
-	mov	d5,#66
+	mov	d4,#3
+	call	encoder_clear_count
 .L101:
+	mov	d4,#4
+	call	encoder_clear_count
+.L102:
+	mov	d4,#0
+.L103:
+	mov	d5,#66
+.L104:
 	movh.a	a15,#@his(speed1)
 	lea	a15,[a15]@los(speed1)
 	ld.h	d6,[a15]
-.L102:
+.L105:
 	mov	d7,#5
 	call	tft180_show_int
-.L103:
+.L106:
 	mov	d4,#0
-.L104:
+.L107:
 	mov	d5,#86
-.L105:
+.L108:
 	movh.a	a15,#@his(speed2)
 	lea	a15,[a15]@los(speed2)
 	ld.h	d6,[a15]
-.L106:
+.L109:
 	mov	d7,#5
 	call	tft180_show_int
-.L107:
+.L110:
 	ret
-.L41:
+.L43:
 	
 __get_motor_speed_function_end:
 	.size	get_motor_speed,__get_motor_speed_function_end-get_motor_speed
@@ -180,41 +180,51 @@ Quick_Break:	.type	func
 	movh.a	a15,#@his(speed1)
 	lea	a15,[a15]@los(speed1)
 	ld.h	d15,[a15]
-.L112:
+.L115:
 	movh.a	a15,#@his(speed2)
 	lea	a15,[a15]@los(speed2)
 	ld.h	d0,[a15]
-.L113:
-	add	d15,d0
-.L114:
-	mov	d0,#2
-.L115:
-	div	e0,d15,d0
-.L65:
-	mov	d15,#50
 .L116:
-	jge	d15,d0,.L6
+	add	d15,d0
 .L117:
-	mov	d4,#-2000
+	mov	d0,#2
 .L118:
+	div	e0,d15,d0
+.L68:
+	mov	d15,#50
+.L119:
+	jge	d15,d0,.L6
+.L120:
+	mov	d4,#-2000
+.L121:
 	mov	d5,#-2000
 	call	motor_ctrl
-.L66:
+.L69:
 	j	.L7
 .L6:
 	mov	d4,#0
-.L119:
+.L122:
 	mov	d5,#0
 	call	motor_ctrl
 .L7:
 	ret
-.L42:
+.L44:
 	
 __Quick_Break_function_end:
 	.size	Quick_Break,__Quick_Break_function_end-Quick_Break
 .L32:
 	; End of function
 	
+	.sdecl	'.data.menu.menu',data,cluster('menu')
+	.sect	'.data.menu.menu'
+	.global	menu
+	.align	4
+menu:	.type	object
+	.size	menu,44
+	.space	4
+	.byte	104,101,108,108,111,32,119,111
+	.byte	114,108,100
+	.space	29
 	.sdecl	'.data. control.speed1',data,cluster('speed1')
 	.sect	'.data. control.speed1'
 	.global	speed1
@@ -246,7 +256,7 @@ speed2:	.type	object
 	.sdecl	'.debug_info',debug
 	.sect	'.debug_info'
 .L15:
-	.word	143733
+	.word	144002
 	.half	3
 	.word	.L16
 	.byte	4
@@ -5286,7 +5296,7 @@ speed2:	.type	object
 	.byte	'alti',0,17,191,18,82
 	.word	32154
 	.byte	6,0
-.L38:
+.L40:
 	.byte	7
 	.byte	'short int',0,2,5,7
 	.byte	'long int',0,4,5,20,19,60,9,12,13
@@ -19629,7 +19639,62 @@ speed2:	.type	object
 	.byte	'WIFI_UART_SERVER_ON',0,1,0,29
 	.byte	'wifi_uart_connect_state_enum',0,48,104,2
 	.word	143648
-	.byte	0
+	.byte	20,49,28,9,6,13
+	.byte	'X',0
+	.word	32446
+	.byte	2,2,35,0,13
+	.byte	'Y',0
+	.word	32446
+	.byte	2,2,35,2,13
+	.byte	'Z',0
+	.word	32446
+	.byte	2,2,35,4,0,29
+	.byte	'S_INT16_XYZ',0,49,33,2
+	.word	143736
+	.byte	20,49,35,9,12,13
+	.byte	'X',0
+	.word	207
+	.byte	4,2,35,0,13
+	.byte	'Y',0
+	.word	207
+	.byte	4,2,35,4,13
+	.byte	'Z',0
+	.word	207
+	.byte	4,2,35,8,0,29
+	.byte	'S_FLOAT_XYZ',0,49,40,2
+	.word	143795
+	.byte	7
+	.byte	'char',0,1,6,15,30
+	.word	143854
+	.byte	16,29,0,3
+	.word	207
+	.byte	3
+	.word	143854
+	.byte	31,1,1,32
+	.word	143871
+	.byte	32
+	.word	143876
+	.byte	0,3
+	.word	143881
+	.byte	20,50,13,9,44,13
+	.byte	'menu_id',0
+	.word	427
+	.byte	4,2,35,0,13
+	.byte	'menu_name',0
+	.word	143862
+	.byte	30,2,35,4,13
+	.byte	'menu_action',0
+	.word	143895
+	.byte	4,2,35,36,13
+	.byte	'param',0
+	.word	143871
+	.byte	4,2,35,40,0,29
+	.byte	'menu_item',0,50,19,2
+	.word	143900
+.L46:
+	.byte	15,44
+	.word	143900
+	.byte	16,0,0,0
 	.sdecl	'.debug_abbrev',debug
 	.sect	'.debug_abbrev'
 .L16:
@@ -19646,15 +19711,16 @@ speed2:	.type	object
 	.sdecl	'.debug_line',debug
 	.sect	'.debug_line'
 .L17:
-	.word	.L68-.L67
-.L67:
+	.word	.L71-.L70
+.L70:
 	.half	3
-	.word	.L70-.L69
-.L69:
+	.word	.L73-.L72
+.L72:
 	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Infra\\\\Sfr\\\\TC26B\\\\_Reg',0
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\zf_driver',0
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\zf_device',0
+	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\code',0
 	.byte	'D:\\AURIX-Studio-1.8.0\\plugins\\com.infineon.aurix.tools_1.8.0\\build_system\\tools\\Compilers\\Tasking_1.1r8\\ctc\\include\\',0
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\\\Ccu6\\\\Timer',0
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\zf_common',0
@@ -19696,9 +19762,9 @@ speed2:	.type	object
 	.byte	'zf_driver_encoder.h',0,2,0,0
 	.byte	'zf_driver_pwm.h',0,2,0,0
 	.byte	'zf_device_tft180.h',0,3,0,0
-	.byte	'..\\code\\pid.h',0,0,0,0
+	.byte	'pid.h',0,4,0,0
 	.byte	'../code/ control.c',0,0,0,0
-	.byte	'stdio.h',0,4,0,0
+	.byte	'stdio.h',0,5,0,0
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\Cpu\\Std\\Platform_Types.h',0
 	.byte	0,0,0
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\Cpu\\Std\\Ifx_Types.h',0
@@ -19715,13 +19781,13 @@ speed2:	.type	object
 	.byte	0,0,0
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\If\\Ccu6If\\Timer.h',0
 	.byte	0,0,0
-	.byte	'IfxCcu6_Timer.h',0,5,0,0
-	.byte	'zf_common_typedef.h',0,6,0,0
-	.byte	'zf_common_fifo.h',0,6,0,0
+	.byte	'IfxCcu6_Timer.h',0,6,0,0
+	.byte	'zf_common_typedef.h',0,7,0,0
+	.byte	'zf_common_fifo.h',0,7,0,0
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\_Impl\\IfxDma_cfg.h',0
 	.byte	0,0,0
 	.byte	'IfxDma_regdef.h',0,1,0,0
-	.byte	'IfxDma.h',0,7,0,0
+	.byte	'IfxDma.h',0,8,0,0
 	.byte	'zf_driver_gpio.h',0,2,0,0
 	.byte	'zf_driver_soft_spi.h',0,2,0,0
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\iLLD\\\\TC26B\\\\Tricore\\_PinMap\\IfxAsclin_PinMap.h',0
@@ -19730,11 +19796,13 @@ speed2:	.type	object
 	.byte	0,0,0
 	.byte	'D:\\\\BenBen\\\\BEN_ben ver1.01\\\\libraries\\\\infineon_libraries\\\\Service\\\\CpuGeneric\\StdIf\\IfxStdIf_DPipe.h',0
 	.byte	0,0,0
-	.byte	'ifxAsclin_Asc.h',0,8,0,0
+	.byte	'ifxAsclin_Asc.h',0,9,0,0
 	.byte	'zf_device_gps_tau1201.h',0,3,0,0
-	.byte	'zf_device_wifi_uart.h',0,3,0,0,0
-.L70:
-.L68:
+	.byte	'zf_device_wifi_uart.h',0,3,0,0
+	.byte	'gyro.h',0,4,0,0
+	.byte	'menu.h',0,4,0,0,0
+.L73:
+.L71:
 	.sdecl	'.debug_info',debug,cluster('motor_ctrl')
 	.sect	'.debug_info'
 .L18:
@@ -19750,15 +19818,15 @@ speed2:	.type	object
 	.word	.L14
 	.byte	3
 	.byte	'motor_ctrl',0,1,10,6,1,1,1
-	.word	.L9,.L37,.L8
+	.word	.L9,.L39,.L8
 	.byte	4
 	.byte	'Lmotor',0,1,10,23
-	.word	.L38,.L39
+	.word	.L40,.L41
 	.byte	4
 	.byte	'Rmotor',0,1,10,37
-	.word	.L38,.L40
+	.word	.L40,.L42
 	.byte	5
-	.word	.L9,.L37
+	.word	.L9,.L39
 	.byte	0,0
 	.sdecl	'.debug_abbrev',debug,cluster('motor_ctrl')
 	.sect	'.debug_abbrev'
@@ -19768,86 +19836,86 @@ speed2:	.type	object
 	.sdecl	'.debug_line',debug,cluster('motor_ctrl')
 	.sect	'.debug_line'
 .L20:
-	.word	.L72-.L71
-.L71:
+	.word	.L75-.L74
+.L74:
 	.half	3
-	.word	.L74-.L73
-.L73:
+	.word	.L77-.L76
+.L76:
 	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.byte	'../code/ control.c',0,0,0,0,0
-.L74:
+.L77:
 	.byte	5,6,7,0,5,2
 	.word	.L9
 	.byte	3,9,1,5,5,9
-	.half	.L46-.L9
+	.half	.L49-.L9
 	.byte	3,1,1,5,40,7,9
-	.half	.L75-.L46
+	.half	.L78-.L49
 	.byte	3,1,1,5,51,9
-	.half	.L45-.L75
+	.half	.L48-.L78
 	.byte	1,5,16,9
-	.half	.L44-.L45
+	.half	.L47-.L48
 	.byte	1,5,22,9
-	.half	.L49-.L44
+	.half	.L52-.L47
 	.byte	3,1,1,5,31,9
-	.half	.L76-.L49
+	.half	.L79-.L52
 	.byte	1,5,22,9
-	.half	.L48-.L76
+	.half	.L51-.L79
 	.byte	3,1,1,5,31,9
-	.half	.L77-.L48
+	.half	.L80-.L51
 	.byte	1,5,61,9
-	.half	.L51-.L77
+	.half	.L54-.L80
 	.byte	3,126,1,5,32,9
-	.half	.L2-.L51
+	.half	.L2-.L54
 	.byte	3,5,1,5,41,9
-	.half	.L52-.L2
+	.half	.L55-.L2
 	.byte	1,5,52,9
-	.half	.L53-.L52
+	.half	.L56-.L55
 	.byte	1,5,22,9
-	.half	.L54-.L53
+	.half	.L57-.L56
 	.byte	3,1,1,5,31,9
-	.half	.L78-.L54
+	.half	.L81-.L57
 	.byte	1,5,22,9
-	.half	.L55-.L78
+	.half	.L58-.L81
 	.byte	3,1,1,5,31,9
-	.half	.L79-.L55
+	.half	.L82-.L58
 	.byte	1,5,5,9
-	.half	.L3-.L79
+	.half	.L3-.L82
 	.byte	3,2,1,5,40,7,9
-	.half	.L80-.L3
+	.half	.L83-.L3
 	.byte	3,1,1,5,51,9
-	.half	.L81-.L80
+	.half	.L84-.L83
 	.byte	1,5,16,9
-	.half	.L47-.L81
+	.half	.L50-.L84
 	.byte	1,5,22,9
-	.half	.L59-.L47
+	.half	.L62-.L50
 	.byte	3,1,1,5,31,9
-	.half	.L82-.L59
+	.half	.L85-.L62
 	.byte	1,5,22,9
-	.half	.L58-.L82
+	.half	.L61-.L85
 	.byte	3,1,1,5,31,9
-	.half	.L83-.L58
+	.half	.L86-.L61
 	.byte	1,5,61,9
-	.half	.L62-.L83
+	.half	.L65-.L86
 	.byte	3,126,1,5,32,9
-	.half	.L4-.L62
+	.half	.L4-.L65
 	.byte	3,5,1,5,41,9
-	.half	.L84-.L4
+	.half	.L87-.L4
 	.byte	1,5,52,9
-	.half	.L85-.L84
+	.half	.L88-.L87
 	.byte	1,5,22,9
-	.half	.L60-.L85
+	.half	.L63-.L88
 	.byte	3,1,1,5,31,9
-	.half	.L86-.L60
+	.half	.L89-.L63
 	.byte	1,5,22,9
-	.half	.L63-.L86
+	.half	.L66-.L89
 	.byte	3,1,1,5,31,9
-	.half	.L87-.L63
+	.half	.L90-.L66
 	.byte	1,5,1,9
-	.half	.L5-.L87
+	.half	.L5-.L90
 	.byte	3,2,1,7,9
 	.half	.L22-.L5
 	.byte	0,1,1
-.L72:
+.L75:
 	.sdecl	'.debug_ranges',debug,cluster('motor_ctrl')
 	.sect	'.debug_ranges'
 .L21:
@@ -19867,9 +19935,9 @@ speed2:	.type	object
 	.word	.L14
 	.byte	3
 	.byte	'get_motor_speed',0,1,40,6,1,1,1
-	.word	.L11,.L41,.L10
+	.word	.L11,.L43,.L10
 	.byte	4
-	.word	.L11,.L41
+	.word	.L11,.L43
 	.byte	0,0
 	.sdecl	'.debug_abbrev',debug,cluster('get_motor_speed')
 	.sect	'.debug_abbrev'
@@ -19879,52 +19947,52 @@ speed2:	.type	object
 	.sdecl	'.debug_line',debug,cluster('get_motor_speed')
 	.sect	'.debug_line'
 .L25:
-	.word	.L89-.L88
-.L88:
+	.word	.L92-.L91
+.L91:
 	.half	3
-	.word	.L91-.L90
-.L90:
+	.word	.L94-.L93
+.L93:
 	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.byte	'../code/ control.c',0,0,0,0,0
-.L91:
+.L94:
 	.byte	5,5,7,0,5,2
 	.word	.L11
 	.byte	3,40,1,5,32,9
-	.half	.L92-.L11
-	.byte	1,5,12,9
-	.half	.L93-.L92
-	.byte	1,5,5,9
-	.half	.L94-.L93
-	.byte	3,1,1,5,32,9
-	.half	.L95-.L94
+	.half	.L95-.L11
 	.byte	1,5,12,9
 	.half	.L96-.L95
-	.byte	1,5,25,9
+	.byte	1,5,5,9
 	.half	.L97-.L96
-	.byte	3,2,1,9
+	.byte	3,1,1,5,32,9
 	.half	.L98-.L97
-	.byte	3,1,1,5,21,9
+	.byte	1,5,12,9
 	.half	.L99-.L98
-	.byte	3,1,1,5,24,9
+	.byte	1,5,25,9
 	.half	.L100-.L99
-	.byte	1,5,28,9
+	.byte	3,2,1,9
 	.half	.L101-.L100
-	.byte	1,5,36,9
+	.byte	3,1,1,5,21,9
 	.half	.L102-.L101
-	.byte	1,5,21,9
-	.half	.L103-.L102
 	.byte	3,1,1,5,24,9
-	.half	.L104-.L103
+	.half	.L103-.L102
 	.byte	1,5,28,9
-	.half	.L105-.L104
+	.half	.L104-.L103
 	.byte	1,5,36,9
+	.half	.L105-.L104
+	.byte	1,5,21,9
 	.half	.L106-.L105
-	.byte	1,5,1,9
+	.byte	3,1,1,5,24,9
 	.half	.L107-.L106
+	.byte	1,5,28,9
+	.half	.L108-.L107
+	.byte	1,5,36,9
+	.half	.L109-.L108
+	.byte	1,5,1,9
+	.half	.L110-.L109
 	.byte	3,2,1,7,9
-	.half	.L27-.L107
+	.half	.L27-.L110
 	.byte	0,1,1
-.L89:
+.L92:
 	.sdecl	'.debug_ranges',debug,cluster('get_motor_speed')
 	.sect	'.debug_ranges'
 .L26:
@@ -19944,12 +20012,12 @@ speed2:	.type	object
 	.word	.L14
 	.byte	3
 	.byte	'Quick_Break',0,1,53,6,1,1,1
-	.word	.L13,.L42,.L12
+	.word	.L13,.L44,.L12
 	.byte	4
-	.word	.L13,.L42
+	.word	.L13,.L44
 	.byte	5
 	.byte	'speed_now',0,1,55,11
-	.word	.L38,.L43
+	.word	.L40,.L45
 	.byte	0,0,0
 	.sdecl	'.debug_abbrev',debug,cluster('Quick_Break')
 	.sect	'.debug_abbrev'
@@ -19959,44 +20027,44 @@ speed2:	.type	object
 	.sdecl	'.debug_line',debug,cluster('Quick_Break')
 	.sect	'.debug_line'
 .L30:
-	.word	.L109-.L108
-.L108:
+	.word	.L112-.L111
+.L111:
 	.half	3
-	.word	.L111-.L110
-.L110:
+	.word	.L114-.L113
+.L113:
 	.byte	2,1,-4,9,10,0,1,1,1,1,0,0,0,1,0
 	.byte	'../code/ control.c',0,0,0,0,0
-.L111:
+.L114:
 	.byte	5,24,7,0,5,2
 	.word	.L13
 	.byte	3,54,1,5,33,9
-	.half	.L112-.L13
+	.half	.L115-.L13
 	.byte	1,5,31,9
-	.half	.L113-.L112
+	.half	.L116-.L115
 	.byte	1,5,43,9
-	.half	.L114-.L113
-	.byte	1,5,41,9
-	.half	.L115-.L114
-	.byte	1,5,20,9
-	.half	.L65-.L115
-	.byte	3,1,1,5,5,9
-	.half	.L116-.L65
-	.byte	1,5,20,7,9
 	.half	.L117-.L116
-	.byte	3,1,1,5,26,9
+	.byte	1,5,41,9
 	.half	.L118-.L117
-	.byte	1,5,32,9
-	.half	.L66-.L118
 	.byte	1,5,20,9
-	.half	.L6-.L66
+	.half	.L68-.L118
+	.byte	3,1,1,5,5,9
+	.half	.L119-.L68
+	.byte	1,5,20,7,9
+	.half	.L120-.L119
+	.byte	3,1,1,5,26,9
+	.half	.L121-.L120
+	.byte	1,5,32,9
+	.half	.L69-.L121
+	.byte	1,5,20,9
+	.half	.L6-.L69
 	.byte	3,2,1,5,22,9
-	.half	.L119-.L6
+	.half	.L122-.L6
 	.byte	1,5,1,9
-	.half	.L7-.L119
+	.half	.L7-.L122
 	.byte	3,1,1,7,9
 	.half	.L32-.L7
 	.byte	0,1,1
-.L109:
+.L112:
 	.sdecl	'.debug_ranges',debug,cluster('Quick_Break')
 	.sect	'.debug_ranges'
 .L31:
@@ -20014,7 +20082,7 @@ speed2:	.type	object
 	.word	.L14
 	.byte	3
 	.byte	'speed1',0,24,7,7
-	.word	.L38
+	.word	.L40
 	.byte	1,5,3
 	.word	speed1
 	.byte	0
@@ -20036,7 +20104,7 @@ speed2:	.type	object
 	.word	.L14
 	.byte	3
 	.byte	'speed2',0,24,7,19
-	.word	.L38
+	.word	.L40
 	.byte	1,5,3
 	.word	speed2
 	.byte	0
@@ -20045,15 +20113,37 @@ speed2:	.type	object
 .L36:
 	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,73,16,63,12,2,9
 	.byte	0,0,0
+	.sdecl	'.debug_info',debug,cluster('menu')
+	.sect	'.debug_info'
+.L37:
+	.word	165
+	.half	3
+	.word	.L38
+	.byte	4,1
+	.byte	'../code/ control.c',0
+	.byte	'TASKING VX-toolset for AURIX Development Studio (non-commercial): C compiler',0
+	.byte	'D:\\BenBen\\BEN_ben ver1.01\\Debug\\',0,12,1,2
+	.word	.L14
+	.byte	3
+	.byte	'menu',0,50,32,11
+	.word	.L46
+	.byte	1,5,3
+	.word	menu
+	.byte	0
+	.sdecl	'.debug_abbrev',debug,cluster('menu')
+	.sect	'.debug_abbrev'
+.L38:
+	.byte	1,17,1,3,8,37,8,27,8,19,15,128,70,12,0,0,2,61,0,24,16,0,0,3,52,0,3,8,58,15,59,15,57,15,73,16,63,12,2,9
+	.byte	0,0,0
 	.sdecl	'.debug_loc',debug,cluster('Quick_Break')
 	.sect	'.debug_loc'
 .L12:
-	.word	-1,.L13,0,.L42-.L13
+	.word	-1,.L13,0,.L44-.L13
 	.half	2
 	.byte	138,0
 	.word	0,0
-.L43:
-	.word	-1,.L13,.L65-.L13,.L66-.L13
+.L45:
+	.word	-1,.L13,.L68-.L13,.L69-.L13
 	.half	5
 	.byte	144,32,157,32,0
 	.word	.L6-.L13,.L7-.L13
@@ -20063,72 +20153,72 @@ speed2:	.type	object
 	.sdecl	'.debug_loc',debug,cluster('get_motor_speed')
 	.sect	'.debug_loc'
 .L10:
-	.word	-1,.L11,0,.L41-.L11
+	.word	-1,.L11,0,.L43-.L11
 	.half	2
 	.byte	138,0
 	.word	0,0
 	.sdecl	'.debug_loc',debug,cluster('motor_ctrl')
 	.sect	'.debug_loc'
-.L39:
-	.word	-1,.L9,0,.L44-.L9
+.L41:
+	.word	-1,.L9,0,.L47-.L9
 	.half	1
 	.byte	84
-	.word	.L44-.L9,.L48-.L9
+	.word	.L47-.L9,.L51-.L9
 	.half	1
 	.byte	82
-	.word	.L49-.L9,.L2-.L9
+	.word	.L52-.L9,.L2-.L9
 	.half	1
 	.byte	88
-	.word	.L50-.L9,.L51-.L9
+	.word	.L53-.L9,.L54-.L9
 	.half	1
 	.byte	85
-	.word	.L2-.L9,.L52-.L9
+	.word	.L2-.L9,.L55-.L9
 	.half	1
 	.byte	84
-	.word	.L54-.L9,.L55-.L9
+	.word	.L57-.L9,.L58-.L9
 	.half	1
 	.byte	82
-	.word	.L56-.L9,.L55-.L9
+	.word	.L59-.L9,.L58-.L9
 	.half	1
 	.byte	85
 	.word	0,0
-.L40:
-	.word	-1,.L9,0,.L45-.L9
+.L42:
+	.word	-1,.L9,0,.L48-.L9
 	.half	1
 	.byte	85
-	.word	.L46-.L9,.L47-.L9
+	.word	.L49-.L9,.L50-.L9
 	.half	1
 	.byte	95
-	.word	.L2-.L9,.L53-.L9
+	.word	.L2-.L9,.L56-.L9
 	.half	1
 	.byte	85
-	.word	.L57-.L9,.L47-.L9
+	.word	.L60-.L9,.L50-.L9
 	.half	1
 	.byte	84
-	.word	.L47-.L9,.L58-.L9
+	.word	.L50-.L9,.L61-.L9
 	.half	1
 	.byte	82
-	.word	.L59-.L9,.L60-.L9
+	.word	.L62-.L9,.L63-.L9
 	.half	1
 	.byte	95
-	.word	.L61-.L9,.L62-.L9
+	.word	.L64-.L9,.L65-.L9
 	.half	1
 	.byte	85
-	.word	.L60-.L9,.L63-.L9
+	.word	.L63-.L9,.L66-.L9
 	.half	1
 	.byte	82
-	.word	.L64-.L9,.L63-.L9
+	.word	.L67-.L9,.L66-.L9
 	.half	1
 	.byte	85
 	.word	0,0
 .L8:
-	.word	-1,.L9,0,.L37-.L9
+	.word	-1,.L9,0,.L39-.L9
 	.half	2
 	.byte	138,0
 	.word	0,0
 	.sdecl	'.debug_frame',debug
 	.sect	'.debug_frame'
-.L120:
+.L123:
 	.word	48
 	.word	-1
 	.byte	3,0,2,1,27,12,26,0,8,26,8,27,8,30,8,29,8,28,8,16,8,17,8,24,8,25,8,31,8,32,8,33,8,34,8,35,8,36,8,37,8,38
@@ -20136,13 +20226,13 @@ speed2:	.type	object
 	.sdecl	'.debug_frame',debug,cluster('motor_ctrl')
 	.sect	'.debug_frame'
 	.word	12
-	.word	.L120,.L9,.L37-.L9
+	.word	.L123,.L9,.L39-.L9
 	.sdecl	'.debug_frame',debug,cluster('get_motor_speed')
 	.sect	'.debug_frame'
 	.word	12
-	.word	.L120,.L11,.L41-.L11
+	.word	.L123,.L11,.L43-.L11
 	.sdecl	'.debug_frame',debug,cluster('Quick_Break')
 	.sect	'.debug_frame'
 	.word	12
-	.word	.L120,.L13,.L42-.L13
+	.word	.L123,.L13,.L44-.L13
 	; Module end

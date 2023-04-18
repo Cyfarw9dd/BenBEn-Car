@@ -104,9 +104,14 @@
 //===================================================外接设备驱动层===================================================
 
 
-#define KEY1 P22_0
-#define KEY2 P22_2
-#define KEY3 P22_1
+#include "image.h"
+#include "control.h"
+#include "pid.h"
+#include "cycle.h"
+#include "gyro.h"
+#include "list.h"
+
+
 
 #endif
 
