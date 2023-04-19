@@ -9,6 +9,7 @@ C_SRCS += \
 ../code/elements.c \
 ../code/gyro.c \
 ../code/image.c \
+../code/list.c \
 ../code/pid.c 
 
 OBJS += \
@@ -17,6 +18,7 @@ OBJS += \
 ./code/elements.o \
 ./code/gyro.o \
 ./code/image.o \
+./code/list.o \
 ./code/pid.o 
 
 COMPILED_SRCS += \
@@ -25,6 +27,7 @@ COMPILED_SRCS += \
 ./code/elements.src \
 ./code/gyro.src \
 ./code/image.src \
+./code/list.src \
 ./code/pid.src 
 
 C_DEPS += \
@@ -33,6 +36,7 @@ C_DEPS += \
 ./code/elements.d \
 ./code/gyro.d \
 ./code/image.d \
+./code/list.d \
 ./code/pid.d 
 
 
