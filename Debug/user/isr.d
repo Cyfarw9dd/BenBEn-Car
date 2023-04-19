@@ -322,5 +322,5 @@ user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/cycle.h
 d:/BenBen/BEN_ben ver1.01/code/cycle.h :
 user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/gyro.h
 d:/BenBen/BEN_ben ver1.01/code/gyro.h :
-user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/menu.h
-d:/BenBen/BEN_ben ver1.01/code/menu.h :
+user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
+d:/BenBen/BEN_ben ver1.01/code/list.h :

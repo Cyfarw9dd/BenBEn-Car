@@ -318,5 +318,5 @@ user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/cycle.h
 d:/BenBen/BEN_ben ver1.01/code/cycle.h :
 user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/gyro.h
 d:/BenBen/BEN_ben ver1.01/code/gyro.h :
-user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/menu.h
-d:/BenBen/BEN_ben ver1.01/code/menu.h :
+user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
+d:/BenBen/BEN_ben ver1.01/code/list.h :

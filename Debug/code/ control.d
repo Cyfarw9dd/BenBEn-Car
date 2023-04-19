@@ -318,5 +318,5 @@ d:/BenBen/BEN_ben ver1.01/code/pid.h :
 d:/BenBen/BEN_ben ver1.01/code/cycle.h :
  control.o :	d:/BenBen/BEN_ben ver1.01/code/gyro.h
 d:/BenBen/BEN_ben ver1.01/code/gyro.h :
- control.o :	d:/BenBen/BEN_ben ver1.01/code/menu.h
-d:/BenBen/BEN_ben ver1.01/code/menu.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
+d:/BenBen/BEN_ben ver1.01/code/list.h :

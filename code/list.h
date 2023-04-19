@@ -3,6 +3,10 @@
 
 #include "zf_common_headfile.h"
 
+/* 
+    按键标志位计时程序写在中断里，每隔一段时间中断标志位自增，定时器计数计时
+    按键扫描写在
+*/
 #define KEY1 P22_0
 #define KEY2 P22_2
 #define KEY3 P22_1
