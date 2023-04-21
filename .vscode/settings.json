@@ -9,5 +9,6 @@
         "zf_common_typedef.h": "c",
         "pid.h": "c",
         "isr_config.h": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }
