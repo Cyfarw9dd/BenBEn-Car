@@ -34,17 +34,15 @@
 ********************************************************************************************************************/
 #include "isr_config.h"
 #include "zf_common_headfile.h"
-#include "image.h"
-#include "control.h"
-#include "pid.h"
-#include "cycle.h"
-#include "gyro.h"
+
 #pragma section all "cpu1_dsram"
 
 
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU1的RAM中
 
 // **************************** 代码区域 ****************************
+
+#define PIT_CCU60_ms 5
 
 extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
 void core1_main(void)
@@ -65,18 +63,21 @@ void core1_main(void)
     encoder_dir_init(ENCODER_DIR_L, ENCODER_DIR_PULSE_L, ENCODER_DIR_DIR_L);
     encoder_dir_init(ENCODER_DIR_R, ENCODER_DIR_PULSE_R, ENCODER_DIR_DIR_R);
 
-    gpio_init(P22_0, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY1 输入 默认高电平 上拉输入
-    gpio_init(P22_2, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY2 输入 默认高电平 上拉输入
-    gpio_init(P22_1, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY3 输入 默认高电平 上拉输入
+    gpio_init(KEY1, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY1 输入 默认高电平 上拉输入
+    gpio_init(KEY2, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY2 输入 默认高电平 上拉输入
+    gpio_init(KEY3, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY3 输入 默认高电平 上拉输入
+    gpio_init(KEY4, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY4 输入 默认高电平 上拉输入
 
     pit_ms_init(CCU60_CH0, 5);
     // 此处编写用户代码 例如外设初始化代码等
-
+    // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
+    tft180_set_font(TFT180_6X8_FONT);
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
         gyroOffsetInit();
+        // List_Switch();
         Camera();
 
         // 以下为常用的测试代码
@@ -84,23 +85,33 @@ void core1_main(void)
         // get_motor_speed();
         // motor_ctrl(3000, 3000);   // (0, 3000)向右转，(3000, 0)向左转
         // tft180_show_gray_image(0 ,0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        tft180_show_int(0, 90, GYRO_REAL.Z, 5);
-        tft180_show_int(0, 110, LMotor_Duty, 5);
-        tft180_show_int(0, 130, RMotor_Duty, 5);
+        // tft180_show_int(0, 90, GYRO_REAL.Z, 5);
+        // tft180_show_int(0, 110, LMotor_Duty, 5);
+        // tft180_show_int(0, 130, RMotor_Duty, 5);
 
-        tft180_show_string(35, 90, "Err_P");         tft180_show_int(80, 90, Prospect[0], 5);
-        tft180_show_string(35, 110, "Err_D");        tft180_show_int(80, 110, TKD, 5);
-        tft180_show_string(35, 130, "GYROD");        tft180_show_int(80, 130, TGKD, 5);
+        tft180_show_string(0, 90, "Err_P");         tft180_show_int(45, 90, Prospect[0], 5);
+        tft180_show_string(0, 110, "Err_D");        tft180_show_int(45, 110, TKD, 5);
+        tft180_show_string(0, 130, "GYROD");        tft180_show_float(45, 130, TGKD, 5, 2);
+
+        if(Key1 == onepress){
+			Key1 = nopress;
+			Prospect[0] += 1;
+			// system_delay_ms(300);
+		}
+		if(!gpio_get_level(KEY2)){
+            Key2 = nopress;
+			TKD += 1;
+			system_delay_ms(300);
+		}
+		if(!gpio_get_level(KEY3)){
+            Key3 = nopress;
+			TGKD -= 0.01;
+			system_delay_ms(300);
+		}
         // 此处编写需要循环执行的代码
     }
 }
 
-IFX_INTERRUPT(cc60_pit_ch0_isr, 0, CCU6_0_CH0_ISR_PRIORITY)
-{
-   interrupt_global_enable(0);                     // 开启中断嵌套
-   pit_clear_flag(CCU60_CH0);
-
-}
 
 
 #pragma section all restore

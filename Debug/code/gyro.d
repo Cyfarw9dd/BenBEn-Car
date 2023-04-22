@@ -308,11 +308,19 @@ code/gyro.o :	d:/BenBen/BEN_ben ver1.01/libraries/zf_device/zf_device_wifi_uart.
 d:/BenBen/BEN_ben ver1.01/libraries/zf_device/zf_device_wifi_uart.h :
 code/gyro.o :	d:/BenBen/BEN_ben ver1.01/libraries/zf_device/zf_device_wireless_uart.h
 d:/BenBen/BEN_ben ver1.01/libraries/zf_device/zf_device_wireless_uart.h :
-code/gyro.o :	../code/image.h
-../code/image.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/image.h
+d:/BenBen/BEN_ben ver1.01/code/image.h :
 code/gyro.o :	d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h
 d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/control.h
+d:/BenBen/BEN_ben ver1.01/code/control.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/pid.h
+d:/BenBen/BEN_ben ver1.01/code/pid.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/cycle.h
+d:/BenBen/BEN_ben ver1.01/code/cycle.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/gyro.h
+d:/BenBen/BEN_ben ver1.01/code/gyro.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
+d:/BenBen/BEN_ben ver1.01/code/list.h :
 code/gyro.o :	../code/elements.h
 ../code/elements.h :
-code/gyro.o :	d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h
-d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h :

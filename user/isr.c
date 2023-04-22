@@ -36,15 +36,18 @@
 #include "isr_config.h"
 #include "isr.h"
 
-// **************************** PIT中断函数 ****************************
-//IFX_INTERRUPT(cc60_pit_ch0_isr, 0, CCU6_0_CH0_ISR_PRIORITY)
-//{
-//    interrupt_global_enable(0);                     // 开启中断嵌套
-//    pit_clear_flag(CCU60_CH0);
-//
-//
-//
-//}
+/**************************** PIT中断函数 ****************************/
+IFX_INTERRUPT(cc60_pit_ch0_isr, 0, CCU6_0_CH0_ISR_PRIORITY)
+{
+   interrupt_global_enable(0);                     // 开启中断嵌套
+   pit_clear_flag(CCU60_CH0);
+
+    KeyScan(gpio_get_level(KEY1), &Key1);
+    // KeyScan(gpio_get_level(KEY2), &Key2);
+    // KeyScan(gpio_get_level(KEY3), &Key3);
+    // KeyScan(gpio_get_level(KEY4), &Key4);
+
+}
 
 
 IFX_INTERRUPT(cc60_pit_ch1_isr, 0, CCU6_0_CH1_ISR_PRIORITY)

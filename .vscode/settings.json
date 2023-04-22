@@ -8,6 +8,8 @@
         "gyro.h": "c",
         "zf_common_typedef.h": "c",
         "pid.h": "c",
-        "isr_config.h": "c"
-    }
+        "isr_config.h": "c",
+        "isr.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }
