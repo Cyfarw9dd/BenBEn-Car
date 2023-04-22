@@ -70,12 +70,14 @@ void core1_main(void)
 
     pit_ms_init(CCU60_CH0, 5);
     // 此处编写用户代码 例如外设初始化代码等
-
+    // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
+    tft180_set_font(TFT180_6X8_FONT);
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
         gyroOffsetInit();
+        // List_Switch();
         Camera();
 
         // 以下为常用的测试代码
@@ -90,6 +92,22 @@ void core1_main(void)
         tft180_show_string(0, 90, "Err_P");         tft180_show_int(45, 90, Prospect[0], 5);
         tft180_show_string(0, 110, "Err_D");        tft180_show_int(45, 110, TKD, 5);
         tft180_show_string(0, 130, "GYROD");        tft180_show_float(45, 130, TGKD, 5, 2);
+
+        if(Key1 == onepress){
+			Key1 = nopress;
+			Prospect[0] += 1;
+			// system_delay_ms(300);
+		}
+		if(Key2 == onepress){
+            Key2 = nopress;
+			TKD += 1;
+			// system_delay_ms(300);
+		}
+		if(Key3 == onepress){
+            Key3 = nopress;
+			TGKD += 0.01;
+			// system_delay_ms(300);
+		}
         // 此处编写需要循环执行的代码
     }
 }
