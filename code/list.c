@@ -22,7 +22,7 @@ List MyList[] =
 
 List *current_list_item = MyList;
 
-#if 0
+
 KeySatateEnum Key1;
 KeySatateEnum Key2;
 KeySatateEnum Key3;
@@ -35,24 +35,25 @@ void KeyParams_Init(void)
     Key3 = nopress;
     Key4 = nopress;
 }
-#endif
+#if 0
 unsigned char Key1 = 0;
 unsigned char Key2 = 0;
 unsigned char Key3 = 0;
 unsigned char Key4 = 0;
+#endif
 
 
 // 一般来说同一时间只会按下一个按键，所以多个按键共用同一个按键标志位也是可以的
 // 待测试的按键扫描函数
-void KeyScan(bool gpio_level, unsigned char *Key)
+void KeyScan(void)
 {
     static unsigned char KeyPressNum = 0;
     static unsigned short KeyPressTime = 0;
     static unsigned char SomeKeyPress_Flag = 0; // 0松开 1按下 2消抖 3长按
-    #define AlwaysPressTime 200
+    #define AlwaysPressTime 1200
     #define debouncing 5
 
-    if(SomeKeyPress_Flag == 0 && !gpio_level)
+    if(SomeKeyPress_Flag == 0 && (!gpio_get_level(KEY1) || !gpio_get_level(KEY2) || !gpio_get_level(KEY3) || !gpio_get_level(KEY4)))
     {
         SomeKeyPress_Flag = 1;
     }
@@ -63,32 +64,71 @@ void KeyScan(bool gpio_level, unsigned char *Key)
         if(SomeKeyPress_Flag == 1 && KeyPressTime >= debouncing)
         {
             SomeKeyPress_Flag = 2;
-            if(!gpio_level)
+            if(!gpio_get_level(KEY1))
             {
                 KeyPressNum = 1;
             }
+            if(!gpio_get_level(KEY2))
+            {
+                KeyPressNum = 2;
+            }
+            if(!gpio_get_level(KEY3))
+            {
+                KeyPressNum = 3;
+            }
+            if(!gpio_get_level(KEY4))
+            {
+                KeyPressNum = 4;
+            }
         }
         // 短按
-        if(gpio_level && KeyPressTime < AlwaysPressTime && SomeKeyPress_Flag == 2)
+        if((gpio_get_level(KEY1) && gpio_get_level(KEY2) && gpio_get_level(KEY3) && gpio_get_level(KEY4)) && KeyPressTime < AlwaysPressTime && SomeKeyPress_Flag == 2)
         {
             SomeKeyPress_Flag = 0;
             if(KeyPressNum == 1)
             {
-                *Key = onepress;
+                Key1 = onepress;
             }
+            if(KeyPressNum == 2)
+            {
+                Key2 = onepress;
+            }
+            if(KeyPressNum == 3)
+            {
+                Key3 = onepress;
+            }
+            if(KeyPressNum == 4)
+            {
+                Key4 = onepress;
+            }  
         }
         // 长按
         if(KeyPressTime >= AlwaysPressTime && SomeKeyPress_Flag == 2)
         {
             if(KeyPressNum == 1)
             {
-                *Key = holdpress;
+                Key1 = holdpress;
             }
-            if(gpio_level)
+            if(KeyPressNum == 2)
+            {
+                Key2 = holdpress;
+            }
+            if(KeyPressNum == 3)
+            {
+                Key3 = holdpress;
+            }
+            if(KeyPressNum == 4)
+            {
+                Key4 = holdpress;
+            }
+            if(gpio_get_level(KEY1) && gpio_get_level(KEY2) && gpio_get_level(KEY3) && gpio_get_level(KEY4))
             {
                 SomeKeyPress_Flag = 0;
                 KeyPressTime = 0;
-                *Key = nopress;
+                Key1 = nopress;
+                Key2 = nopress;
+                Key3 = nopress;
+                Key4 = nopress;
             }
         }
     }

@@ -98,15 +98,15 @@ void core1_main(void)
 			Prospect[0] += 1;
 			// system_delay_ms(300);
 		}
-		if(!gpio_get_level(KEY2)){
+		if(Key2 == onepress){
             Key2 = nopress;
 			TKD += 1;
-			system_delay_ms(300);
+			// system_delay_ms(300);
 		}
-		if(!gpio_get_level(KEY3)){
+		if(Key3 == onepress){
             Key3 = nopress;
 			TGKD -= 0.01;
-			system_delay_ms(300);
+			// system_delay_ms(300);
 		}
         // 此处编写需要循环执行的代码
     }
