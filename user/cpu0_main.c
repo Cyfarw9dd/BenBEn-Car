@@ -10,11 +10,6 @@
   默认情况下全局变量都是保存在dsram1里的，导致核0中跑的代码对RAM的读取有一定的延迟
 ********************************************************************************************************************/
 #include "zf_common_headfile.h"
-#include "control.h"
-#include "image.h"
-#include "pid.h"
-#include "cycle.h"
-#include "gyro.h"
 #pragma section all "cpu0_dsram"
 
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU0的RAM中
@@ -41,7 +36,6 @@ int core0_main(void)
 	while (TRUE)
 	{
 		// 此处编写需要循环执行的代码
-
 		// 此处编写需要循环执行的代码
 	}
 }

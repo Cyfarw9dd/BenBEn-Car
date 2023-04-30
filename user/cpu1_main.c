@@ -89,6 +89,7 @@ void core1_main(void)
         // tft180_show_int(0, 110, LMotor_Duty, 5);
         // tft180_show_int(0, 130, RMotor_Duty, 5);
         gyroOffsetInit();
+		sendimg_zoom(&bin_image[0], MT9V03X_W, MT9V03X_H, 90, 60);
         tft180_show_gray_image(0, 0, &bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
         tft180_show_string(0, 90, "Err_P");         tft180_show_int(45, 90, Prospect[0], 5);
         tft180_show_string(0, 110, "Err_D");        tft180_show_int(45, 110, TKD, 5);
