@@ -322,3 +322,5 @@ user/cpu1_main.o :	d:/BenBen/BEN_ben ver1.01/code/gyro.h
 d:/BenBen/BEN_ben ver1.01/code/gyro.h :
 user/cpu1_main.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
 d:/BenBen/BEN_ben ver1.01/code/list.h :
+user/cpu1_main.o :	d:/BenBen/BEN_ben ver1.01/code/elements.h
+d:/BenBen/BEN_ben ver1.01/code/elements.h :

@@ -15,7 +15,7 @@
     这里给出一个数据类型的参考表
     unsigned char           unsigned char
     int16                   short
-    int                   int
+    int                     int
     左边是ADS里的惯用的写法，但是并不符合C标准，右边是C语言中的写法，但在ADS里编程时，更多的还是用左边的这种形式
 */
 #include "zf_common_headfile.h"
@@ -25,6 +25,8 @@
 #include "cycle.h"
 #include "pid.h"
 #include "control.h"
+
+#define Eightboundary 1
 
 unsigned char centerline[120];                  //定义中线数组，中线数组的横坐标等于（左线横坐标+右线横坐标）/ 2
 unsigned char leftline[120];                    //定义左边线数组
@@ -46,17 +48,21 @@ int further, middle, near;              //图像中的远点，中点和近点
 */
 void Camera(void){
     if(mt9v03x_finish_flag){                              //mt9v03x_finish_flag为图像处理结束的标志位，在逐飞库中有着详细定义
+        #if Eightboundary
+        image_process();
+        Searching_for_boundaries(&bin_image[0]);         //寻找赛道边界
+        Deal_Road_Characteristics(&bin_image[0]);        //处理赛道特征，如计算左右半边赛道宽度等       
+        Turn_cycle(2000);    
+        Hightlight_Lines(&bin_image[0]);                 //高亮左右边界以及中线                                                   
+        #else 
         image_threshold = GetOSTU(mt9v03x_image[0]);      //通过大津法来得到原始灰度图像的阈值
         lcd_binaryzation032_zoom(mt9v03x_image[0], image_deal[0], MT9V03X_W , MT9V03X_H, image_threshold); //将二值化后的图像存放到image_deal[120][188]里
-        // image_filter(&image_deal[0]);
-        // image_process();
         Searching_for_boundaries(&image_deal[0]);         //寻找赛道边界
         Deal_Road_Characteristics(&image_deal[0]);        //处理赛道特征，如计算左右半边赛道宽度等       
-        Turn_cycle(2000);    
-        Hightlight_Lines(&image_deal[0]);                 //高亮左右边界以及中线                        
-        // Pokemon_Go();                                     //元素判断
+        Turn_cycle(2500);    
+        Hightlight_Lines(&image_deal[0]);                 //高亮左右边界以及中线                                                   
         tft180_show_gray_image(0, 0, &image_deal[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-
+        #endif 
         mt9v03x_finish_flag = 0;                          //标志位归0，一定要归0！不归0的话图像只处理起始帧
     }
 }
@@ -172,19 +178,35 @@ void Searching_for_boundaries(unsigned char (*binary_array)[188]){
 
 
 void Deal_Road_Characteristics(unsigned char (*binary_array)[188]){
+    #if Eightboundary
     for(unsigned char i = BottomRow; i > 0; i--){
-        centerline[i] = (rightline[i] + leftline[i]) / 2;
+        center_line[i] = (l_border[i] + r_border[i]) / 2;
+        Left_RoadWidth[i] = absolute(93 - l_border[i]);
+        Right_RoadWidth[i] = absolute(r_border[i] - 93);
+    }
+    #else
+    for(unsigned char i = BottomRow; i > 0; i--){
+        centerline[i] = (leftline[i] + rightline[i]) / 2;
         Left_RoadWidth[i] = absolute(93 - leftline[i]);
         Right_RoadWidth[i] = absolute(rightline[i] - 93);
     }
+    #endif
 }
 
 void Hightlight_Lines(unsigned char (*binary_array)[188]){
+    #if Eightboundary
+    for(unsigned char i = BottomRow; i > 0; i--){
+        binary_array[i][center_line[i]] = 120;
+        binary_array[i][r_border[i]] = 120;
+        binary_array[i][l_border[i]] = 120;
+    }
+    #else
     for(unsigned char i = BottomRow; i > 0; i--){
         binary_array[i][centerline[i]] = 120;
         binary_array[i][rightline[i]] = 120;
         binary_array[i][leftline[i]] = 120;
     }
+    #endif
 }
 
 /*
@@ -261,8 +283,29 @@ float one_curvature(int x1, int y1) // one_curvature(centerline[30], 30)
 */
 
 void cal_curvature(void){
-    int prospect = 15;            // 摄像头高度为20cm，自定义前瞻行数15 
 
+    int prospect = 15;            // 摄像头高度为20cm，自定义前瞻行数15 
+    #if Eightboundary
+    near = (center_line[119] + center_line[119 - 1] + center_line[119 - 2]) / 3;
+    middle = (center_line[119 - prospect] + center_line[119 - prospect - 1] + center_line[119 - prospect - 2]) / 3;
+    // middle = middle * 1.05;
+    // near = near * 1.05;
+    further = (center_line[119 - prospect * 2] + center_line[119 - prospect * 2 - 1] + center_line[119 - prospect * 2 - 2]) / 3;
+
+    if(further < middle && middle < near){
+        Prospect_Err = ((middle - further)  + (near - middle)) / 2;
+    }
+    else if(further < middle && middle >= near){
+        Prospect_Err = near - middle;
+    }
+    else if(further >= middle && middle < near){
+        Prospect_Err = near - middle;
+    }
+    else{
+        Prospect_Err = ((middle - further) + (near - middle)) / 2;
+    }
+    Bottom_Err = center_line[119] - 94;
+    #else
     near = (centerline[119] + centerline[119 - 1] + centerline[119 - 2]) / 3;
     middle = (centerline[119 - prospect] + centerline[119 - prospect - 1] + centerline[119 - prospect - 2]) / 3;
     // middle = middle * 1.05;
@@ -282,6 +325,8 @@ void cal_curvature(void){
         Prospect_Err = ((middle - further) + (near - middle)) / 2;
     }
     Bottom_Err = centerline[119] - 94;
+    #endif
+
 }
 
 
@@ -1321,7 +1366,7 @@ if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找
 
 
 //显示图像   改成你自己的就行 等后期足够自信了，显示关掉，显示屏挺占资源的
-tft180_show_gray_image(0, 0, &bin_image[0], image_w, image_h, image_w / 1.5, image_h / 1.5, 0);
+// tft180_show_gray_image(0, 0, &bin_image[0], image_w, image_h, image_w / 1.5, image_h / 1.5, 0);
 
 	// //根据最终循环次数画出边界点
 	// for (i = 0; i < data_stastics_l; i++)

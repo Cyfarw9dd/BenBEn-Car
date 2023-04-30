@@ -322,3 +322,5 @@ code/elements.o :	d:/BenBen/BEN_ben ver1.01/code/gyro.h
 d:/BenBen/BEN_ben ver1.01/code/gyro.h :
 code/elements.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
 d:/BenBen/BEN_ben ver1.01/code/list.h :
+code/elements.o :	d:/BenBen/BEN_ben ver1.01/code/elements.h
+d:/BenBen/BEN_ben ver1.01/code/elements.h :

@@ -35,6 +35,7 @@
 
 #include "isr_config.h"
 #include "isr.h"
+extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
 
 /**************************** PITÖÐ¶Ïº¯Êý ****************************/
 IFX_INTERRUPT(cc60_pit_ch0_isr, 0, CCU6_0_CH0_ISR_PRIORITY)
@@ -43,6 +44,7 @@ IFX_INTERRUPT(cc60_pit_ch0_isr, 0, CCU6_0_CH0_ISR_PRIORITY)
    pit_clear_flag(CCU60_CH0);
 
     KeyScan();
+    Camera();
 
 }
 
@@ -52,8 +54,7 @@ IFX_INTERRUPT(cc60_pit_ch1_isr, 0, CCU6_0_CH1_ISR_PRIORITY)
     interrupt_global_enable(0);                     // ¿ªÆôÖÐ¶ÏÇ¶Ì×
     pit_clear_flag(CCU60_CH1);
 
-
-
+    
 
 }
 
@@ -61,7 +62,6 @@ IFX_INTERRUPT(cc61_pit_ch0_isr, 0, CCU6_1_CH0_ISR_PRIORITY)
 {
     interrupt_global_enable(0);                     // ¿ªÆôÖÐ¶ÏÇ¶Ì×
     pit_clear_flag(CCU61_CH0);
-
 
 
 

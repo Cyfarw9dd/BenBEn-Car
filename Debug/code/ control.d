@@ -320,3 +320,5 @@ d:/BenBen/BEN_ben ver1.01/code/cycle.h :
 d:/BenBen/BEN_ben ver1.01/code/gyro.h :
  control.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
 d:/BenBen/BEN_ben ver1.01/code/list.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/elements.h
+d:/BenBen/BEN_ben ver1.01/code/elements.h :

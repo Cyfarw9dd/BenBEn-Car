@@ -94,7 +94,7 @@ void Turn_cycle_ForPCrossing(short theory_duty){ //1600
 
 extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
 float TKD = 13;
-float TGKD = 0;
+float TGKD = 0.11;
 short Err, Last_Err;
 short Direct_Duty;
 void Turn_cycle(short Theory_Duty){

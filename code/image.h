@@ -34,6 +34,9 @@ extern short image_threshold;
 
 extern unsigned char original_image[image_h][image_w];
 extern unsigned char bin_image[image_h][image_w];  //图像数组
+extern unsigned char l_border[image_h];//左线数组
+extern unsigned char r_border[image_h];//右线数组
+extern unsigned char center_line[image_h];//中线数组
 
 extern void image_process(void);   //直接在中断或循环里调用此程序就可以循环执行了
 

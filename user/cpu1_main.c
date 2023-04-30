@@ -68,17 +68,16 @@ void core1_main(void)
     gpio_init(KEY3, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY3 输入 默认高电平 上拉输入
     gpio_init(KEY4, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY4 输入 默认高电平 上拉输入
 
-    pit_ms_init(CCU60_CH0, 5);
     // 此处编写用户代码 例如外设初始化代码等
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
     tft180_set_font(TFT180_6X8_FONT);
+    pit_ms_init(CCU60_CH0, 5);
+    pit_ms_init(CCU60_CH1, 20);
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        gyroOffsetInit();
         // List_Switch();
-        Camera();
 
         // 以下为常用的测试代码
         
@@ -86,9 +85,11 @@ void core1_main(void)
         // motor_ctrl(3000, 3000);   // (0, 3000)向右转，(3000, 0)向左转
         // tft180_show_gray_image(0 ,0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
         // tft180_show_int(0, 90, GYRO_REAL.Z, 5);
+        // tft180_show
         // tft180_show_int(0, 110, LMotor_Duty, 5);
         // tft180_show_int(0, 130, RMotor_Duty, 5);
-
+        gyroOffsetInit();
+        tft180_show_gray_image(0, 0, &bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
         tft180_show_string(0, 90, "Err_P");         tft180_show_int(45, 90, Prospect[0], 5);
         tft180_show_string(0, 110, "Err_D");        tft180_show_int(45, 110, TKD, 5);
         tft180_show_string(0, 130, "GYROD");        tft180_show_float(45, 130, TGKD, 5, 2);
@@ -105,7 +106,7 @@ void core1_main(void)
 		}
 		if(Key3 == onepress){
             Key3 = nopress;
-			TGKD -= 0.01;
+			TGKD += 0.02;
 			// system_delay_ms(300);
 		}
         // 此处编写需要循环执行的代码
