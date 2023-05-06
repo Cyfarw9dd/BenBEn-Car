@@ -68,7 +68,7 @@ void Kalman_Filter_Y(float Accel,float Gyro);
 
 void Get_IcmData(void);
 
-void AngleGet(void);
+// void AngleGet(void);
 
 void gyroOffsetInit(void);
 

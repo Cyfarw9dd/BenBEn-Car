@@ -44,6 +44,7 @@
 
 #define PIT_CCU60_ms 5
 
+extern short speed1, speed2;
 extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
 void core1_main(void)
 {
@@ -54,6 +55,7 @@ void core1_main(void)
     tft180_init();
     imu660ra_init();
     wireless_uart_init();
+    PID_int();
 
     pwm_init(ATOM0_CH0_P21_2, 17 * 1000, 0);
     pwm_init(ATOM0_CH1_P21_3, 17 * 1000, 0);
@@ -71,43 +73,51 @@ void core1_main(void)
     // 此处编写用户代码 例如外设初始化代码等
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
     tft180_set_font(TFT180_6X8_FONT);
-    pit_ms_init(CCU60_CH0, 5);
-    pit_ms_init(CCU60_CH1, 20);
+    pit_ms_init(CCU60_CH0, 1);
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
         // List_Switch();
-
+        // cal_curvature(&(MyRoad_Characteristics.Curve_Err));
         // 以下为常用的测试代码
         
-        // get_motor_speed();
+        get_motor_speed();
         // motor_ctrl(3000, 3000);   // (0, 3000)向右转，(3000, 0)向左转
         // tft180_show_gray_image(0 ,0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
         // tft180_show_int(0, 90, GYRO_REAL.Z, 5);
         // tft180_show
-        // tft180_show_int(0, 110, LMotor_Duty, 5);
-        // tft180_show_int(0, 130, RMotor_Duty, 5);
-        gyroOffsetInit();
-		sendimg_zoom(&bin_image[0], MT9V03X_W, MT9V03X_H, 90, 60);
-        tft180_show_gray_image(0, 0, &bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        tft180_show_string(0, 90, "Err_P");         tft180_show_int(45, 90, Prospect[0], 5);
-        tft180_show_string(0, 110, "Err_D");        tft180_show_int(45, 110, TKD, 5);
-        tft180_show_string(0, 130, "GYROD");        tft180_show_float(45, 130, TGKD, 5, 2);
 
+        gyroOffsetInit();
+        // Camera();
+		// sendimg_zoom(&bin_image[0], MT9V03X_W, MT9V03X_H, 90, 60);
+        tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        
+        // tft180_show_string(0, 30, "TurnNei_P");         tft180_show_float(60, 30, Turn_NeiPID.Kp, 5, 2);
+        // tft180_show_string(0, 50 , "TurnNei_I");        tft180_show_float(60, 50, Turn_NeiPID.Ki, 5, 2);
+        // tft180_show_string(0, 70, "TurnNei_D");        tft180_show_float(60, 70, Turn_NeiPID.Kd, 5, 2);
+        tft180_show_string(0, 110, "Turn_P");         tft180_show_float(45, 110, TurnPID.Kp, 5, 2);
+        // tft180_show_string(0, 110, "Turn_I");        tft180_show_float(45, 110, TurnPID.Ki, 5, 2);
+        tft180_show_string(0, 130, "Turn_d");        tft180_show_float(45, 130, TurnPID.Kd, 5, 2);
+        // tft180_show_float(0, 90, Centerline_Err, 5, 2);         tft180_show_float(60, 90, Prospect_Err, 5, 2);
+        TaskProcess();
+        image_process();
+        tft180_show_float(0, 90, speed1, 5, 2);         tft180_show_float(60, 90, speed2, 5, 2); 
+        Deal_Road_Characteristics(&bin_image[0], &MyRoad_Characteristics);
+        Hightlight_Lines(&bin_image[0]);                 
         if(Key1 == onepress){
 			Key1 = nopress;
-			Prospect[0] += 1;
+			Turn_NeiPID.Kp += 0.1;
 			// system_delay_ms(300);
 		}
 		if(Key2 == onepress){
             Key2 = nopress;
-			TKD += 1;
+			TurnPID.Kp += 0;
 			// system_delay_ms(300);
 		}
 		if(Key3 == onepress){
             Key3 = nopress;
-			TGKD += 0.02;
+			TurnPID.Kd += 1;
 			// system_delay_ms(300);
 		}
         // 此处编写需要循环执行的代码

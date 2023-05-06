@@ -9,7 +9,13 @@
         "zf_common_typedef.h": "c",
         "pid.h": "c",
         "isr_config.h": "c",
-        "isr.h": "c"
+        "isr.h": "c",
+        "imgproc.h": "c",
+        "zf_common_debug.h": "c",
+        "zf_common_function.h": "c",
+        "zf_common_interrupt.h": "c",
+        "zf_driver_dma.h": "c",
+        "zf_driver_soft_spi.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }

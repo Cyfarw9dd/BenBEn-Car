@@ -326,3 +326,5 @@ user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
 d:/BenBen/BEN_ben ver1.01/code/list.h :
 user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/elements.h
 d:/BenBen/BEN_ben ver1.01/code/elements.h :
+user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/fuse.h
+d:/BenBen/BEN_ben ver1.01/code/fuse.h :

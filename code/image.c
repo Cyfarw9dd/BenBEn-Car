@@ -19,12 +19,6 @@
     左边是ADS里的惯用的写法，但是并不符合C标准，右边是C语言中的写法，但在ADS里编程时，更多的还是用左边的这种形式
 */
 #include "zf_common_headfile.h"
-#include "image.h"
-#include "gyro.h"
-#include "elements.h"
-#include "cycle.h"
-#include "pid.h"
-#include "control.h"
 
 #define Eightboundary 1
 
@@ -39,9 +33,11 @@ short image_threshold = 0;                      //定义图像处理阈值
 
 /*这两个变量用于计算中线的偏差程度，并将计算出的结果交给转向环计算*/
 
-int Prospect_Err = 0;                   //定义前瞻偏差，前瞻偏差的取值为实际中线上三个等距的点分别对理想中线做的差
-int Bottom_Err = 0;                     //定义车身横向偏差，即摄像头拍到图像的最底端一行所处的中线值对理想中线做的差
-int further, middle, near;              //图像中的远点，中点和近点
+unsigned char Prospect_Err = 0;                   //定义前瞻偏差，前瞻偏差的取值为实际中线上三个等距的点分别对理想中线做的差
+unsigned char Bottom_Err = 0;                     //定义车身横向偏差，即摄像头拍到图像的最底端一行所处的中线值对理想中线做的差
+unsigned char further, middle, near;              //图像中的远点，中点和近点
+
+Road_Characteristics MyRoad_Characteristics;    // 图像特征处理结构体
 
 /*
     摄像头运行的主体函数，大津法，扫线等都整合在里面运行
@@ -51,8 +47,8 @@ void Camera(void){
         #if Eightboundary
         image_process();
         Searching_for_boundaries(&bin_image[0]);         //寻找赛道边界
-        Deal_Road_Characteristics(&bin_image[0]);        //处理赛道特征，如计算左右半边赛道宽度等       
-        Turn_cycle(2000);    
+        cal_curvature(&(MyRoad_Characteristics.Curve_Err));
+        Deal_Road_Characteristics(&bin_image[0], &MyRoad_Characteristics);        //处理赛道特征，如计算左右半边赛道宽度等          
         Hightlight_Lines(&bin_image[0]);                 //高亮左右边界以及中线                                                   
         #else 
         image_threshold = GetOSTU(mt9v03x_image[0]);      //通过大津法来得到原始灰度图像的阈值
@@ -177,12 +173,12 @@ void Searching_for_boundaries(unsigned char (*binary_array)[188]){
 }
 
 
-void Deal_Road_Characteristics(unsigned char (*binary_array)[188]){
+void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Characteristics *rsptr){
     #if Eightboundary
     for(unsigned char i = BottomRow; i > 0; i--){
         center_line[i] = (l_border[i] + r_border[i]) / 2;
-        Left_RoadWidth[i] = absolute(93 - l_border[i]);
-        Right_RoadWidth[i] = absolute(r_border[i] - 93);
+        rsptr->Left_RoadWidth[i] = absolute(93 - l_border[i]);
+        rsptr->Right_RoadWidth[i] = absolute(r_border[i] - 93);
     }
     #else
     for(unsigned char i = BottomRow; i > 0; i--){
@@ -196,9 +192,9 @@ void Deal_Road_Characteristics(unsigned char (*binary_array)[188]){
 void Hightlight_Lines(unsigned char (*binary_array)[188]){
     #if Eightboundary
     for(unsigned char i = BottomRow; i > 0; i--){
-        binary_array[i][center_line[i]] = 120;
-        binary_array[i][r_border[i]] = 120;
-        binary_array[i][l_border[i]] = 120;
+        mt9v03x_image[i][center_line[i]] = RGB565_RED;
+        mt9v03x_image[i][r_border[i]] = RGB565_YELLOW;
+        mt9v03x_image[i][l_border[i]] = RGB565_YELLOW;
     }
     #else
     for(unsigned char i = BottomRow; i > 0; i--){
@@ -282,14 +278,14 @@ float one_curvature(int x1, int y1) // one_curvature(centerline[30], 30)
     相加并求均值，尽可能地过滤掉异常数据。
 */
 
-void cal_curvature(void){
+void cal_curvature(int *mid_cur){
 
     int prospect = 15;            // 摄像头高度为20cm，自定义前瞻行数15 
     #if Eightboundary
     near = (center_line[119] + center_line[119 - 1] + center_line[119 - 2]) / 3;
     middle = (center_line[119 - prospect] + center_line[119 - prospect - 1] + center_line[119 - prospect - 2]) / 3;
     // middle = middle * 1.05;
-    // near = near * 1.05;
+    // near = near * 1.1;
     further = (center_line[119 - prospect * 2] + center_line[119 - prospect * 2 - 1] + center_line[119 - prospect * 2 - 2]) / 3;
 
     if(further < middle && middle < near){
@@ -305,6 +301,8 @@ void cal_curvature(void){
         Prospect_Err = ((middle - further) + (near - middle)) / 2;
     }
     Bottom_Err = center_line[119] - 94;
+
+    // 左大弯
     #else
     near = (centerline[119] + centerline[119 - 1] + centerline[119 - 2]) / 3;
     middle = (centerline[119 - prospect] + centerline[119 - prospect - 1] + centerline[119 - prospect - 2]) / 3;
@@ -1413,4 +1411,22 @@ y值最大*******************************************(188,120)
 
 */
 
-
+int Cal_centerline(void)
+{
+    int ratio_sum = 0;
+    int centerline_err_sum;
+    unsigned char centerline_ratio[] = 
+    {
+        18, 18, 18, 18, 18, 18, 18, 18, 18, 18,
+        20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
+        27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
+        30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+    };
+    for (int i = sizeof(centerline_ratio) / sizeof(unsigned char); i > 0; i--)
+    {
+        ratio_sum += centerline_ratio[i];
+        centerline_err_sum += (center_line[MT9V03X_H - i] - 93) * centerline_ratio[i]; ;
+    }
+    return centerline_err_sum / ratio_sum;
+}

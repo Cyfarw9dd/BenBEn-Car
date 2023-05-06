@@ -25,9 +25,9 @@
 
 extern unsigned char centerline[120], leftline[120], rightline[120];
 extern unsigned char image_deal[MT9V03X_H][MT9V03X_W];
-extern int Prospect_Err;
-extern int Bottom_Err;
-extern int further, middle, near;
+extern unsigned char  Prospect_Err;
+extern unsigned char  Bottom_Err;
+extern unsigned char  further, middle, near;
 extern unsigned char Left_RoadWidth[120], Right_RoadWidth[120];
 extern short image_threshold;
 
@@ -41,13 +41,25 @@ extern unsigned char center_line[image_h];//中线数组
 extern void image_process(void);   //直接在中断或循环里调用此程序就可以循环执行了
 
 
+typedef struct
+{
+    unsigned char Left_RoadWidth[120];      // 左半边赛道宽度
+    unsigned char Right_RoadWidth[120];     // 右半边赛道宽度
+    int Left_Curve;         // 左线弧度
+    int Right_Curve;        // 右线弧度
+    int Curve_Err;          // 中线弧度偏差
+}Road_Characteristics;
+
+
+extern Road_Characteristics MyRoad_Characteristics;
+
 void Camera(void);
 
 unsigned char otsuThreshold(unsigned char *image, unsigned short col, unsigned short row);
 
 void Searching_for_boundaries(unsigned char (*binary_array)[188]);
 
-void Deal_Road_Characteristics(unsigned char (*binary_array)[188]);
+void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Characteristics *);
 
 void Hightlight_Lines(unsigned char (*binary_array)[188]);
 
@@ -57,7 +69,7 @@ void Four_neighbourhood_Filter(unsigned char (*binary_array)[188]);
 
 float one_curvature(int x1, int y1);
 
-void cal_curvature(void);
+void cal_curvature(int *);
 
 void sobel(unsigned char (*imageIn)[188], unsigned char (*imageOut)[188], unsigned char Threshold);
 
@@ -95,5 +107,7 @@ void image_filter(unsigned char(*bin_image)[image_w]); //形态学滤波，简�
 void image_draw_rectan(unsigned char(*image)[image_w]);
 
 // void image_process(void);
+
+int Cal_centerline(void);
 
 #endif /* CODE_IMAGE_H_ */

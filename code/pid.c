@@ -1,7 +1,4 @@
-#include "pid.h"
-#include "image.h"
-#include "control.h"
-#include "cycle.h"
+#include "zf_common_headfile.h"
 
 PID Lmotor_PID,
     Rmotor_PID,
@@ -16,9 +13,10 @@ PID Steer_PID;
 
 float Lmotor[3] = {100, 0, 2};
 float Rmotor[3] = {100, 0, 2};
-
 float Direct[4] = {30, 0, 0, -15};
-float Prospect[4] = {21, 13, 0, 0};// D3
+
+float Prospect[4] = {0, 0, 0, 0};
+
 float Bottom[4] = {0, 0, 0, 0};
 float Motor[4]   = {50, 4.9, 3, 50};
 float Prospect_ForPCrossing[4] = {40, 10, 0, 0};
@@ -269,4 +267,55 @@ int calculate_pid(float a){
     if(t>9999)      t=9998;*/
 
     return t;
+}
+
+
+
+/************************************************
+函数名：LocP_DCalc(PID *sptr,int16 Setpoint,int16 Turepoint)
+功  能：位置式PID控制
+参  数：PID *sptr,int16 Setpoint,int16 Turepoint
+返回值：float 
+************************************************/
+int16 LocP_DCalc(MyPID*sptr, int16 Setpoint, int16 Turepoint)
+{
+    int16 iError, dError;
+    int16 output;
+
+    iError = Setpoint - Turepoint;  //偏差
+    sptr->SumError += iError;            //积分(采样时间很短时，用一阶差分代替一阶微分，用累加代替积分)
+    dError = (int16)(iError - (sptr->LastError));     //微分
+    sptr->LastError = iError;
+    if(sptr->SumError > 2500) 
+        sptr->SumError = 2500;   //积分限幅
+    if(sptr->SumError < -2500) 
+        sptr->SumError=-2500;
+    output = (int16)(sptr->Kp * iError  //比例项
+          +(sptr->Ki * sptr->SumError)//积分项
+          +sptr->Kd * dError);        //微分项
+    return(output);
+}
+/************************************************
+函数名：IncPIDCalc(PID *sptr,int16 Setpoint,int16 Turepoint)
+功  能：增量式PID控制
+参  数：PID *sptr,int16 Setpoint,int16 Turepoint
+返回值：int32 iIncpid
+************************************************/
+int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint)
+{
+    int16 iError, iIncpid;
+    //当前误差
+    iError = Setpoint - Turepoint;      //偏差
+ 
+    //增量计算
+    iIncpid = (int16)(sptr->Kp * (iError - sptr->LastError)
+            + sptr->Ki * iError
+            + sptr->Kd * (iError - 2 * sptr->LastError + sptr->LLastError));
+    //储存误差，用于下次计算
+
+    sptr->LLastError = sptr->LastError;
+
+    sptr->LastError = iError;
+
+    return(iIncpid);
 }

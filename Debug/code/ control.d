@@ -322,3 +322,5 @@ d:/BenBen/BEN_ben ver1.01/code/gyro.h :
 d:/BenBen/BEN_ben ver1.01/code/list.h :
  control.o :	d:/BenBen/BEN_ben ver1.01/code/elements.h
 d:/BenBen/BEN_ben ver1.01/code/elements.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/fuse.h
+d:/BenBen/BEN_ben ver1.01/code/fuse.h :

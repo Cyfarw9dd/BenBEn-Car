@@ -4,8 +4,6 @@
 
 code/pid.o :	../code/pid.c
 ../code/pid.c :
-code/pid.o :	../code/pid.h
-../code/pid.h :
 code/pid.o :	d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h
 d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h :
 code/pid.o :	d:/AURIX-Studio-1.8.0/plugins/com.infineon.aurix.tools_1.8.0/build_system/tools/Compilers/Tasking_1.1r8/ctc/include/math.h
@@ -324,3 +322,5 @@ code/pid.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
 d:/BenBen/BEN_ben ver1.01/code/list.h :
 code/pid.o :	d:/BenBen/BEN_ben ver1.01/code/elements.h
 d:/BenBen/BEN_ben ver1.01/code/elements.h :
+code/pid.o :	d:/BenBen/BEN_ben ver1.01/code/fuse.h
+d:/BenBen/BEN_ben ver1.01/code/fuse.h :

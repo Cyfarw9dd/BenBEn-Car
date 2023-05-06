@@ -18,7 +18,21 @@ typedef struct
     int LastData;
 }PID;
 
-typedef struct{
+typedef struct 
+{
+    float SumError;
+
+    float Kp;
+    float Ki;
+    float Kd;
+
+    float LastError;
+    float LLastError;
+}MyPID;
+
+
+typedef struct
+{
     float Set;             //设定值
     float Actual;          //实际值
     float err;             //当前误差
@@ -44,24 +58,28 @@ int PlacePID_Control(PID *sprt, float *PID, int NowPiont, int SetPoint);
 
 int PID_Realize(PID *sptr, float *PID, int NowData, int Point);
 
-short PID_Increase(PID *sptr, float *PID, int NowData, int Point);
+int16 PID_Increase(PID *sptr, float *PID, int NowData, int Point);
 
 int PD_control(float *PID);
 
 void PID_Parameter_Init(PID *sptr);
 
-short range_protect(short duty, short min, short max);
+int16 range_protect(int16 duty, int16 min, int16 max);
 
-short PID_Increase_for_ProspectErr(PID *sptr, float *PID);
+int16 PID_Increase_for_ProspectErr(PID *sptr, float *PID);
 
-short PID_Increase_for_BottomErr(PID *sptr, float *PID);
+int16 PID_Increase_for_BottomErr(PID *sptr, float *PID);
 
-short PID_Realize_for_ProspectErr(PID *sptr, float *PID);
+int16 PID_Realize_for_ProspectErr(PID *sptr, float *PID);
 
-short PID_Realize_for_BottomErr(PID *sptr, float *PID);
+int16 PID_Realize_for_BottomErr(PID *sptr, float *PID);
 
 void PID_Init(void);
 
 int calculate_pid(float a);
+
+int16 LocP_DCalc(MyPID*sptr, int16 Setpoint, int16 Turepoint);
+
+int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint);
 
 #endif /* CODE_PID_H_ */

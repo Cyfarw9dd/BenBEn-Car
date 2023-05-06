@@ -313,30 +313,30 @@ void Get_IcmData(void){
 // }
 
 // 互补滤波角度计算
-void AngleGet(void){
-    int Angle_acc, Angle_ratio;
-    float dt = 0.0001249;   //Gy 2ms时间积分系数
-    double angle_ratio;     //加速度比值
-    // Anglefiltering();       //入口滤波，算数平均
+// void AngleGet(void){
+//     int Angle_acc, Angle_ratio;
+//     float dt = 0.0001249;   //Gy 2ms时间积分系数
+//     double angle_ratio;     //加速度比值
+//     // Anglefiltering();       //入口滤波，算数平均
 
-    //以下为加速度计取反正切得到角度
+//     //以下为加速度计取反正切得到角度
 
-    angle_ratio = ((double)REAL_ACC.X) / (REAL_ACC.Z + 0.1);
-    Angle_acc = (float)atan(angle_ratio) * 57.29578049;  //加速度计得到的角
-    if(Angle_acc > 89)
-        Angle_acc = 89;
-    if(Angle_acc < -89)
-        Angle_acc = -89;
+//     angle_ratio = ((double)REAL_ACC.X) / (REAL_ACC.Z + 0.1);
+//     Angle_acc = (float)atan(angle_ratio) * 57.29578049;  //加速度计得到的角
+//     if(Angle_acc > 89)
+//         Angle_acc = 89;
+//     if(Angle_acc < -89)
+//         Angle_acc = -89;
     
-    //以下为角速度计积分，同融合加速度，得到角度
+//     //以下为角速度计积分，同融合加速度，得到角度
 
-    float GY = (float)(GYRO_REAL.Y);
-    GY = GYRO_REAL.Y - GyroY_Zero;      //去零漂之后的陀螺仪采集值
+//     float GY = (float)(GYRO_REAL.Y);
+//     GY = GYRO_REAL.Y - GyroY_Zero;      //去零漂之后的陀螺仪采集值
 
-    float Angle = (float)(Angle-(float)(GY * dt));
-    Angle = Angle + (Angle_acc-Angle)*0.001; 
-    //相当于Angle = Angle*(1-0.00105) + Angle_acc*0.
-}   
+//     float Angle = (float)(Angle-(float)(GY * dt));
+//     Angle = Angle + (Angle_acc-Angle)*0.001; 
+//     //相当于Angle = Angle*(1-0.00105) + Angle_acc*0.
+// }   
 
 
 // 陀螺仪滤除零漂

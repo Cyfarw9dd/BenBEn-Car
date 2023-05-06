@@ -7,6 +7,7 @@ C_SRCS += \
 ../code/\ control.c \
 ../code/cycle.c \
 ../code/elements.c \
+../code/fuse.c \
 ../code/gyro.c \
 ../code/image.c \
 ../code/list.c \
@@ -16,6 +17,7 @@ OBJS += \
 ./code/\ control.o \
 ./code/cycle.o \
 ./code/elements.o \
+./code/fuse.o \
 ./code/gyro.o \
 ./code/image.o \
 ./code/list.o \
@@ -25,6 +27,7 @@ COMPILED_SRCS += \
 ./code/\ control.src \
 ./code/cycle.src \
 ./code/elements.src \
+./code/fuse.src \
 ./code/gyro.src \
 ./code/image.src \
 ./code/list.src \
@@ -34,6 +37,7 @@ C_DEPS += \
 ./code/\ control.d \
 ./code/cycle.d \
 ./code/elements.d \
+./code/fuse.d \
 ./code/gyro.d \
 ./code/image.d \
 ./code/list.d \
