@@ -22,7 +22,7 @@
 #define MOTOR_MIN 0                                                              // 电机限幅最小值
 #define MOTOR_EXPECTATION 3000                                                   // 电机理论输出期望
 
-#define CURVE_ERR 50
+// #define CURVE_ERR 50
 enum motor_mode
 {
     MODE_NORMAL = 0,
