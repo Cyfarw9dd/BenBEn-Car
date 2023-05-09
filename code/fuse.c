@@ -21,7 +21,7 @@ static TASK_COMPONENTS TaskComps[] =
 {
     {0,  5,  5, Motor_output_control},          // 角速度内环和D车速度环2ms
     {0, 10, 10, Trailing_control},              // 转向外环10ms
-    {0,  2,  2, Speed_control},                   // C车速度环20ms
+    {0, 20, 20, Speed_control},                   // C车速度环20ms
     {0,  1,  1, KeyScan},                       // 按键扫描函数  
 };
 
@@ -39,13 +39,13 @@ void PID_int(void)
 	R_SpeedPID.Ki=0.9;
 	R_SpeedPID.Kd=0;
 	
-	TurnPID.Kp=100;       //转向环PID参数 （C车只用调这个，不用串级转向）
+	TurnPID.Kp=140;       //转向环PID参数 （C车只用调这个，不用串级转向）
 	TurnPID.Ki=0;
-	TurnPID.Kd=0;
+	TurnPID.Kd=80;
 	
-	Turn_NeiPID.Kp=4.80;  //转向内环PID参数（D车用） 4.89
+	Turn_NeiPID.Kp=2.5;  //转向内环PID参数（D车用） 4.89
 	Turn_NeiPID.Ki=0;
-	Turn_NeiPID.Kd=0;
+	Turn_NeiPID.Kd=2;
 }
 
 /**************************************************************************************
@@ -104,7 +104,7 @@ void Motor_output_control()
     //icm20602_get_gyro();   //获取陀螺仪角速度值
     imu660ra_get_gyro();
     Steer_pwm = LocP_DCalc(&Turn_NeiPID, GYRO_REAL.Z, Prospect_err);   //转向内环PWM	 icm20602_gyro_z
-    Steer_pwm = range_protect(Steer_pwm, -3000, 3000);                //转向内环PWM限幅
+    Steer_pwm = range_protect(Steer_pwm, -6000, 6000);                //转向内环PWM限幅
 	  
     All_PWM_left = Speed_pwm_all - Steer_pwm;                         //左电机所有PWM输出 Speed_pwm_all
     All_PWM_right = Speed_pwm_all + Steer_pwm;                        //右电机所有PWM输出
@@ -141,14 +141,13 @@ void Speed_control()
 {
     // timed_task();           //出库定时打开干簧管等
     get_motor_speed();      //编码器测量
-    real_speed = (speed1 + speed2) / 2;
     //Speed_pwm_left+=real_speed;
     //	  if(Speed_pwm_left>20000)
     //		{
     //			DisableGlobalIRQ();//关闭总中断
     //		  go_motor(0,0);
     //		}
-    aim_speed = 380;      //目标速度
+    aim_speed = 500;      //目标速度
 
     //Speed_pwm_all = LocP_DCalc(&SpeedPID,aim_speed ,real_speed); //D车速度环（位置式）
     Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed);//D车速度环（增量式）
