@@ -1417,11 +1417,11 @@ int Cal_centerline(void)
     int centerline_err_sum;
     unsigned char centerline_ratio[] = 
     {
-        18, 18, 18, 18, 18, 18, 18, 18, 18, 18,
-        20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
+        10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+        22, 22, 22, 22, 22, 22, 22, 22, 22, 22,
         25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
-        27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
-        30, 30, 30, 30, 30, 30, 30, 30, 30, 30,
+        30, 30, 30, 30, 30, 30, 30, 50, 50, 50,
     };
     for (int i = sizeof(centerline_ratio) / sizeof(unsigned char); i > 0; i--)
     {
@@ -1430,3 +1430,4 @@ int Cal_centerline(void)
     }
     return centerline_err_sum / ratio_sum;
 }
+
