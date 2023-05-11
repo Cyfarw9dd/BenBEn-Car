@@ -18,11 +18,15 @@
 #define PWM_CH3                            (ATOM0_CH3_P21_5)                     // PWM引脚3
 #define PWM_CH4                            (ATOM0_CH1_P21_3)                     // PWM引脚4   
 
+<<<<<<< HEAD
 #define MOTOR_MAX 3500                                                           // 电机限幅最大值
+=======
+#define MOTOR_MAX 3400                                                           // 电机限幅最大值
+>>>>>>> 6af42e20e20202310b45e182ba008d5643124521
 #define MOTOR_MIN 0                                                              // 电机限幅最小值
 #define MOTOR_EXPECTATION 3000                                                   // 电机理论输出期望
 
-#define CURVE_ERR 50
+// #define CURVE_ERR 50
 enum motor_mode
 {
     MODE_NORMAL = 0,

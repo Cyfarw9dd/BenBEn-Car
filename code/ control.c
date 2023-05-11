@@ -5,6 +5,7 @@
 
 
 short speed1 = 0, speed2 = 0; // 定义编码器值获取变量
+float speed_array[2];
 
 // 电机控制
 void motor_ctrl(short Lmotor, short Rmotor){
@@ -66,6 +67,7 @@ void motor_ctrl(short Lmotor, short Rmotor){
 void get_motor_speed(void){
     speed1 = -encoder_get_count(ENCODER_DIR_L);
     speed2 = encoder_get_count(ENCODER_DIR_R);
+    real_speed = (speed1 + speed2) / 2;
     
 
     encoder_clear_count(ENCODER_DIR_L);
