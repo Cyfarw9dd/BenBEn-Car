@@ -324,3 +324,5 @@ user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/elements.h
 d:/BenBen/BEN_ben ver1.01/code/elements.h :
 user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/fuse.h
 d:/BenBen/BEN_ben ver1.01/code/fuse.h :
+user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/adc.h
+d:/BenBen/BEN_ben ver1.01/code/adc.h :

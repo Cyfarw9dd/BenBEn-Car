@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../code/\ control.c \
+../code/adc.c \
 ../code/cycle.c \
 ../code/elements.c \
 ../code/fuse.c \
@@ -15,6 +16,7 @@ C_SRCS += \
 
 OBJS += \
 ./code/\ control.o \
+./code/adc.o \
 ./code/cycle.o \
 ./code/elements.o \
 ./code/fuse.o \
@@ -25,6 +27,7 @@ OBJS += \
 
 COMPILED_SRCS += \
 ./code/\ control.src \
+./code/adc.src \
 ./code/cycle.src \
 ./code/elements.src \
 ./code/fuse.src \
@@ -35,6 +38,7 @@ COMPILED_SRCS += \
 
 C_DEPS += \
 ./code/\ control.d \
+./code/adc.d \
 ./code/cycle.d \
 ./code/elements.d \
 ./code/fuse.d \

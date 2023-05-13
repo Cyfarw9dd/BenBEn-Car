@@ -65,6 +65,7 @@ typedef volatile int8       vint8;                                              
 typedef volatile int16      vint16;                                             // 易变性修饰 有符号 16 bits
 typedef volatile int32      vint32;                                             // 易变性修饰 有符号 32 bits
 typedef volatile int64      vint64;                                             // 易变性修饰 有符号 64 bits
+
 #endif
 
 #define ZF_ENABLE       (1)

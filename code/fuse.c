@@ -1,10 +1,11 @@
 #include "zf_common_headfile.h"
 
 extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
-int16 aim_speed = 0;         //目标速度 
-int16 real_speed = 0;        //左右轮平均速度 
-int16 left_speed = 0;        //左轮速度
-int16 right_speed = 0;       //右轮速度
+int16 aim_speed = 0;         // 目标速度 
+int16 real_speed = 0;        // 左右轮平均速度 
+float real_real_speed = 0;   // 左右轮平均速度换算成实际速度   
+int16 left_speed = 0;        // 左轮速度
+int16 right_speed = 0;       // 右轮速度
 MyPID SpeedPID = {0};
 MyPID L_SpeedPID ={0};
 MyPID R_SpeedPID ={0};

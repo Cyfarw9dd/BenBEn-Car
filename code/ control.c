@@ -68,6 +68,7 @@ void get_motor_speed(void){
     speed1 = -encoder_get_count(ENCODER_DIR_L);
     speed2 = encoder_get_count(ENCODER_DIR_R);
     real_speed = (speed1 + speed2) / 2;
+    real_real_speed = speed1 * 0.0432f;      // 0.0432f
     
 
     encoder_clear_count(ENCODER_DIR_L);

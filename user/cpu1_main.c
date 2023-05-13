@@ -41,8 +41,9 @@
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU1的RAM中
 
 // **************************** 代码区域 ****************************
-
+// buzzer p33.1
 #define PIT_CCU60_ms 5
+unsigned char outflag = 0;      // 出库标志位
 
 extern short speed1, speed2;
 extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
@@ -51,6 +52,7 @@ void core1_main(void)
     disable_Watchdog();                     // 关闭看门狗
     interrupt_global_enable(0);             // 打开全局中断
     // 此处编写用户代码 例如外设初始化代码等
+    outflag = 1;
     mt9v03x_init();
     tft180_init();
     imu660ra_init();
@@ -74,10 +76,17 @@ void core1_main(void)
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
     tft180_set_font(TFT180_6X8_FONT);
     pit_ms_init(CCU60_CH0, 1);
+    
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
+        while (outflag)
+        {
+            motor_ctrl(3000, 2000);
+            system_delay_ms(500);
+            outflag = 0;
+        }
         // List_Switch();
         // cal_curvature(&(MyRoad_Characteristics.Curve_Err));
         // 以下为常用的测试代码
@@ -90,14 +99,14 @@ void core1_main(void)
 
         gyroOffsetInit();
         // Camera();
-		// sendimg_zoom(&bin_image[0], MT9V03X_W, MT9V03X_H, 90, 60);
+		// sendimg_binary_CHK(&bin_image[0], MT9V03X_W, MT9V03X_H, image_thereshold, 25);
         // tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        // put_float(0, real_speed);
-        tft180_show_string(0, 30, "TurnNei_P");         tft180_show_float(60, 30, Turn_NeiPID.Kp, 5, 2);
+        // put_float(0, real_real_speed);
+        tft180_show_string(0, 30, "TurnNei_P");         tft180_show_float(60, 30, real_real_speed, 5, 2);
         // tft180_show_string(0, 50 , "TurnNei_I");        tft180_show_float(60, 50, Turn_NeiPID.Ki, 5, 2);
         // tft180_show_string(0, 70, "TurnNei_D");        tft180_show_float(60, 70, Turn_NeiPID.Kd, 5, 2);
-        tft180_show_string(0, 110, "Turn_P");         tft180_show_float(45, 110, TurnPID.Kp, 5, 2);
-        // tft180_show_string(0, 110, "Turn_I");        tft180_show_float(45, 110, TurnPID.Ki, 5, 2);
+        // tft180_show_string(0, 110, "Turn_P");         tft180_show_float(45, 110, TurnPID.Kp, 5, 2);
+        tft180_show_string(0, 110, "Turn_I");        tft180_show_float(45, 110, TurnPID.Ki, 5, 2);
         tft180_show_string(0, 130, "Turn_d");        tft180_show_float(45, 130, TurnPID.Kd, 5, 2);
         // tft180_show_float(0, 90, Centerline_Err, 5, 2);         tft180_show_float(60, 90, Prospect_Err, 5, 2);
         TaskProcess();

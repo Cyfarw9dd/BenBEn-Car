@@ -326,3 +326,5 @@ code/cycle.o :	d:/BenBen/BEN_ben ver1.01/code/elements.h
 d:/BenBen/BEN_ben ver1.01/code/elements.h :
 code/cycle.o :	d:/BenBen/BEN_ben ver1.01/code/fuse.h
 d:/BenBen/BEN_ben ver1.01/code/fuse.h :
+code/cycle.o :	d:/BenBen/BEN_ben ver1.01/code/adc.h
+d:/BenBen/BEN_ben ver1.01/code/adc.h :

@@ -324,3 +324,5 @@ d:/BenBen/BEN_ben ver1.01/code/list.h :
 d:/BenBen/BEN_ben ver1.01/code/elements.h :
  control.o :	d:/BenBen/BEN_ben ver1.01/code/fuse.h
 d:/BenBen/BEN_ben ver1.01/code/fuse.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/adc.h
+d:/BenBen/BEN_ben ver1.01/code/adc.h :

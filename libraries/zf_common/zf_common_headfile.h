@@ -110,8 +110,9 @@
 #include "cycle.h"
 #include "gyro.h"
 #include "list.h"
-#include "elements.h"a
+#include "elements.h"
 #include "fuse.h"
+#include "adc.h"
 
 
 
