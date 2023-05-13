@@ -142,6 +142,8 @@ void Speed_control()
 {
     // timed_task();           //出库定时打开干簧管等
     get_motor_speed();      //编码器测量
+    real_speed = (speed1 + speed2) / 2;
+    real_real_speed = speed1 * 0.0432f;      // 0.0432f
     //Speed_pwm_left+=real_speed;
     //	  if(Speed_pwm_left>20000)
     //		{

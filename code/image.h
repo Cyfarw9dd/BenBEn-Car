@@ -29,6 +29,7 @@ extern unsigned char  Prospect_Err;
 extern unsigned char  Bottom_Err;
 extern unsigned char  further, middle, near;
 extern unsigned char Left_RoadWidth[120], Right_RoadWidth[120];
+extern int BlackPoints_Nums;
 // extern short image_threshold;
 
 
@@ -37,6 +38,8 @@ extern unsigned char bin_image[image_h][image_w];  //图像数组
 extern unsigned char l_border[image_h];//左线数组
 extern unsigned char r_border[image_h];//右线数组
 extern unsigned char center_line[image_h];//中线数组
+extern unsigned char left_lost_line; // 左边丢线数目
+extern unsigned char right_lost_line;  // 右边丢线数目
 extern unsigned char image_thereshold;
 
 extern void image_process(void);   //直接在中断或循环里调用此程序就可以循环执行了
@@ -110,5 +113,8 @@ void image_draw_rectan(unsigned char(*image)[image_w]);
 // void image_process(void);
 
 int Cal_centerline(void);
+
+void Cal_lostline(void);
+
 
 #endif /* CODE_IMAGE_H_ */

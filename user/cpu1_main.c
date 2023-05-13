@@ -101,8 +101,8 @@ void core1_main(void)
         // Camera();
 		// sendimg_binary_CHK(&bin_image[0], MT9V03X_W, MT9V03X_H, image_thereshold, 25);
         // tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        // put_float(0, real_real_speed);
-        tft180_show_string(0, 30, "TurnNei_P");         tft180_show_float(60, 30, real_real_speed, 5, 2);
+        put_float(0, real_real_speed);
+        tft180_show_string(0, 30, "BlackPoints_Nums");         tft180_show_float(60, 30, real_real_speed, 5, 2);
         // tft180_show_string(0, 50 , "TurnNei_I");        tft180_show_float(60, 50, Turn_NeiPID.Ki, 5, 2);
         // tft180_show_string(0, 70, "TurnNei_D");        tft180_show_float(60, 70, Turn_NeiPID.Kd, 5, 2);
         // tft180_show_string(0, 110, "Turn_P");         tft180_show_float(45, 110, TurnPID.Kp, 5, 2);

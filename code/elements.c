@@ -319,7 +319,7 @@ void Findchangepoint_R(changepoint *prt, unsigned char Start, unsigned char End,
 unsigned char Leftline_Lost_Sum(unsigned char Start_Row, unsigned char End_row){
     unsigned char leftline_lost_sum = 0;
     for(int i = Start_Row; i > End_row; i--){
-        if(leftline[i] < 5){
+        if(l_border[i] < 5){
             leftline_lost_sum++;
         }
     }
@@ -330,7 +330,7 @@ unsigned char Leftline_Lost_Sum(unsigned char Start_Row, unsigned char End_row){
 unsigned char Rightline_Lost_Sum(unsigned char Start_Row, unsigned char End_row){
     unsigned char rightline_lost_sum = 0;
     for(int i = Start_Row; i > End_row; i--){
-        if(rightline[i] > 182){
+        if(r_border[i] > 182){
             rightline_lost_sum++;
         }
     }

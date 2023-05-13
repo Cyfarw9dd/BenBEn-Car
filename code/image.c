@@ -9,14 +9,6 @@
     度值的范围为0~255。所以，灰度值为0会被表达为黑色，为255的话即为白色。
     0~255恰好为无符号查尔变量(unsigned char)所表达的值的范围，在ADS里写作unsigned char，所以有关于图像处理，图像数组的变量都会将其声
     明为unsigned char类型。
-
-
-    //-----------------------------------------------------------------//
-    这里给出一个数据类型的参考表
-    unsigned char           unsigned char
-    int16                   short
-    int                     int
-    左边是ADS里的惯用的写法，但是并不符合C标准，右边是C语言中的写法，但在ADS里编程时，更多的还是用左边的这种形式
 */
 #include "zf_common_headfile.h"
 
@@ -30,12 +22,16 @@ unsigned char image_deal2[MT9V03X_H][MT9V03X_W];
 unsigned char Left_RoadWidth[120];              //定义左半边赛道宽度，即中线到左边线的距离
 unsigned char Right_RoadWidth[120];             //定义右半边赛道宽度
 short image_threshold = 0;                      //定义图像处理阈值
+int BlackPoints_Nums = 0;
 
 /*这两个变量用于计算中线的偏差程度，并将计算出的结果交给转向环计算*/
 
 unsigned char Prospect_Err = 0;                   //定义前瞻偏差，前瞻偏差的取值为实际中线上三个等距的点分别对理想中线做的差
 unsigned char Bottom_Err = 0;                     //定义车身横向偏差，即摄像头拍到图像的最底端一行所处的中线值对理想中线做的差
 unsigned char further, middle, near;              //图像中的远点，中点和近点
+
+unsigned char left_lost_line;
+unsigned char right_lost_line;
 
 Road_Characteristics MyRoad_Characteristics;    // 图像特征处理结构体
 
@@ -543,7 +539,7 @@ short Cal_BlackPoints(unsigned char (*binary_array)[188], unsigned char Start_Ro
     short blackpoint;
     blackpoint = 0;
     for(unsigned char i = Start_Row; i > End_Row; i--){
-        for(unsigned char j = 0; j < 186; i++){
+        for(unsigned char j = 53; j < 133; i++){          // 一共扫描80列的黑点
             if(binary_array[i][j] == 0){
                 blackpoint++;
             }
@@ -1429,5 +1425,20 @@ int Cal_centerline(void)
         centerline_err_sum += (center_line[MT9V03X_H - i] - 93) * centerline_ratio[i]; ;
     }
     return centerline_err_sum / ratio_sum;
+}
+
+void Cal_lostline(void)
+{
+    for (unsigned char i = 119; i > 0; i--)
+    {
+        if (l_border[i] == 0)
+        {
+            left_lost_line++;
+        }
+        if (r_border[i] == 187)
+        {
+            right_lost_line++;
+        }
+    }
 }
 
