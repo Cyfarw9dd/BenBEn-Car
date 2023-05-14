@@ -11,6 +11,8 @@
 #define KEY2 P22_2
 #define KEY3 P22_1
 #define KEY4 P22_3
+#define TOGGLE1 P33_12
+#define TOGGLE2 P33_13
 
 
 

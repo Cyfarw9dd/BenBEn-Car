@@ -71,6 +71,10 @@ void core1_main(void)
     gpio_init(KEY2, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY2 输入 默认高电平 上拉输入
     gpio_init(KEY3, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY3 输入 默认高电平 上拉输入
     gpio_init(KEY4, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY4 输入 默认高电平 上拉输入
+    gpio_init(TOGGLE1, GPI, GPIO_HIGH, GPI_PULL_UP);        // 拨码开关1
+    gpio_init(TOGGLE2, GPI, GPIO_HIGH, GPI_PULL_UP);        // 拨码开关2
+
+    
 
     // 此处编写用户代码 例如外设初始化代码等
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
@@ -81,12 +85,22 @@ void core1_main(void)
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
+        #if 0
         while (outflag)
         {
             motor_ctrl(3000, 2000);
             system_delay_ms(500);
             outflag = 0;
         }
+        #endif
+        #if 1
+        while (outflag)
+        {
+            motor_ctrl(1800, 3500);
+            system_delay_ms(500);
+            outflag = 0;
+        }
+        #endif
         // List_Switch();
         // cal_curvature(&(MyRoad_Characteristics.Curve_Err));
         // 以下为常用的测试代码
@@ -101,8 +115,16 @@ void core1_main(void)
         // Camera();
 		// sendimg_binary_CHK(&bin_image[0], MT9V03X_W, MT9V03X_H, image_thereshold, 25);
         // tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        put_float(0, real_real_speed);
-        tft180_show_string(0, 30, "BlackPoints_Nums");         tft180_show_float(60, 30, real_real_speed, 5, 2);
+        if(gpio_get_level(TOGGLE1))
+            tft180_show_gray_image(0, 0, &bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        else
+            tft180_clear();
+        // if(gpio_get_level(TOGGLE2))
+        //     tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        // else    
+        //     tft180_clear();
+        // put_float(0, real_real_speed);
+        // tft180_show_string(0, 30, "BlackPoints_Nums");         tft180_show_float(60, 30, real_real_speed, 5, 2);
         // tft180_show_string(0, 50 , "TurnNei_I");        tft180_show_float(60, 50, Turn_NeiPID.Ki, 5, 2);
         // tft180_show_string(0, 70, "TurnNei_D");        tft180_show_float(60, 70, Turn_NeiPID.Kd, 5, 2);
         // tft180_show_string(0, 110, "Turn_P");         tft180_show_float(45, 110, TurnPID.Kp, 5, 2);
