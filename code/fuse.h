@@ -11,6 +11,7 @@ extern  MyPID SpeedPID,
         
 extern int All_PWM_left, All_PWM_right;
 extern int16 real_speed;
+extern int16 aim_speed;
 extern float real_real_speed;
 extern int Centerline_Err;
 

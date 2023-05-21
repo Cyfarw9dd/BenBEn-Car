@@ -172,7 +172,7 @@ void Searching_for_boundaries(unsigned char (*binary_array)[188]){
 void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Characteristics *rsptr){
     #if Eightboundary
     for(unsigned char i = BottomRow; i > 0; i--){
-        center_line[i] = (l_border[i] + r_border[i]) / 2;
+        centerline[i] = (leftline[i] + rightline[i]) / 2;
         rsptr->Left_RoadWidth[i] = absolute(93 - l_border[i]);
         rsptr->Right_RoadWidth[i] = absolute(r_border[i] - 93);
     }
@@ -188,9 +188,9 @@ void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Characte
 void Hightlight_Lines(unsigned char (*binary_array)[188]){
     #if Eightboundary
     for(unsigned char i = BottomRow; i > 0; i--){
-        mt9v03x_image[i][center_line[i]] = RGB565_RED;
-        mt9v03x_image[i][r_border[i]] = RGB565_YELLOW;
-        mt9v03x_image[i][l_border[i]] = RGB565_YELLOW;
+        bin_image[i][centerline[i]] = 255;
+        bin_image[i][rightline[i]] = 255;
+        bin_image[i][leftline[i]] = 255;
     }
     #else
     for(unsigned char i = BottomRow; i > 0; i--){
@@ -1343,20 +1343,23 @@ turn_to_bin();
 /*提取赛道边界*/
 image_filter(&bin_image[0]);//滤波
 image_draw_rectan(&bin_image[0]);//预处理
+Searching_for_boundaries(&bin_image[0]);
+Deal_Road_Characteristics(&bin_image, &MyRoad_Characteristics);
+Hightlight_Lines(&bin_image[0]);
 //清零
-data_stastics_l = 0;
-data_stastics_r = 0;
-if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找到就一直找
-{
-	// printf("正在开始八领域\n");
-	search_l_r((unsigned short)USE_num, &bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
-	// printf("八邻域已结束\n");
-	// 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
-	get_left(data_stastics_l);
-	get_right(data_stastics_r);
-	//处理函数放这里，不要放到if外面去了，不要放到if外面去了，不要放到if外面去了，重要的事说三遍
+// data_stastics_l = 0;
+// data_stastics_r = 0;
+// if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找到就一直找
+// {
+// 	// printf("正在开始八领域\n");
+// 	search_l_r((unsigned short)USE_num, &bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
+// 	// printf("八邻域已结束\n");
+// 	// 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
+// 	get_left(data_stastics_l);
+// 	get_right(data_stastics_r);
+// 	//处理函数放这里，不要放到if外面去了，不要放到if外面去了，不要放到if外面去了，重要的事说三遍
 
-}
+// }
 
 
 //显示图像   改成你自己的就行 等后期足够自信了，显示关掉，显示屏挺占资源的
@@ -1422,7 +1425,7 @@ int Cal_centerline(void)
     for (int i = sizeof(centerline_ratio) / sizeof(unsigned char); i > 0; i--)
     {
         ratio_sum += centerline_ratio[i];
-        centerline_err_sum += (center_line[MT9V03X_H - i] - 93) * centerline_ratio[i]; ;
+        centerline_err_sum += (centerline[MT9V03X_H - i] - 93) * centerline_ratio[i]; ;
     }
     return centerline_err_sum / ratio_sum;
 }

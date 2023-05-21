@@ -18,7 +18,7 @@
 #define PWM_CH3                            (ATOM0_CH3_P21_5)                     // PWM引脚3
 #define PWM_CH4                            (ATOM0_CH1_P21_3)                     // PWM引脚4   
 
-#define MOTOR_MAX 4000                                                           // 电机限幅最大值
+#define MOTOR_MAX 3090                                                           // 电机限幅最大值
 #define MOTOR_MIN 0                                                              // 电机限幅最小值
 #define MOTOR_EXPECTATION 3000                                                   // 电机理论输出期望
 

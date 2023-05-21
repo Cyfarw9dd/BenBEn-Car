@@ -44,7 +44,13 @@
 // buzzer p33.1
 #define PIT_CCU60_ms 5
 unsigned char outflag = 0;      // 出库标志位
-
+#define UART_INDEX              (DEBUG_UART_INDEX   )                           // 默认 UART_0
+#define UART_BAUDRATE           (DEBUG_UART_BAUDRATE)                           // 默认 115200
+#define UART_TX_PIN             (DEBUG_UART_TX_PIN  )                           // 默认 UART0_TX_P14_0
+#define UART_RX_PIN             (DEBUG_UART_RX_PIN  )                           // 默认 UART0_RX_P14_1
+#define REDLIGHT                101                                             // 定义红灯标志位
+#define YELLOWLIGHT             201                                             // 定义黄灯标志位
+#define LED1                    (P20_9)
 extern short speed1, speed2;
 extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
 void core1_main(void)
@@ -73,9 +79,18 @@ void core1_main(void)
     gpio_init(KEY4, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY4 输入 默认高电平 上拉输入
     gpio_init(TOGGLE1, GPI, GPIO_HIGH, GPI_PULL_UP);        // 拨码开关1
     gpio_init(TOGGLE2, GPI, GPIO_HIGH, GPI_PULL_UP);        // 拨码开关2
+    uart_init(UART_INDEX, UART_BAUDRATE, UART_TX_PIN, UART_RX_PIN);             // 初始化串口
 
-    
 
+    gpio_init(LED1, GPO, GPIO_HIGH, GPO_PUSH_PULL);  
+        while(1)
+    {
+        if(dl1a_init())
+            gpio_toggle_level(LED1);                                            // ??? LED ?????????? ???? LED ???? ??????????????????????
+        else
+            break;
+        system_delay_ms(1000);                                                  // ????????
+    }
     // 此处编写用户代码 例如外设初始化代码等
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
     tft180_set_font(TFT180_6X8_FONT);
@@ -85,72 +100,69 @@ void core1_main(void)
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        #if 0
-        while (outflag)
-        {
-            motor_ctrl(3000, 2000);
-            system_delay_ms(500);
-            outflag = 0;
-        }
-        #endif
-        #if 1
-        while (outflag)
-        {
-            motor_ctrl(1800, 3500);
-            system_delay_ms(500);
-            outflag = 0;
-        }
-        #endif
-        // List_Switch();
-        // cal_curvature(&(MyRoad_Characteristics.Curve_Err));
-        // 以下为常用的测试代码
-
+        // 控制部分采用时间片轮询法，或许可以把速度环另开一个中断
         // get_motor_speed();
-        // motor_ctrl(3000, 3000);   // (0, 3000)向右转，(3000, 0)向左转
-        // tft180_show_gray_image(0 ,0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        // tft180_show_int(0, 90, GYRO_REAL.Z, 5);
-        // tft180_show
-
-        gyroOffsetInit();
-        // Camera();
-		// sendimg_binary_CHK(&bin_image[0], MT9V03X_W, MT9V03X_H, image_thereshold, 25);
-        // tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        if(gpio_get_level(TOGGLE1))
-            tft180_show_gray_image(0, 0, &bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        else
-            tft180_clear();
-        // if(gpio_get_level(TOGGLE2))
-        //     tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        // else    
-        //     tft180_clear();
-        // put_float(0, real_real_speed);
-        // tft180_show_string(0, 30, "BlackPoints_Nums");         tft180_show_float(60, 30, real_real_speed, 5, 2);
-        // tft180_show_string(0, 50 , "TurnNei_I");        tft180_show_float(60, 50, Turn_NeiPID.Ki, 5, 2);
-        // tft180_show_string(0, 70, "TurnNei_D");        tft180_show_float(60, 70, Turn_NeiPID.Kd, 5, 2);
-        // tft180_show_string(0, 110, "Turn_P");         tft180_show_float(45, 110, TurnPID.Kp, 5, 2);
-        tft180_show_string(0, 110, "Turn_I");        tft180_show_float(45, 110, TurnPID.Ki, 5, 2);
-        tft180_show_string(0, 130, "Turn_d");        tft180_show_float(45, 130, TurnPID.Kd, 5, 2);
-        // tft180_show_float(0, 90, Centerline_Err, 5, 2);         tft180_show_float(60, 90, Prospect_Err, 5, 2);
         TaskProcess();
+        // motor_ctrl(3000, 3000);
         image_process();
-        tft180_show_float(0, 90, speed1, 5, 2);         tft180_show_float(60, 90, speed2, 5, 2); 
-        Deal_Road_Characteristics(&bin_image[0], &MyRoad_Characteristics);
-        Hightlight_Lines(&bin_image[0]);                 
-        if(Key1 == onepress){
-			Key1 = nopress;
-			Turn_NeiPID.Kp += 0.1;
-			// system_delay_ms(300);
-		}
-		if(Key2 == onepress){
-            Key2 = nopress;
-			TurnPID.Kp += 10;
-			// system_delay_ms(300);
-		}
-		if(Key3 == onepress){
-            Key3 = nopress;
-			TurnPID.Kd += 1;
-			// system_delay_ms(300);
-		}
+        // tft180_show_gray_image(0, 0, &bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        tft180_show_int(0, 0, real_speed, 5);
+        dl1a_get_distance();
+        if(dl1a_finsh_flag == 1)
+        {
+            dl1a_finsh_flag = 0;
+            if(dl1a_distance_mm < 500)
+            {        
+                pit_disable(CCU60_CH0); // 关闭定时器中断
+                motor_ctrl(-1800, -1800);
+                system_delay_ms(80);                
+                motor_ctrl(0,0);
+                system_delay_ms(200);
+                motor_ctrl(-1800, 1800);
+                system_delay_ms(260);
+                motor_ctrl(0,0);
+                system_delay_ms(200);
+                motor_ctrl(1800, 1800);
+                system_delay_ms(420);
+                motor_ctrl(0,0);
+                system_delay_ms(200);
+                motor_ctrl(1800, -1800);
+                system_delay_ms(400);
+                motor_ctrl(0,0);
+                system_delay_ms(200);                                 
+                motor_ctrl(1800, 1800);
+                system_delay_ms(360);
+                motor_ctrl(0,0);
+                system_delay_ms(200);
+                motor_ctrl(-1800, 1800);
+                system_delay_ms(250);
+                motor_ctrl(0,0);
+                system_delay_ms(100);
+                get_motor_speed();
+                pit_enable(CCU60_CH0); // 恢复定时器中断
+            }
+        }
+
+
+        // unsigned char *receive_array = uart_read_byte(UART_INDEX);
+        // for (int i = 0; i < sizeof(receive_array) / sizeof(unsigned char); i++)
+        // {
+        //     // 串口接收数据
+        //     if (receive_array[i] == REDLIGHT)
+        //     {
+        //         pit_disable(CCU60_CH0);     // 关闭定时器中断
+        //         motor_ctrl(-1500, -1500);   // 刹车
+        //         system_delay_ms(10);   
+        //     }
+        //     else    pit_enable(CCU60_CH0);
+        //     if (receive_array[i] == YELLOWLIGHT)
+        //     {
+        //         pit_disable(CCU60_CH0);
+        //         motor_ctrl(-1500, -1500);
+        //         system_delay_ms(10);   
+        //     }
+        //     else    pit_enable(CCU60_CH0);
+        // }
         // 此处编写需要循环执行的代码
     }
 }
