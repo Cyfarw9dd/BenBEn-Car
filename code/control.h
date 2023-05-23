@@ -37,6 +37,7 @@ void get_motor_speed(void);
 
 void Quick_Break(void);
 
+
 #endif /* CODE_CONTROL_H_ */
 
 

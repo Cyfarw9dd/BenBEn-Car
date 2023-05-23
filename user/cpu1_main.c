@@ -48,13 +48,18 @@
 #define UART_BAUDRATE           (DEBUG_UART_BAUDRATE)                           // 默认 115200
 #define UART_TX_PIN             (DEBUG_UART_TX_PIN  )                           // 默认 UART0_TX_P14_0
 #define UART_RX_PIN             (DEBUG_UART_RX_PIN  )                           // 默认 UART0_RX_P14_1
-#define REDLIGHT                101                                          // 定义红灯标志位
+#define REDLIGHT                101                                             // 定义红灯标志位
+#define NOREDLIGHT              10                                              // 定义红灯丢失位
 #define YELLOWLIGHT             201                                             // 定义黄灯标志位
+#define NOYELLOWLIGHT           20                                              // 定义黄灯丢失位
 #define LED1                    (P20_9)
 
 unsigned char outflag = 0;                                                      // 出库标志位
 extern short speed1, speed2;                                                    // 左右编码器值
 extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
+unsigned char receive_array[9];
+void dl1a_movement(void);
+void trafficlights_movement(void);
 void core1_main(void)
 {
     disable_Watchdog();                     // 关闭看门狗
@@ -81,9 +86,9 @@ void core1_main(void)
     gpio_init(KEY4, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY4 输入 默认高电平 上拉输入
     gpio_init(TOGGLE1, GPI, GPIO_HIGH, GPI_PULL_UP);        // 初始化拨码开关1
     gpio_init(TOGGLE2, GPI, GPIO_HIGH, GPI_PULL_UP);        // 初始化拨码开关2
-    pwm_init(BUZZER, 17 * 1000, 0);                                // 初始化编码器
+    pwm_init(BUZZER, 1500, 0);                                // 初始化编码器
     uart_init(UART_INDEX, UART_BAUDRATE, UART_TX_PIN, UART_RX_PIN);             // 初始化串口
-
+    uart_rx_interrupt(UART_INDEX, 1);                                           // 开启 UART_INDEX 的接收中断
     gpio_init(LED1, GPO, GPIO_HIGH, GPO_PUSH_PULL);  
     while(1)
     {
@@ -103,73 +108,84 @@ void core1_main(void)
     {
         // 此处编写需要循环执行的代码
         // 控制部分采用时间片轮询法，或许可以把速度环另开一个中断
-        pwm_set_duty(BUZZER, 3000);
+        // pwm_set_duty(BUZZER, 8000);
         TaskProcess();
         image_process();
-        // tft180_show_gray_image(0, 0, &bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        // tft180_show_int(0, 0, real_speed, 5);
-        // dl1a_get_distance();
-        // if(dl1a_finsh_flag == 1)
-        // {
-        //     dl1a_finsh_flag = 0;
-        //     if(dl1a_distance_mm < 500)
-        //     {        
-        //         pit_disable(CCU60_CH0); // 关闭定时器中断
-        //         motor_ctrl(-1800, -1800);
-        //         system_delay_ms(80);                
-        //         motor_ctrl(0,0);
-        //         system_delay_ms(200);
-        //         motor_ctrl(-1800, 1800);
-        //         system_delay_ms(260);
-        //         motor_ctrl(0,0);
-        //         system_delay_ms(200);
-        //         motor_ctrl(1800, 1800);
-        //         system_delay_ms(420);
-        //         motor_ctrl(0,0);
-        //         system_delay_ms(200);
-        //         motor_ctrl(1800, -1800);
-        //         system_delay_ms(400);
-        //         motor_ctrl(0,0);
-        //         system_delay_ms(200);                                 
-        //         motor_ctrl(1800, 1800);
-        //         system_delay_ms(360);
-        //         motor_ctrl(0,0);
-        //         system_delay_ms(200);
-        //         motor_ctrl(-1800, 1800);
-        //         system_delay_ms(250);
-        //         motor_ctrl(0,0);
-        //         system_delay_ms(100);
-        //         get_motor_speed();
-        //         pit_enable(CCU60_CH0); // 恢复定时器中断
-        //     }
-        // }
-
-
-        unsigned char receive_array = uart_read_byte(UART_INDEX);
-        for (int i = 0; i < sizeof(receive_array) / sizeof(unsigned char); i++)
-        {
-            // 串口接收数据
-            if (receive_array + i == REDLIGHT)
-            {
-                pit_disable(CCU60_CH0);     // 关闭定时器中断
-                motor_ctrl(-1500, -1500);   // 刹车
-                tft180_show_string(0, 0, "check it");
-                system_delay_ms(10);   
-            }
-            else    pit_enable(CCU60_CH0);  tft180_clear();
-            if (receive_array + i == YELLOWLIGHT)
-            {
-                pit_disable(CCU60_CH0);
-                motor_ctrl(-1500, -1500);
-                system_delay_ms(10);   
-            }
-            else    pit_enable(CCU60_CH0);  // 开启定时器中断
-        }
+        tft180_show_gray_image(0, 0, &bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        dl1a_movement();
+        // trafficlights_movement();
         // 此处编写需要循环执行的代码
     }
 }
 
+void dl1a_movement(void)
+{
+    dl1a_get_distance();
+    if(dl1a_finsh_flag == 1)
+    {
+        dl1a_finsh_flag = 0;
+        if(dl1a_distance_mm < 400)
+        {        
+            pit_disable(CCU60_CH0); // 关闭定时器中断
+            motor_ctrl(-1800, -1800);//识别倒车   8.1V
+            system_delay_ms(80);                
+            motor_ctrl(0,0);
+            system_delay_ms(200);
+            motor_ctrl(-1800, 1800);//左转
+            system_delay_ms(420);
+            motor_ctrl(0,0);
+            system_delay_ms(200);
+            motor_ctrl(1800, 1800);//直行
+            system_delay_ms(500);
+            motor_ctrl(0,0);
+            system_delay_ms(200);
+            motor_ctrl(1800, -1800);//右转
+            system_delay_ms(640);
+            motor_ctrl(0,0);
+            system_delay_ms(200);                                 
+            motor_ctrl(1800, 1800);//直行
+            system_delay_ms(610);
+            motor_ctrl(0,0);
+            system_delay_ms(200);
+            motor_ctrl(-1800, 1800);//左转
+            system_delay_ms(380);
+            motor_ctrl(0,0);
+            system_delay_ms(100);
+            get_motor_speed();      // 重新采集一次编码器数据，不然编码器数据会保留在中断关闭前的那一刻，会有影响
+            pit_enable(CCU60_CH0);  // 恢复定时器中断
+        }
+    }
+}
 
+void trafficlights_movement(void)
+{
+    
+    unsigned char receive_array;
+    uart_query_byte(UART_INDEX, &receive_array);
+    // tft180_show_int(0, 0, receive_array + 1, 5);
+    // tft180_show_string(0, 0, receive_array);
+    if (receive_array + 1 == REDLIGHT)      // 如果识别到红灯
+    {
+        // tft180_clear();
+        // tft180_show_string(0, 0, "check it");
+        aim_speed = 0;                      // 期望速度0，刹车
+        system_delay_ms(20);                // 一定延时
+        pit_disable(CCU60_CH0);             // 关闭PIT中断
+    }
+    else if (receive_array + 2== YELLOWLIGHT)
+    {
+        aim_speed = 50;                      // 期望速度0，刹车
+        system_delay_ms(20);
+        system_delay_ms(20);                // 一定延时
+        pit_disable(CCU60_CH0);             // 关闭PIT中断
+    }
+    else
+    {
+        aim_speed = 100;
+        get_motor_speed();
+        pit_enable(CCU60_CH0);
+    }
+}
 
 #pragma section all restore
 // **************************** 代码区域 ****************************
