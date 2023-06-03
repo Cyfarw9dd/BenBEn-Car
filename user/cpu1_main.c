@@ -140,17 +140,17 @@ void dl1a_movement(void)
             motor_ctrl(0,0);
             system_delay_ms(200);
             motor_ctrl(1800, -1800);//右转
-            system_delay_ms(640);
+            system_delay_ms(740);
             motor_ctrl(0,0);
             system_delay_ms(200);                                 
             motor_ctrl(1800, 1800);//直行
-            system_delay_ms(610);
+            system_delay_ms(600);
             motor_ctrl(0,0);
             system_delay_ms(200);
-            motor_ctrl(-1800, 1800);//左转
-            system_delay_ms(380);
-            motor_ctrl(0,0);
-            system_delay_ms(100);
+            // motor_ctrl(-1800, 1800);//左转
+            // system_delay_ms(380);
+            // motor_ctrl(0,0);
+            // system_delay_ms(100);
             get_motor_speed();      // 重新采集一次编码器数据，不然编码器数据会保留在中断关闭前的那一刻，会有影响
             pit_enable(CCU60_CH0);  // 恢复定时器中断
         }
