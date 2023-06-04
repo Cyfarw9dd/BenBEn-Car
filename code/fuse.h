@@ -7,6 +7,7 @@ extern  MyPID SpeedPID,
         L_SpeedPID, 
         R_SpeedPID,
         TurnPID,
+        ADC_TurnPID,
         Turn_NeiPID;
         
 extern int All_PWM_left, All_PWM_right;
@@ -27,13 +28,23 @@ typedef struct
 
 void TaskRemarks(void);
 
+void ADC_TaskRemarks(void);
+
 void TaskProcess(void);
+
+void ADC_TaskProcess(void);
 
 void Motor_output_control(void);
 
+void ADC_Motor_output_control(void);
+
 void Trailing_control(void);
 
+void ADC_Trailing_control(void);
+
 void Speed_control(void);
+
+void ADC_Speed_control(void);
 
 
 #endif /* CODE_FUSE_H_ */

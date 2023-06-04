@@ -74,19 +74,20 @@ void Turn_cycle_ver3(short Theory_Duty){
 
 
 
-void Turn_cycle_ForPCrossing(short theory_duty){ //1600
-    // cal_curvature();
-    short Prospect_Parameter = PID_Realize_for_ProspectErr(&Prospect_PID, Prospect);
-    short Bottom_Parameter = PID_Realize_for_BottomErr(&Bottom_PID, Bottom);
-    short Union_result = Prospect_Parameter + Bottom_Parameter;
-    // short Direct_Parameter = -PID_Realize(&Direct_PID, Direct, (int32)(Real_Gyro_Z * 10),(int32)Union_result);
+// void Turn_cycle_ForPCrossing(short theory_duty){ //1600
 
-    Direct_Last = Direct_Last * 0.2 + Union_result * 0.8;
-    LMotor_Duty = theory_duty - Direct_Last * 4;
-    RMotor_Duty = theory_duty + Direct_Last * 4;
+//     cal_curvature();
+//     short Prospect_Parameter = PID_Realize_for_ProspectErr(&Prospect_PID, Prospect);
+//     short Bottom_Parameter = PID_Realize_for_BottomErr(&Bottom_PID, Bottom);
+//     short Union_result = Prospect_Parameter + Bottom_Parameter;
+//     // short Direct_Parameter = -PID_Realize(&Direct_PID, Direct, (int32)(Real_Gyro_Z * 10),(int32)Union_result);
 
-    motor_ctrl(LMotor_Duty, RMotor_Duty);
-}
+//     Direct_Last = Direct_Last * 0.2 + Union_result * 0.8;
+//     LMotor_Duty = theory_duty - Direct_Last * 4;
+//     RMotor_Duty = theory_duty + Direct_Last * 4;
+
+//     motor_ctrl(LMotor_Duty, RMotor_Duty);
+// }
 
 
 

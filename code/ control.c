@@ -70,9 +70,6 @@ void get_motor_speed(void){
 
     encoder_clear_count(ENCODER_DIR_L);
     encoder_clear_count(ENCODER_DIR_R);
-    // tft180_show_int(0, 66, speed1, 5);
-    // tft180_show_int(0, 86, speed2, 5);
-    // systick_delay_ms(STM0, 100);
 }
 
 
@@ -86,3 +83,9 @@ void Quick_Break(void)
         motor_ctrl(0,0);
 }
 
+void Buzzer(void)
+{
+    pwm_set_duty(BUZZER, 8000);
+    system_delay_ms(10);
+    pwm_set_duty(BUZZER, 0);
+}
