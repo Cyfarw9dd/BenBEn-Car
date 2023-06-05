@@ -14,13 +14,29 @@ typedef struct
 List MyList[] = 
 {
     {1, "Image Mode", NULL, NULL},              // 图像模式
-    {11, "Bin Image", NULL, NULL},           // 显示二值化图像
-    {12, "Gray Imange", NULL, NULL},         // 显示灰度图像
-    {2, "Tuning Mode", NULL, NULL},             // 调参模式
-    {21, "Tuning", NULL, NULL},
+    {11, "gray image", show_gray_image, NULL},             // 显示灰度图像
+    {12, "binary Imange", show_binary_image, NULL},          // 显示二值化图像
+    {13, "show boudaries", show_boundaries, NULL},         // 显示图像边界
+    {14, "back to main", NULL, NULL},           // 返回主菜单
+    {2, "Tuning", NULL, NULL},
+    {21, "Speed Cycle", NULL, NULL},
+    {211, "Camera", NULL, NULL},
+    {212, "ADC", NULL, NULL},
+    {213, "back to main", NULL, NULL},
+    {22, "InnerTurn Cycle", NULL, NULL},
+    {221, "Camer", NULL, NULL},
+    {222, "ADC", NULL, NULL},
+    {223, "back to main", NULL, NULL},
+    {23, "Turn Cycle", NULL, NULL},
+    {231, "Camera", NULL, NULL},
+    {232, "ADC", NULL, NULL},
+    {233, "back to main", NULL, NULL},
+    {24, "show paramters", NULL, NULL},
+    {25, "back to main", NULL, NULL},
+    {3, "nothing", NULL, NULL},
 };
 
-List *current_list_item = MyList;
+List *current_list_item;
 
 
 KeySatateEnum Key1;
@@ -47,6 +63,7 @@ unsigned char Key4 = 0;
 // 待测试的按键扫描函数
 void KeyScan(void)
 {
+    // KeyParams_Init();
     static unsigned char KeyPressNum = 0;
     static unsigned short KeyPressTime = 0;
     static unsigned char SomeKeyPress_Flag = 0; // 0松开 1按下 2消抖 3长按
@@ -134,10 +151,17 @@ void KeyScan(void)
     }
 }
 
+void MyKeyScan(void)
+{
+    if(!gpio_get_level(KEY1))   Key1 = onepress;
+    if(!gpio_get_level(KEY2))   Key2 = onepress;
+    if(!gpio_get_level(KEY3))   Key3 = onepress;
+    if(!gpio_get_level(KEY4))   Key4 = onepress;
+}
 
 bool have_sub_list(int ListIndex)     // 查看是否存在子菜单
 {
-    for (int i = 0; i < sizeof(List) / sizeof(MyList); i++)
+    for (int i = 0; i < sizeof(MyList) / sizeof(List); i++)
     {
         if (MyList[i].ListIndex / 10 == ListIndex)
         {
@@ -149,9 +173,9 @@ bool have_sub_list(int ListIndex)     // 查看是否存在子菜单
 
 int show_sub_list(int parent_index, int highlight_col)      // 显示子菜单以及当前高亮菜单
 {
-    // tft180_clear();
+    tft180_clear();
     int item_index = 0;
-    for (int i = 0; i < sizeof(List) / sizeof(MyList[0]); i++)
+    for (int i = 0; i < sizeof(MyList) / sizeof(List); i++)
     {
         if (MyList[i].ListIndex / 10 == parent_index)
         {
@@ -196,7 +220,7 @@ void List_Switch(void)
                     highlight_col = 0;
                     parent_list_index = current_list_item->ListIndex;
                 }
-                else if (strcmp(current_list_item->ListName, "Back to Main") == 0)   // 如果当前菜单为Back to Main，则返回主菜单
+                else if (strcmp(current_list_item->ListName, "back to main") == 0)   // 如果当前菜单为Back to Main，则返回主菜单
                 {
                     highlight_col = 0;
                     parent_list_index = 0;
@@ -207,8 +231,45 @@ void List_Switch(void)
                 }
             }
             list_item_count = show_sub_list(parent_list_index, highlight_col);
+            // KeyParams_Init();
         }
 #if 0
     }
 }
 #endif
+
+void *show_gray_image(void)
+{
+    tft180_clear();
+    KeyParams_Init();
+    tft180_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W, MT9V03X_H, 0);
+    // tft180_show_string(0, 0, "show gray image");
+}
+
+void show_binary_image(void)
+{
+    tft180_clear();
+    KeyParams_Init();
+    tft180_show_string(0, 0, "show binary image");
+}
+
+void show_boundaries(void)
+{
+    tft180_clear();
+    KeyParams_Init();
+    tft180_show_string(0, 0, "show boundaries");
+}
+
+void back_to_main(void)
+{
+    tft180_clear();
+    KeyParams_Init();
+    tft180_show_string(0, 0, "back to main");
+}
+
+void tuning(void)
+{
+    tft180_clear();
+    KeyParams_Init();
+    tft180_show_string(0, 0, "start tuning");
+}

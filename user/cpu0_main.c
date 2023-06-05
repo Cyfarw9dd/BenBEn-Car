@@ -41,19 +41,19 @@ int core0_main(void)
     adc_init(ADC0_CH6_A6, ADC_8BIT);
     adc_init(ADC0_CH7_A7, ADC_8BIT);
 
-	 pit_ms_init(CCU61_CH0, 1);
+	// pit_ms_init(CCU61_CH0, 1);
     // 此处编写用户代码 例如外设初始化代码等
     cpu_wait_event_ready();         // 等待所有核心初始化完毕
 	while (TRUE)
 	{
 		// 此处编写需要循环执行的代码
 		// gyroOffsetInit();
-		ADC_TaskProcess();
-		tft180_show_string(0, 0, "left out"); 		tft180_show_int(60, 0, Left_Adc, 5);
-		tft180_show_string(0, 30, "left in"); 		tft180_show_int(60, 30, Left_Shu_Adc, 5);
-		tft180_show_string(0, 60, "right in"); 		tft180_show_int(60, 60, Right_Adc, 5);
-		tft180_show_string(0, 90, "right out"); 		tft180_show_int(60, 90, Right_Shu_Adc, 5);
-		tft180_show_float(0, 100, GYRO_REAL.Z, 5, 2);
+		// ADC_TaskProcess();
+		// tft180_show_string(0, 0, "left out"); 		tft180_show_int(60, 0, Left_Adc, 5);
+		// tft180_show_string(0, 30, "left in"); 		tft180_show_int(60, 30, Left_Shu_Adc, 5);
+		// tft180_show_string(0, 60, "right in"); 		tft180_show_int(60, 60, Right_Adc, 5);
+		// tft180_show_string(0, 90, "right out"); 		tft180_show_int(60, 90, Right_Shu_Adc, 5);
+		// tft180_show_float(0, 100, GYRO_REAL.Z, 5, 2);
 
 		// 此处编写需要循环执行的代码
 	}

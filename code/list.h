@@ -8,8 +8,8 @@
     按键扫描写在
 */
 #define KEY1 P22_0
-#define KEY2 P22_2
-#define KEY3 P22_1
+#define KEY2 P22_1
+#define KEY3 P22_2
 #define KEY4 P22_3
 #define TOGGLE1 P33_12
 #define TOGGLE2 P33_13
@@ -30,8 +30,27 @@ extern KeySatateEnum Key4;
 
 
 
+
 void KeyParams_Init(void);
 
-void KeyScan();
+void KeyScan(void);
+
+void MyKeyScan(void);
+
+bool have_sub_list(int ListIndex) ;
+
+int show_sub_list(int parent_index, int highlight_col);
+
+void List_Switch(void);
+
+void *show_gray_image(void);
+
+void show_binary_image(void);
+
+void show_boundaries(void);
+
+void back_to_main(void);
+
+void tuning(void);
 
 #endif /* CODE_LIST_H_ */

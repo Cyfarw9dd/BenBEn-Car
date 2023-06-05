@@ -57,7 +57,7 @@ void core1_main(void)
     outflag = 1;
     mt9v03x_init();
     tft180_init();
-    imu660ra_init();
+    // imu660ra_init();
     wireless_uart_init();
     PID_int();
     // 初始化pwm
@@ -82,7 +82,7 @@ void core1_main(void)
 
     // 此处编写用户代码 例如外设初始化代码等
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
-    tft180_set_font(TFT180_6X8_FONT);
+    // tft180_set_font(TFT180_6X8_FONT);
     pit_ms_init(CCU60_CH0, 1);
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
     while (TRUE)
@@ -106,25 +106,31 @@ void core1_main(void)
         // #endif
         // List_Switch();
         // cal_curvature(&(MyRoad_Characteristics.Curve_Err));
-        gyroOffsetInit();
+        // gyroOffsetInit();
         // Camera();
 		// sendimg_binary_CHK(&bin_image[0], MT9V03X_W, MT9V03X_H, image_thereshold, 25);
-        // tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        // tft180_show_gray_image(0, 0, &bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
 
         // if(gpio_get_level(TOGGLE2))
         //     tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
         // else    
         //     tft180_clear();
         // put_float(0, real_real_speed);
-        // tft180_show_string(0, 30, "BlackPoints_Nums");         tft180_show_float(60, 30, real_real_speed, 5, 2);
-        // tft180_show_string(0, 50 , "TurnNei_I");        tft180_show_float(60, 50, Turn_NeiPID.Ki, 5, 2);
-        // tft180_show_string(0, 70, "TurnNei_D");        tft180_show_float(60, 70, Turn_NeiPID.Kd, 5, 2);
-        // tft180_show_string(0, 110, "Turn_P");         tft180_show_float(45, 110, TurnPID.Kp, 5, 2);
-        // tft180_show_float(0, 90, speed1, 5, 2);         tft180_show_float(60, 90, speed2, 5, 2);
-        // TaskProcess();
+        // unsigned char k1 = Key1;
+        // unsigned char k2 = Key2;
+        // unsigned char k3 = Key3;
+        // unsigned char k4 = Key4;
+        // tft180_show_int(0, 0, k1, 5);
+        // tft180_show_int(0, 30, k2, 5);
+        // tft180_show_int(0, 90, k3, 5);
+        // tft180_show_int(0, 120, k4, 5);
+        // tft180_show_int(0, 0, parent_list_index, 1);
+        TaskProcess();
         image_process();
         Deal_Road_Characteristics(&bin_image[0], &MyRoad_Characteristics);
-        Hightlight_Lines(&bin_image[0]);                 
+        Hightlight_Lines(&bin_image[0]);
+        MyKeyScan();
+        List_Switch();                 
         // if(Key1 == onepress){
 		// 	Key1 = nopress;
 		// 	Turn_NeiPID.Kp += 0.1;
