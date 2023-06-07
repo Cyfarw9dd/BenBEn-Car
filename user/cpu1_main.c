@@ -57,7 +57,7 @@ void core1_main(void)
     outflag = 1;
     mt9v03x_init();
     tft180_init();
-    // imu660ra_init();
+    imu660ra_init();
     wireless_uart_init();
     PID_int();
     // 初始化pwm
@@ -78,12 +78,23 @@ void core1_main(void)
     gpio_init(TOGGLE1, GPI, GPIO_HIGH, GPI_PULL_UP);        // 拨码开关1
     gpio_init(TOGGLE2, GPI, GPIO_HIGH, GPI_PULL_UP);        // 拨码开关2
 
+    // 初始化8路运放
+    adc_init(ADC0_CH0_A0, ADC_8BIT);
+    adc_init(ADC0_CH1_A1, ADC_8BIT);
+    adc_init(ADC0_CH2_A2, ADC_8BIT);
+    adc_init(ADC0_CH3_A3, ADC_8BIT);
+    adc_init(ADC0_CH4_A4, ADC_8BIT);
+    adc_init(ADC0_CH5_A5, ADC_8BIT);
+    adc_init(ADC0_CH6_A6, ADC_8BIT);
+    adc_init(ADC0_CH7_A7, ADC_8BIT);
+
     
 
     // 此处编写用户代码 例如外设初始化代码等
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
-    // tft180_set_font(TFT180_6X8_FONT);
+    tft180_set_font(TFT180_6X8_FONT);
     pit_ms_init(CCU60_CH0, 1);
+    pit_ms_init(CCU60_CH1, 1);
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
     while (TRUE)
     {
@@ -103,49 +114,20 @@ void core1_main(void)
         //     system_delay_ms(500);
         //     outflag = 0;
         // }
-        // #endif
-        // List_Switch();
-        // cal_curvature(&(MyRoad_Characteristics.Curve_Err));
-        // gyroOffsetInit();
-        // Camera();
-		// sendimg_binary_CHK(&bin_image[0], MT9V03X_W, MT9V03X_H, image_thereshold, 25);
-        // tft180_show_gray_image(0, 0, &bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-
-        // if(gpio_get_level(TOGGLE2))
-        //     tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        // else    
-        //     tft180_clear();
-        // put_float(0, real_real_speed);
-        // unsigned char k1 = Key1;
-        // unsigned char k2 = Key2;
-        // unsigned char k3 = Key3;
-        // unsigned char k4 = Key4;
-        // tft180_show_int(0, 0, k1, 5);
-        // tft180_show_int(0, 30, k2, 5);
-        // tft180_show_int(0, 90, k3, 5);
-        // tft180_show_int(0, 120, k4, 5);
-        // tft180_show_int(0, 0, parent_list_index, 1);
+        // #endif 
+        // tft180_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        // tft180_show_string(0, 0, "left out"); 		tft180_show_int(60, 0, Left_Adc, 5);
+		// tft180_show_string(0, 30, "left in"); 		tft180_show_int(60, 30, Left_Shu_Adc, 5);
+		// tft180_show_string(0, 60, "right in"); 		tft180_show_int(60, 60, Right_Adc, 5);
+		// tft180_show_string(0, 90, "right out"); 		tft180_show_int(60, 90, Right_Shu_Adc, 5);
+		// tft180_show_float(0, 100, GYRO_REAL.Z, 5, 2);  
+        gyroOffsetInit();
         TaskProcess();
+        // ADC_TaskProcess();
         image_process();
         Deal_Road_Characteristics(&bin_image[0], &MyRoad_Characteristics);
         Hightlight_Lines(&bin_image[0]);
-        MyKeyScan();
-        List_Switch();                 
-        // if(Key1 == onepress){
-		// 	Key1 = nopress;
-		// 	Turn_NeiPID.Kp += 0.1;
-		// 	// system_delay_ms(300);
-		// }
-		// if(Key2 == onepress){
-        //     Key2 = nopress;
-		// 	TurnPID.Kp += 10;
-		// 	// system_delay_ms(300);
-		// }
-		// if(Key3 == onepress){
-        //     Key3 = nopress;
-		// 	TurnPID.Kd += 1;
-		// 	// system_delay_ms(300);
-		// }
+        // List_Switch();                 
         // 此处编写需要循环执行的代码
     }
 }

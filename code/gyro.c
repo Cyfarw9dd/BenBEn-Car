@@ -345,14 +345,14 @@ void gyroOffsetInit(void){
     GYRO_REAL.X = 0;
     GYRO_REAL.Y = 0;
     GYRO_REAL.Z = 0;
-    for(unsigned char i = 0; i < 100; i++){
+    for(unsigned char i = 0; i < 200; i++){
         Get_IcmData();
         GYRO_REAL.X += GYRO.X;
         GYRO_REAL.Y += GYRO.Y;
         GYRO_REAL.Z += GYRO.Z;
         // system_delay_us(50);
     }
-    GYRO_REAL.X /= 100;
-    GYRO_REAL.Y /= 100;
-    GYRO_REAL.Z /= 100;
+    GYRO_REAL.X /= 200;
+    GYRO_REAL.Y /= 200;
+    GYRO_REAL.Z /= 200;
 }

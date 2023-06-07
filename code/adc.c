@@ -448,7 +448,7 @@ void Get_deviation(void)
 	ADC_Collect();           //电感原始值采值
 	Data_current_analyze();  //电感值归一化函数
 	// Road_type_judge();       //赛道类型判断---直道---弯道---环岛
-	Annulus_handle();        //环岛处理
+	// Annulus_handle();        //环岛处理
 	//obstacle_avoidance();    //障碍物检测
 	Current_Dir = Cha_bi_he(Left_Adc+Left_Shu_Adc,Right_Adc+Right_Shu_Adc,40); //获得赛道偏差
 	Out_protect();         //出界保护
