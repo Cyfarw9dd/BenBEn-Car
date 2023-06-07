@@ -37,7 +37,7 @@ static TASK_COMPONENTS ADC_TaskComps[] =
 
 void PID_int(void)
 {
-    SpeedPID.Kp = 12; // 1.0 //速度环PID参数（D车用，速度环2ms）
+    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
     SpeedPID.Ki = 2;    // 0.7
     SpeedPID.Kd = 12;
 
@@ -215,7 +215,7 @@ void Speed_control()
     //			DisableGlobalIRQ();//关闭总中断
     //		  go_motor(0,0);
     //		}
-    aim_speed = 300; // 目标速度
+    aim_speed = 350; // 目标速度
 
     // Speed_pwm_all = LocP_DCalc(&SpeedPID,aim_speed ,real_speed); //D车速度环（位置式）
     Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
@@ -237,7 +237,7 @@ void ADC_Speed_control()
     //			DisableGlobalIRQ();//关闭总中断
     //		  go_motor(0,0);
     //		}
-    aim_speed = 100; // 目标速度
+    aim_speed = 300; // 目标速度
 
     // Speed_pwm_all = LocP_DCalc(&SpeedPID,aim_speed ,real_speed); //D车速度环（位置式）
     Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）

@@ -122,8 +122,8 @@ void core1_main(void)
 		// tft180_show_string(0, 90, "right out"); 		tft180_show_int(60, 90, Right_Shu_Adc, 5);
 		// tft180_show_float(0, 100, GYRO_REAL.Z, 5, 2);  
         gyroOffsetInit();
-        TaskProcess();
-        // ADC_TaskProcess();
+        // TaskProcess();
+        ADC_TaskProcess();
         image_process();
         Deal_Road_Characteristics(&bin_image[0], &MyRoad_Characteristics);
         Hightlight_Lines(&bin_image[0]);

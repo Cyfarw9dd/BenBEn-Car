@@ -221,12 +221,12 @@ void Out_protect(void)
 {
 	if(Left_Adc<OUTSIDE&&Right_Adc<OUTSIDE)
 	{
-		pit_disable(CCU61_CH0);//关闭总中断
+		pit_disable(CCU60_CH1);//关闭总中断
 		motor_ctrl(0, 0);
 	}
 	else
 	{
-		pit_enable(CCU61_CH0);
+		pit_enable(CCU60_CH1);
 	}
 }
 /*****************************************判断赛道类型*************************************
