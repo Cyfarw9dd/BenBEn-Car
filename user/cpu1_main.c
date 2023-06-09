@@ -57,6 +57,7 @@ void core1_main(void)
     outflag = 1;
     mt9v03x_init();
     tft180_init();
+    // ips200_init(IPS200_TYPE_PARALLEL8);
     imu660ra_init();
     wireless_uart_init();
     PID_int();
@@ -95,10 +96,18 @@ void core1_main(void)
     tft180_set_font(TFT180_6X8_FONT);
     pit_ms_init(CCU60_CH0, 1);
     pit_ms_init(CCU60_CH1, 1);
+    pit_ms_init(CCU61_CH0, 20);
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
+        while (!Departure_PointFlag)
+        {
+            pit_disable(CCU60_CH0);
+            // pit_disable(CCU60_CH1);
+        }
+        pit_enable(CCU60_CH0);
+        // pit_enable(CCU60_CH1);
         // #if 0
         // while (outflag)
         // {
@@ -120,14 +129,16 @@ void core1_main(void)
 		// tft180_show_string(0, 30, "left in"); 		tft180_show_int(60, 30, Left_Shu_Adc, 5);
 		// tft180_show_string(0, 60, "right in"); 		tft180_show_int(60, 60, Right_Adc, 5);
 		// tft180_show_string(0, 90, "right out"); 		tft180_show_int(60, 90, Right_Shu_Adc, 5);
-		// tft180_show_float(0, 100, GYRO_REAL.Z, 5, 2);  
+		// tft180_show_int(0, 100, centerline_k, 5);  
+        // tft180_show_int(0, 120, image_thereshold, 5);  
         gyroOffsetInit();
-        // TaskProcess();
-        ADC_TaskProcess();
+        // Buzzer();
+        TaskProcess();
+        // ADC_TaskProcess();
         image_process();
+        Judging_Elements();
         Deal_Road_Characteristics(&bin_image[0], &MyRoad_Characteristics);
-        Hightlight_Lines(&bin_image[0]);
-        // List_Switch();                 
+        // Hightlight_Lines(&bin_image[0]);                
         // 此处编写需要循环执行的代码
     }
 }

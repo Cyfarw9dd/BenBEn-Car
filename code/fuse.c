@@ -237,7 +237,7 @@ void ADC_Speed_control()
     //			DisableGlobalIRQ();//关闭总中断
     //		  go_motor(0,0);
     //		}
-    aim_speed = 300; // 目标速度
+    aim_speed = 350; // 目标速度
 
     // Speed_pwm_all = LocP_DCalc(&SpeedPID,aim_speed ,real_speed); //D车速度环（位置式）
     Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）

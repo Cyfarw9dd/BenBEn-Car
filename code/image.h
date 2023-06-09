@@ -41,6 +41,7 @@ extern unsigned char center_line[image_h];//中线数组
 extern unsigned char left_lost_line; // 左边丢线数目
 extern unsigned char right_lost_line;  // 右边丢线数目
 extern unsigned char image_thereshold;
+extern int centerline_k;
 
 extern void image_process(void);   //直接在中断或循环里调用此程序就可以循环执行了
 
@@ -79,7 +80,7 @@ void sobel(unsigned char (*imageIn)[188], unsigned char (*imageOut)[188], unsign
 
 short GetOSTU (unsigned char tmImage[MT9V03X_H][MT9V03X_W]);
 
-void regression(int type, int startline, int endline);
+int regression(int startline,int endline);
 
 short Cal_BlackPoints(unsigned char (*binary_array)[188], unsigned char Start_Row, unsigned char End_Row);
 

@@ -32,6 +32,7 @@ unsigned char further, middle, near;              //图像中的远点，中点�
 
 unsigned char left_lost_line;
 unsigned char right_lost_line;
+int centerline_k = 0;
 
 Road_Characteristics MyRoad_Characteristics;    // 图像特征处理结构体
 
@@ -176,6 +177,11 @@ void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Characte
         rsptr->Left_RoadWidth[i] = absolute(93 - l_border[i]);
         rsptr->Right_RoadWidth[i] = absolute(r_border[i] - 93);
     }
+    // 最小二乘法拟合中线，扫描平放下方的一块矩形区域，(187, 0)->(137, 187)
+    // for (int i = BottomRow; i > BottomRow - 50; i--)
+    // {
+    //     center_line[i] = (int)(centerline_k * (i - BottomRow)) + 0;
+    // }
     #else
     for(unsigned char i = BottomRow; i > 0; i--){
         centerline[i] = (leftline[i] + rightline[i]) / 2;
@@ -188,9 +194,9 @@ void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Characte
 void Hightlight_Lines(unsigned char (*binary_array)[188]){
     #if Eightboundary
     for(unsigned char i = BottomRow; i > 0; i--){
-        mt9v03x_image[i][center_line[i]] = RGB565_RED;
-        mt9v03x_image[i][r_border[i]] = RGB565_YELLOW;
-        mt9v03x_image[i][l_border[i]] = RGB565_YELLOW;
+        tft180_draw_point((l_border[i] + 5) / 2, i / 2, RGB565_BLUE);
+        tft180_draw_point(center_line[i] / 2, i / 2, RGB565_RED);
+        tft180_draw_point((r_border[i] - 5)  / 2, i / 2, RGB565_GREEN);
     }
     #else
     for(unsigned char i = BottomRow; i > 0; i--){
@@ -451,82 +457,34 @@ short GetOSTU(unsigned char tmImage[MT9V03X_H][MT9V03X_W])
     return Threshold;                        //返回最佳阈值;
 }
 
-void regression(int type, int startline, int endline){
-    int i = 0;
-    int sumlines = endline - startline;
-    int sumX = 0;
-    int sumY = 0;
-    float averageX = 0;
-    float averageY = 0;
-    float sumUp = 0;
-    float sumDown = 0;
-    float parameterA, parameterB;
-    if (type == 0)      //拟合中线
-    {
-        for (i = startline; i < endline; i++)
-        {
-            sumX += i;
-            sumY += centerline[i];
-        }
-        if (sumlines != 0)
-        {
-            averageX = sumX / sumlines;     //x的平均值
-            averageY = sumY / sumlines;     //y的平均值
-        }
-        else
-        {
-            averageX = 0;     //x的平均值
-            averageY = 0;     //y的平均值
-        }
-        for (i = startline; i < endline; i++)
-        {
-            sumUp += (centerline[i] - averageY) * (i - averageX);
-            sumDown += (i - averageX) * (i - averageX);
-        }
-        if (sumDown == 0) parameterB = 0;
-        else parameterB = sumUp / sumDown;
-        parameterA = averageY - parameterB * averageX;
-    }
-    else if (type == 1)//拟合左线
-    {
-        for (i = startline; i < endline; i++)
-        {
-            sumX += i;
-            sumY += leftline[i];
-        }
-        if (sumlines == 0) sumlines = 1;
-        averageX = sumX / sumlines;     //x的平均值
-        averageY = sumY / sumlines;     //y的平均值
-        for (i = startline; i < endline; i++)
-        {
-            //SetText("lefetline"+i+" " +lefetline[i] + " averageY" +" "+ averageY);
-            sumUp += (leftline[i] - averageY) * (i - averageX);
-            sumDown += (i - averageX) * (i - averageX);
-        }
-        if (sumDown == 0) parameterB = 0;
-        else parameterB = sumUp / sumDown;
-        parameterA = averageY - parameterB * averageX;
-    }
-    else if (type == 2)//拟合右线
-    {
-        for (i = startline; i < endline; i++)
-        {
-            sumX += i;
-            sumY += rightline[i];
-        }
-        if (sumlines == 0) sumlines = 1;
-        averageX = sumX / sumlines;     //x的平均值
-        averageY = sumY / sumlines;     //y的平均值
-        for (i = startline; i < endline; i++)
-        {
-            sumUp += (rightline[i] - averageY) * (i - averageX);
-            sumDown += (i - averageX) * (i - averageX);
-        }
-        if (sumDown == 0) parameterB = 0;
-        else parameterB = sumUp / sumDown;
-        parameterA = averageY - parameterB * averageX;
+/************************************线性回归计算中线斜率************************************/
+// y = Ax+B
+int regression(int startline,int endline)
+{
+    int i = 0, SumX = 0, SumY = 0, SumLines = 0; 
+    float SumUp = 0, SumDown = 0, avrX = 0, avrY=0 , B, A;
+    SumLines = endline - startline;   // startline 为开始行， //endline 结束行 //SumLines
 
-    }
+    for(i=startline;i<endline;i++)     
+    { 
+    SumX+=i;       
+    SumY+=center_line[i];    //这里Middle_black为存放中线的数组
+    }         
+    avrX=SumX/SumLines;     //X的平均值
+    avrY=SumY/SumLines;     //Y的平均值       
+    SumUp=0;      
+    SumDown=0;  
+    for(i=startline;i<endline;i++)   
+    {       
+    SumUp+=(center_line[i]-avrY)*(i-avrX);    
+    SumDown+=(i-avrX)*(i-avrX);    
+    }    
+    if(SumDown==0) 
+    B=0;  
+    else 
+    B=(int)(SumUp/SumDown);       
+    A=(SumY-B*SumX)/SumLines;  //截距
+    return B;  //返回斜率
 }
 
 
@@ -1357,6 +1315,7 @@ if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找
 	//处理函数放这里，不要放到if外面去了，不要放到if外面去了，不要放到if外面去了，重要的事说三遍
 
 }
+centerline_k = regression(BottomRow - 50, BottomRow);
 
 
 //显示图像   改成你自己的就行 等后期足够自信了，显示关掉，显示屏挺占资源的

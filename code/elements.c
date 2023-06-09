@@ -21,6 +21,7 @@ short Upslope_Counter = 0;      // 上坡识别计时器
 short Downslope_Counter = 0;    // 下坡识别计时器
 short Rounding_LCounter = 0;    // 左环岛识别计时器
 short Rounding_RCounter = 0;    // 右环岛识别计时器
+short Departure_cnt = 0;        // 发车计数器
 
 unsigned char Present_RoundAbout_PointFlagL = 1;    /*********************/
 unsigned char Present_RoundAbout_PointFlagR = 1;
@@ -33,6 +34,29 @@ unsigned char RoundAbout_PointFlag_R = 0;   // 右环岛标志位
 unsigned char Upslope_PointFlag = 0;        // 上坡标志位
 unsigned char Downslope_PointFlag = 0;      // 下坡标志位
 unsigned char Parking_PointFlag = 0;        // 停车标志位
+unsigned char BreakRoad_PointFlag = 0;      // 断路标志位
+unsigned char Obstacle_PointFlag = 0;       // 障碍标志位
+unsigned char Departure_PointFlag;          // 发车标志位
+
+
+void Judging_Elements(void)
+{
+    Judging_Break_Road(&bin_image[0]);
+    Judging_StartLine(&bin_image[0]);
+    // Judging_RoundAbout(&bin_image[0]);
+    if (BreakRoad_PointFlag == 1)
+    {
+        buzzer_flag = 1;
+        pit_disable(CCU60_CH0);
+        pit_enable(CCU60_CH1);
+    }
+    else if (BreakRoad_PointFlag == 0)
+    {
+        buzzer_flag = 0;
+        pit_disable(CCU60_CH1);
+        pit_enable(CCU60_CH0);
+    }
+}
 
 
 /*
@@ -554,6 +578,34 @@ void Judging_Slope(void){
     if(Real_Gyro_Y >= 35){
         Downslope_PointFlag = 1;
     }
+}
+
+//  --------------
+// -> start from here image_thereshold
+// 2 * 188 = 376
+
+void Judging_Break_Road(unsigned char (*binary_array)[188])
+{
+    int blackpoints = 0;
+    for (int row = 119; row > 118; row --)
+    {
+        for (int left_col = 93; left_col > 0; left_col--)
+        {
+            if (mt9v03x_image[row][left_col] < THRESHOLD)
+            {
+                blackpoints++;
+            }
+        }
+        for (int right_col = 0; right_col < 187; right_col++)
+        {
+            if (mt9v03x_image[row][right_col] < THRESHOLD)
+            {
+                blackpoints++;
+            }
+        }
+    }
+    if (blackpoints > 300)  BreakRoad_PointFlag = 1;
+    else                    BreakRoad_PointFlag = 0;
 }
 
 

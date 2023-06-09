@@ -38,19 +38,34 @@ List MyList[] =
     {2, "Tuning", NULL, NULL},
     {21, "Speed Cycle", NULL, NULL},
     {211, "Camera", NULL, NULL},
+    {2111, "P", NULL, NULL},
+    {2112, "I", NULL, NULL},
+    {2113, "D", NULL, NULL},
+    {2114, "go back", NULL, NULL},
     {212, "ADC", NULL, NULL},
-    {213, "back to main", NULL, NULL},
+    {2121, "P", NULL, NULL},
+    {2122, "I", NULL, NULL},
+    {2123, "D", NULL, NULL},
+    {2124, "go back", NULL, NULL},
     {22, "InnerTurn Cycle", NULL, NULL},
-    {221, "Camer", NULL, NULL},
-    {222, "ADC", NULL, NULL},
-    {223, "back to main", NULL, NULL},
+    {221, "P", NULL, NULL},
+    {222, "I", NULL, NULL},
+    {223, "D", NULL, NULL},
+    {224, "go back", NULL, NULL},
     {23, "Turn Cycle", NULL, NULL},
     {231, "Camera", NULL, NULL},
+    {2311, "P", NULL, NULL},
+    {2322, "I", NULL, NULL},
+    {2333, "D", NULL, NULL},
     {232, "ADC", NULL, NULL},
-    {233, "back to main", NULL, NULL},
-    {24, "show paramters", NULL, NULL},
-    {25, "back to main", NULL, NULL},
-    {3, "nothing", NULL, NULL},
+    {2321, "P", NULL, NULL},
+    {2322, "I", NULL, NULL},
+    {2323, "D", NULL, NULL},
+    {2324, "go back", NULL, NULL},
+    {233, "go back", NULL, NULL},
+    {24, "show params", NULL, NULL},
+    {25, "go back", NULL, NULL},
+    {3, "Departure", NULL, NULL},
 };
 
 List *current_list_item;
@@ -264,6 +279,16 @@ void List_Switch(void)
         {
             current_list_item->list_action(current_list_item->param, current_list_item->ListName);
         }
+        else if (strcmp(current_list_item->ListName, "go back") == 0)   // 如果当前菜单为go back，则返回上一级
+        {
+            highlight_col = 0;
+            parent_list_index = parent_list_index / 10;
+        }
+        else if (strcmp(current_list_item->ListName, "Departure") == 0)   // 如果当前菜单为go back，则返回上一级
+        {
+            // Departure_PointFlag = 1;
+            Departure_cnt = 50;
+        }
     }
     else if (Key4_flag)
     {
@@ -280,32 +305,56 @@ void show_gray_image(void)
 {
     tft180_clear();
     Key_flag_clear();
-    while(!Key3_flag)
-    //     tft180_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        tft180_show_string(0, 0, "show gray image");
+    while (!Key3_flag)
+    {
+        MyKeyScan();
+        tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 2, MT9V03X_H / 2, 0);
+        tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(110, 65, StartLine_PointFlag, 2);
+        tft180_show_string(0, 80, "LRoundAbout_PFlag");     tft180_show_int(110, 80, RoundAbout_PointFlag_L, 2);
+        tft180_show_string(0, 95, "RRoundAbout_PFlag");     tft180_show_int(110, 95, RoundAbout_PointFlag_R, 2);
+        tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad_PointFlag, 2);
+        tft180_show_string(0, 125, "Obstacle_PFlag");      tft180_show_int(110, 125, Obstacle_PointFlag, 2);
+    }
+    tft180_clear();
 }
 
 void show_binary_image(void)
 {
     tft180_clear();
     Key_flag_clear();
-    tft180_show_string(0, 0, "show binary image");
+    while (!Key3_flag)
+    {
+        MyKeyScan();
+        tft180_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 2, MT9V03X_H / 2, 0);
+        tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(110, 65, StartLine_PointFlag, 2);
+        tft180_show_string(0, 80, "LRoundAbout_PFlag");     tft180_show_int(110, 80, RoundAbout_PointFlag_L, 2);
+        tft180_show_string(0, 95, "RRoundAbout_PFlag");     tft180_show_int(110, 95, RoundAbout_PointFlag_R, 2);
+        tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad_PointFlag, 2);
+        tft180_show_string(0, 125, "Obstacle_PFlag");      tft180_show_int(110, 125, Obstacle_PointFlag, 2);
+        
+    }
+    tft180_clear();
+        
 }
-
 void show_boundaries(void)
 {
     tft180_clear();
     Key_flag_clear();
-    while(!Key3_flag)
-        tft180_show_string(0, 0, "show boundaries");
+    while (!Key3_flag)
+    {
+        MyKeyScan();
+        Hightlight_Lines(&bin_image[0]);
+        tft180_clear();
+    }
+    tft180_clear();
 }
 
-void back_to_main(void)
-{
-    tft180_clear();
-    Key_flag_clear();
-    tft180_show_string(0, 0, "back to main");
-}
+// void back_to_main(void)
+// {
+//     tft180_clear();
+//     Key_flag_clear();
+//     parent_list_index = parent_list_index / 10;
+// }
 
 void tuning(void)
 {

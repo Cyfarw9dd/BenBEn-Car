@@ -4,10 +4,6 @@
 
 user/isr.o :	../user/isr.c
 ../user/isr.c :
-user/isr.o :	../user/isr_config.h
-../user/isr_config.h :
-user/isr.o :	../user/isr.h
-../user/isr.h :
 user/isr.o :	d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h
 d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h :
 user/isr.o :	d:/AURIX-Studio-1.8.0/plugins/com.infineon.aurix.tools_1.8.0/build_system/tools/Compilers/Tasking_1.1r8/ctc/include/math.h
@@ -330,3 +326,7 @@ user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/fuse.h
 d:/BenBen/BEN_ben ver1.01/code/fuse.h :
 user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/adc.h
 d:/BenBen/BEN_ben ver1.01/code/adc.h :
+user/isr.o :	../user/isr_config.h
+../user/isr_config.h :
+user/isr.o :	../user/isr.h
+../user/isr.h :
