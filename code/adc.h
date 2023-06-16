@@ -55,18 +55,30 @@ extern int16 ADC_PWM;
 extern unsigned char temp;
 
 //函数声明
-void ADC_int(void);                   
-void ADC_Collect(void);               
-void Data_current_analyze(void);      
+void ADC_int(void);       
+
+void ADC_Collect(void);     
+
+void Data_current_analyze(void);    
+
 float Cha_bi_he(int16 data1, int16 data2,int16 x); 
+
 void Road_type_judge(void);    
+
 void Annulus_handle(void);      
+
 int16 Direction_error(void);    
+
 void init_Steer_PWM(void);      
+
 void Steering_Control_Out(int16 duty);  
-void Out_protect(void);                  
+
+void Out_protect(void);    
+
 void Get_deviation(void);
+
 void Annulus_assist(void);
+
 void obstacle_avoidance(void);
 
 

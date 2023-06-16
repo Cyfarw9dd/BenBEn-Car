@@ -31,33 +31,7 @@ int16 ADC_PWM=0;
 unsigned char flag_obstacle=0;
 unsigned short obstacle_time=0;
 unsigned char temp=0;			
-	 
-/***************************电感采集通道初始化****************************
-函数：  void ADC_int(void)  
-功能：  电感采值进行初始化
-参数：  void
-说明：  电感采集初始化
-返回值；无
-日期：  2020-10-27
-作者：  heqiu
-************************************************************************/
-// void ADC_int(void)
-// {
-//     adc_init(Left_ADC_Pin,ADC_SYSclk_DIV_2);//初始化P0.0为ADC功能
-//     adc_init(LeftXie_ADC_Pin,ADC_SYSclk_DIV_2);//初始化P0.1为ADC功能
-//     adc_init(RightXie_ADC_Pin,ADC_SYSclk_DIV_2);//初始化P0.5为ADC功能
-//     adc_init(Right_ADC_Pin,ADC_SYSclk_DIV_2);//初始化P0.6为ADC功能 
-// }
 
-/***************************中值滤波函数*********************************
-函数：unsigned short adc_mid(adc_channel_enum adcn,ADCCH_enum ch)  
-功能： 3次电感采值进行中值滤波
-参数： adcn        选择ADC通道       resolution      分辨率
-说明： 8位ADC输出，0~255（2的8次方），5v电压平均分成255份，分辨率为5/255=0.196
-返回值；k(unsigned char)中间那个值
-日期：  2020-10-27
-作者：  heqiu 
-************************************************************************/
 unsigned short adc_mid(adc_channel_enum adcn, adc_resolution_enum ch)
 {
 	unsigned short i,j,k,tmp;
@@ -83,16 +57,7 @@ unsigned short adc_mid(adc_channel_enum adcn, adc_resolution_enum ch)
 	return(tmp);
 }
 
-/***************************均值滤波函数****************************
-函数：  unsigned short adc_ave(adc_channel_enum adcn,ADCCH_enum ch,unsigned char N) 
-功能：  中值滤波后的5个电感值求平均值
-参数：  adcn        选择ADC通道         
-说明：  该函数调用中值滤波函数，即电感值是中位置
-返回值；tmp
-日期：  2020-10-27
-作者：  heqiu 
-示例：  adc_ave(ADC_P10, ADC_8BIT)-->ADC通道为P-10，分辨率为8bit 
-*******************************************************************/
+/***************************均值滤波函数*****************************/
 unsigned short adc_ave(adc_channel_enum adcn, adc_resolution_enum ch,unsigned char N)
 {
 	unsigned short tmp=0;
@@ -104,31 +69,15 @@ unsigned short adc_ave(adc_channel_enum adcn, adc_resolution_enum ch,unsigned ch
 	tmp=tmp/N;
 	return(tmp);
 }
-/***************************电感采值************************************
-函数：  void ADC_Collect()   
-功能：  电感采值
-参数：  void
-说明：  8位ADC输出，0~255（2的8次方），5v电压平均分成255份，分辨率为5/255=0.196
-返回值；void
-日期：  2020-10-27
-作者：  heqiu   
-***********************************************************************/
+/***************************电感采值************************************/
 void ADC_Collect()
 {
-	adc_value[0] = adc_ave(ADC0_CH7_A7, ADC_8BIT, 5);     //左横电感 ADC0_CH7_A7
-	adc_value[1] = adc_ave(ADC0_CH3_A3, ADC_8BIT, 5);  //左竖电感 ADC0_CH3_A3
-	adc_value[2] = adc_ave(ADC0_CH0_A0, ADC_8BIT, 5); //右竖电感 ADC0_CH1_A1
-    adc_value[3] = adc_ave(ADC0_CH1_A1, ADC_8BIT, 5);    //右横电感 ADC0_CH3_A3
+	adc_value[0] = (unsigned char)adc_ave(ADC0_CH7_A7, ADC_8BIT, 5);     
+	adc_value[1] = (unsigned char)adc_ave(ADC0_CH3_A3, ADC_8BIT, 5);  
+	adc_value[2] = (unsigned char)adc_ave(ADC0_CH0_A0, ADC_8BIT, 5); 
+    adc_value[3] = (unsigned char)adc_ave(ADC0_CH1_A1, ADC_8BIT, 5);    
 }
-/*********************************电感采值********************************
-函数：  void Data_current_analyze()   
-功能：  电感采值原始值归一化（0~100）
-参数：  void
-说明：  归一化处理
-返回值；void
-日期：  2023-3-17
-作者：  heqiu              
-*************************************************************************/
+/*********************************电感采值********************************/
 void Data_current_analyze()
 {
     unsigned char i;
@@ -144,21 +93,13 @@ void Data_current_analyze()
         AD_V[i]=100;
     }
     }
-    Left_Adc = AD_V[0];       //左电感最终值
-    Left_Shu_Adc = AD_V[1];   //左竖电感最终值
-    Right_Shu_Adc = AD_V[2];  //右竖电感最终值
-    Right_Adc = AD_V[3];	    //右电感最终值	
+    Left_Adc = (unsigned char)AD_V[0];       //左电感最终值
+    Left_Shu_Adc = (unsigned char)AD_V[1];   //左竖电感最终值
+    Right_Shu_Adc = (unsigned char)AD_V[2];  //右竖电感最终值
+    Right_Adc = (unsigned char)AD_V[3];	    //右电感最终值	
 }
 
-/*********************************差比和函数**********************************
-函数：  float Cha_bi_he(int16 data1, int16 data2,int16 x)
-功能：  差比和求赛道偏差
-参数：  int16 data1, int16 data2,int16 x
-说明：  差比和求赛道偏差
-返回值；result
-日期：  2023-3-23
-作者：  heqiu              
-****************************************************************************/
+/*********************************差比和函数**********************************/
 float Cha_bi_he(int16 data1, int16 data2,int16 x)
 {
     int16 cha;
@@ -171,52 +112,7 @@ float Cha_bi_he(int16 data1, int16 data2,int16 x)
 
     return result;
 }
-// /*****************************************舵机初始化*************************************
-// 函数：  void init_PWM(void)
-// 参数：  无
-// 说明：  分母10000，使用，如需修改引脚修改对应宏定义即可
-//         pwm_init(PWM0_P00, 100, 5000);     //初始化PWM0  使用引脚P0.0  输出PWM频率100HZ   占空比为百分之 5000/PWM_DUTY_MAX*100
-// 				PWM_DUTY_MAX在zf_pwm.h文件中 默认为10000
-// *注意，先调节舵机，如果舵机为SD05，则频率为200hz ,如果舵机为S3010,频率则为50hz
-// *频率确定后，先把占空比分母，即PWM_DUTY_MAX确定，一般无需修改了
-// *然后就开始调节舵机了，调占空比的分子，即调用的函数的最后那个参数，根据经验算一下，大概是1/20的占空比，然后往左往右慢慢试
-// *计算公式：中值占空比大概是7.5% （和频率精度都有关系） 20ms(1.5ms高电平)
-// 返回值：无  
-// ***************************************************************************************/
-// void init_Steer_PWM(void)
-// {
-//   	pwm_init(Steer_Pin, 50, Steer_Duty_Midle);     //初始化舵机  输出PWM频率50HZ，并设置中值
-// }
-
-// /************************************舵机转向控制输出**********************************
-// 函数：  void Steering_Control_Out(int16 duty)
-// 功能：  舵机转向控制  
-// 参数：  无
-// 说明：  舵机转向控制    注意调好舵机中值后，左右极限也调出来，要修改上面的宏定义
-// 返回值：无 
-// **************************************************************************************/
-// void Steering_Control_Out(int16 duty)
-// {
-//    duty = Steer_Duty_Midle + duty ;//在舵机中值的基础上进行偏移
-//    if (duty >= Steer_Duty_Max) 
-// 	 {
-// 		 duty = Steer_Duty_Max;
-// 	 }
-//    else if(duty <= Steer_Duty_Min) 
-// 	 {
-// 		 duty = Steer_Duty_Min;
-// 	 }
-//    pwm_duty(Steer_Pin, duty);
-// }
-/*****************************************出界保护函数*************************************
-函数：  void Out_protect() 
-参数：  无
-说明：  防止车冲出赛道后撞坏东西,检测出赛道后中断失能，电机停转，放回赛道中断使能继续跑
-
-*注意：！！！平时调试时可以打开，加了避障处理后需要关闭此函数，不然有可能无法实现避障功能！！！
-返回值：无  
-作者：  heqiu 
-******************************************************************************************/
+/*****************************************出界保护函数************************************/
 void Out_protect(void)
 {
 	if(Left_Adc<OUTSIDE&&Right_Adc<OUTSIDE)

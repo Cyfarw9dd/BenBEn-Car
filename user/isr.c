@@ -68,12 +68,12 @@ IFX_INTERRUPT(cc61_pit_ch0_isr, 0, CCU6_1_CH0_ISR_PRIORITY)
     //     buzzer_cnt++;
     // }   
     List_Switch(); 
-    Departure_cnt--;
-    if (Departure_cnt < 0)
-    {
-        Departure_PointFlag = 1;
-        Departure_cnt = 0;
-    }
+    // Departure_cnt--;
+    // if (Departure_cnt < 0)
+    // {
+    //     Departure_PointFlag = 1;
+    //     Departure_cnt = 0;
+    // }
 
 }
 

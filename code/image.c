@@ -1,28 +1,50 @@
-/*
-    处理总钻风图像时需要注意一点，总钻风原始图像大小是120 * 188的。如果用XY平面坐标系表示原始图像的话，总钻风图像的坐标原点
-    位于左上方，其中，x轴正方向为竖直向下，y轴正方向为水平向右。
-    换言之，X坐标表示的是图像的行数，Y坐标表示图像中的列数。
-
-    mt9v03x_image[120][188]为总钻风摄像头采集到的原始灰度图像
-
-    在灰度图像中，每个像素点是有其各自的灰度值的，这些灰度值可能为30，可能为90，数字越大，颜色越浅，数字越小，颜色越深。且灰
-    度值的范围为0~255。所以，灰度值为0会被表达为黑色，为255的话即为白色。
-    0~255恰好为无符号查尔变量(unsigned char)所表达的值的范围，在ADS里写作unsigned char，所以有关于图像处理，图像数组的变量都会将其声
-    明为unsigned char类型。
-*/
 #include "zf_common_headfile.h"
 
 #define Eightboundary 1
+#define AT                  AT_IMAGE
+#define AT_CLIP(img, x, y)  AT_IMAGE((img), clip((x), 0, (img)->width-1), clip((y), 0, (img)->height-1));
+#define DEF_IMAGE(ptr, w, h)         {.data=ptr, .width=w, .height=h, .step=w}
+#define ROI_IMAGE(img, x1, y1, w, h) {.data=&AT_IMAGE(img, x1, y1), .width=w, .height=h, .step=img.width}
+
+image_t img_raw = DEF_IMAGE(NULL, MT9V03X_W, MT9V03X_H);
+
 
 unsigned char centerline[120];                  //定义中线数组，中线数组的横坐标等于（左线横坐标+右线横坐标）/ 2
 unsigned char leftline[120];                    //定义左边线数组
 unsigned char rightline[120];                   //定义右边线数组
 unsigned char image_deal[MT9V03X_H][MT9V03X_W]; //声明一个二维数组，用于存放二值化后的图像，其中，下标MT9V03X_H，MT9V03X_W表示总钻风图像的高和宽
-unsigned char image_deal2[MT9V03X_H][MT9V03X_W];
 unsigned char Left_RoadWidth[120];              //定义左半边赛道宽度，即中线到左边线的距离
 unsigned char Right_RoadWidth[120];             //定义右半边赛道宽度
-short image_threshold = 0;                      //定义图像处理阈值
+
+unsigned char original_image[CLIP_IMAGE_H][MT9V03X_W];
+unsigned char image_thereshold;//图像分割阈值
+
+
 int BlackPoints_Nums = 0;
+int ipts0[MT9V03X_H][2];
+int ipts1[MT9V03X_H][2];
+int ipts0_num, ipts1_num;
+float block_size = 5;
+
+
+/* 前进方向定义：
+ *   0
+ * 3   1
+ *   2
+ */
+const int8 dir_front[4][2]= {{0,  -1},
+                                {1,  0},
+                                {0,  1},
+                                {-1, 0}};
+const int8 dir_frontleft[4][2] = {{-1, -1},
+                                    {1,  -1},
+                                    {1,  1},
+                                    {-1, 1}};
+const int8 dir_frontright[4][2] = {{1,  -1},
+                                     {1,  1},
+                                     {-1, 1},
+                                     {-1, -1}};
+
 
 /*这两个变量用于计算中线的偏差程度，并将计算出的结果交给转向环计算*/
 
@@ -34,302 +56,35 @@ unsigned char left_lost_line;
 unsigned char right_lost_line;
 int centerline_k = 0;
 
-Road_Characteristics MyRoad_Characteristics;    // 图像特征处理结构体
 
-/*
-    摄像头运行的主体函数，大津法，扫线等都整合在里面运行
-*/
-void Camera(void){
-    if(mt9v03x_finish_flag){                              //mt9v03x_finish_flag为图像处理结束的标志位，在逐飞库中有着详细定义
-        #if Eightboundary
-        image_process();
-        Searching_for_boundaries(&bin_image[0]);         //寻找赛道边界
-        cal_curvature(&(MyRoad_Characteristics.Curve_Err));
-        Deal_Road_Characteristics(&bin_image[0], &MyRoad_Characteristics);        //处理赛道特征，如计算左右半边赛道宽度等          
-        Hightlight_Lines(&bin_image[0]);                 //高亮左右边界以及中线                                                   
-        #else 
-        image_threshold = GetOSTU(mt9v03x_image[0]);      //通过大津法来得到原始灰度图像的阈值
-        lcd_binaryzation032_zoom(mt9v03x_image[0], image_deal[0], MT9V03X_W , MT9V03X_H, image_threshold); //将二值化后的图像存放到image_deal[120][188]里
-        Searching_for_boundaries(&image_deal[0]);         //寻找赛道边界
-        Deal_Road_Characteristics(&image_deal[0]);        //处理赛道特征，如计算左右半边赛道宽度等       
-        Turn_cycle(2500);    
-        Hightlight_Lines(&image_deal[0]);                 //高亮左右边界以及中线                                                   
-        tft180_show_gray_image(0, 0, &image_deal[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        #endif 
-        mt9v03x_finish_flag = 0;                          //标志位归0，一定要归0！不归0的话图像只处理起始帧
-    }
-}
+Road_Charac MyRoad_Charac;    // 图像特征处理结构体
 
 
-/*
-    函数名称：大津法获取阈值函数
-    函数功能：通过计算原始灰度图像中的灰度直方图来自动计算出当前灰度图像中的阈值
-    大津法的具体实现过程可以不用特别了解
-*/
-unsigned char otsuThreshold(unsigned char *image, unsigned short col, unsigned short row)
-{
-    #define GrayScale 256
-    unsigned short width = col;
-    unsigned short height = row;
-    int pixelCount[GrayScale];
-    float pixelPro[GrayScale];
-    int i, j, pixelSum = width * height;
-    unsigned char threshold = 0;
-    unsigned char* data = image;  //指向像素数据的指针
-    for (i = 0; i < GrayScale; i++)
-    {
-        pixelCount[i] = 0;
-        pixelPro[i] = 0;
-    }
-
-    //统计灰度级中每个像素在整幅图像中的个数
-    for (i = 0; i < height; i++)
-    {
-        for (j = 0; j < width; j++)
-        {
-            pixelCount[(int)data[i * width + j]]++;  //将像素值作为计数数组的下标
-        }
-    }
-
-    //计算每个像素在整幅图像中的比例
-    float maxPro = 0.0;
-    for (i = 0; i < GrayScale; i++)
-    {
-        pixelPro[i] = (float)pixelCount[i] / pixelSum;
-        if (pixelPro[i] > maxPro)
-        {
-            maxPro = pixelPro[i];
-        }
-    }
-
-    //遍历灰度级[0,255]
-    float w0, w1, u0tmp, u1tmp, u0, u1, u, deltaTmp, deltaMax = 0;
-    for (i = 0; i < GrayScale; i++)     // i作为阈值
-    {
-        w0 = w1 = u0tmp = u1tmp = u0 = u1 = u = deltaTmp = 0;
-        for (j = 0; j < GrayScale; j++)
-        {
-            if (j <= i)   //背景部分
-            {
-                w0 += pixelPro[j];
-                u0tmp += j * pixelPro[j];
-            }
-            else   //前景部分
-            {
-                w1 += pixelPro[j];
-                u1tmp += j * pixelPro[j];
-            }
-        }
-        u0 = u0tmp / w0;
-        u1 = u1tmp / w1;
-        u = u0tmp + u1tmp;
-        deltaTmp = w0 * pow((u0 - u), 2) + w1 * pow((u1 - u), 2);
-        if (deltaTmp > deltaMax)
-        {
-            deltaMax = deltaTmp;
-            threshold = (unsigned char)i;
-        }
-    }
-
-    return threshold;
-}
-
-/*
-    图像扫描，即扫线函数，接受一个参数，这个参数即为二值化后的图像的指针
-    通过从图像中间像左右两边依次遍历寻找到黑色边界
-    并将这些黑色边界的横坐标分别存放到边界数组中
-    中线坐标即用边线的计算出来
-*/
-void Searching_for_boundaries(unsigned char (*binary_array)[188]){
-    unsigned char Row = 0;
-    unsigned char Left_Col = 0;
-    unsigned char Right_Col = 0;
-    for(Row=119;Row>0;Row--){
-        for(Left_Col=93;Left_Col<188;Left_Col++){
-            if(Left_Col == EndCoL){
-                rightline[Row] = EndCoL;
-                break;
-            }
-            if((binary_array[Row][Left_Col-2]==255)&&(binary_array[Row][Left_Col-1]==0)&&(binary_array[Row][Left_Col]==0)){
-                rightline[Row]=Left_Col;
-                break;
-            }
-        }
-
-        for(Right_Col=93;Right_Col>1;Right_Col--){
-            if(Right_Col == StartCoL){
-                leftline[Row] = StartCoL;
-                break;
-            }
-            if((binary_array[Row][Right_Col]==0)&&(binary_array[Row][Right_Col+1]==0)&&(binary_array[Row][Right_Col+2]==255)){
-                leftline[Row]=Right_Col;
-                break;
-            }
-        }
-    }
-}
-
-
-void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Characteristics *rsptr){
-    #if Eightboundary
+void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Charac *rsptr){
     for(unsigned char i = BottomRow; i > 0; i--){
         center_line[i] = (l_border[i] + r_border[i]) / 2;
-        rsptr->Left_RoadWidth[i] = absolute(93 - l_border[i]);
-        rsptr->Right_RoadWidth[i] = absolute(r_border[i] - 93);
+        rsptr->Left_RoadWidth[i] = (unsigned char)absolute(93 - l_border[i]);
+        rsptr->Right_RoadWidth[i] = (unsigned char)absolute(r_border[i] - 93);
     }
     // 最小二乘法拟合中线，扫描平放下方的一块矩形区域，(187, 0)->(137, 187)
     // for (int i = BottomRow; i > BottomRow - 50; i--)
     // {
     //     center_line[i] = (int)(centerline_k * (i - BottomRow)) + 0;
     // }
-    #else
-    for(unsigned char i = BottomRow; i > 0; i--){
-        centerline[i] = (leftline[i] + rightline[i]) / 2;
-        Left_RoadWidth[i] = absolute(93 - leftline[i]);
-        Right_RoadWidth[i] = absolute(rightline[i] - 93);
-    }
-    #endif
 }
 
 void Hightlight_Lines(unsigned char (*binary_array)[188]){
-    #if Eightboundary
-    for(unsigned char i = BottomRow; i > 0; i--){
-        tft180_draw_point((l_border[i] + 5) / 2, i / 2, RGB565_BLUE);
-        tft180_draw_point(center_line[i] / 2, i / 2, RGB565_RED);
-        tft180_draw_point((r_border[i] - 5)  / 2, i / 2, RGB565_GREEN);
-    }
-    #else
-    for(unsigned char i = BottomRow; i > 0; i--){
-        binary_array[i][centerline[i]] = 120;
-        binary_array[i][rightline[i]] = 120;
-        binary_array[i][leftline[i]] = 120;
-    }
-    #endif
+    // for(unsigned char i = BottomRow; i > 0; i--){
+    //     tft180_draw_point((l_border[i] + 5) / 2, i / 2, RGB565_BLUE);
+    //     tft180_draw_point(center_line[i] / 2, i / 2, RGB565_RED);
+    //     tft180_draw_point((r_border[i] - 5)  / 2, i / 2, RGB565_GREEN);
+    // }
+	for (int i = BottomRow; i > 0; i--)
+	{
+		tft180_draw_point(ipts0[i][0] / 2, ipts0[i][1] / 2, RGB565_BLUE);
+		tft180_draw_point(ipts1[i][0] / 2, ipts1[i][1] / 2, RGB565_GREEN);
+	}
 }
-
-/*
-    二值化函数
-    *p          原始图像数组指针
-    *q          空图像数组指针
-    width       原始图像的宽
-    height      原始图像的高
-    threshold   阈值，这里为大津法计算出的图像阈值
-*/
-
-void lcd_binaryzation032_zoom(unsigned char *p, unsigned char *q, unsigned short width, unsigned short height, unsigned char threshold)//传入一个处理数组的指针，然后进行修改数组内容
-{
-    unsigned i,j;
-    unsigned short temp = 0;
-
-    for(j=0;j<height;j++)
-    {
-        for(i=0;i<width;i++)
-        {
-            temp = *p;
-            if(temp>threshold)
-                *q = 255;
-            else
-                *q  = 0;
-            ++q;
-            ++p;
-        }
-    }
-}
-
-/*
-    四邻域滤波
-*/
-void Four_neighbourhood_Filter(unsigned char (*binary_array)[188]){
-    short row; //行
-    short col; //列
-
-    for (col = 1; col < MT9V03X_H - 1; col++)
-    {
-        for (row = 1; row < MT9V03X_W - 1; row++)
-        {
-            if ((binary_array[col][row] == 0)
-                    && (binary_array[col - 1][row] + binary_array[col + 1][row] + binary_array[col][row + 1] + binary_array[col][row - 1] > 550))
-            {
-                binary_array[col][row] = 255;
-            }
-            else if ((binary_array[col][row] == 1)
-                    && (binary_array[col - 1][row] + binary_array[col + 1][row] + binary_array[col][row + 1] + binary_array[col][row - 1] < 550))
-            {
-                binary_array[col][row] = 0;
-            }
-        }
-    }
-}
-
-float one_curvature(int x1, int y1) // one_curvature(centerline[30], 30)
-{
-    float K;
-    int l = x1 - 63;
-    int h = y1 - 59;
-    K = (float)2 * l / (l * l + h * h);
-    return K;
-}
-
-/*
-    函数名称：计算中线偏差
-    返回值：无
-    参数：无
-    调用过程：
-    自定义前瞻行数，默认是15，前瞻行数值越大，代表着参与偏差计算的行数就越多，前瞻行数值越小，参与偏差计算的行数就越小，即反应
-    就更加灵敏。自定义远点，中点，近点，实际的中线偏差由这三个点结合实际情况横向求差而得。并且，对这三个点各自取了临近的两个点
-    相加并求均值，尽可能地过滤掉异常数据。
-*/
-
-void cal_curvature(int *mid_cur){
-
-    int prospect = 15;            // 摄像头高度为20cm，自定义前瞻行数15 
-    #if Eightboundary
-    near = (center_line[119] + center_line[119 - 1] + center_line[119 - 2]) / 3;
-    middle = (center_line[119 - prospect] + center_line[119 - prospect - 1] + center_line[119 - prospect - 2]) / 3;
-    // middle = middle * 1.05;
-    // near = near * 1.1;
-    further = (center_line[119 - prospect * 2] + center_line[119 - prospect * 2 - 1] + center_line[119 - prospect * 2 - 2]) / 3;
-
-    if(further < middle && middle < near){
-        Prospect_Err = ((middle - further)  + (near - middle)) / 2;
-    }
-    else if(further < middle && middle >= near){
-        Prospect_Err = near - middle;
-    }
-    else if(further >= middle && middle < near){
-        Prospect_Err = near - middle;
-    }
-    else{
-        Prospect_Err = ((middle - further) + (near - middle)) / 2;
-    }
-    Bottom_Err = center_line[119] - 94;
-
-    // 左大弯
-    #else
-    near = (centerline[119] + centerline[119 - 1] + centerline[119 - 2]) / 3;
-    middle = (centerline[119 - prospect] + centerline[119 - prospect - 1] + centerline[119 - prospect - 2]) / 3;
-    // middle = middle * 1.05;
-    // near = near * 1.05;
-    further = (centerline[119 - prospect * 2] + centerline[119 - prospect * 2 - 1] + centerline[119 - prospect * 2 - 2]) / 3;
-
-    if(further < middle && middle < near){
-        Prospect_Err = ((middle - further)  + (near - middle)) / 2;
-    }
-    else if(further < middle && middle >= near){
-        Prospect_Err = near - middle;
-    }
-    else if(further >= middle && middle < near){
-        Prospect_Err = near - middle;
-    }
-    else{
-        Prospect_Err = ((middle - further) + (near - middle)) / 2;
-    }
-    Bottom_Err = centerline[119] - 94;
-    #endif
-
-}
-
-
 
 /*
     索贝尔算子
@@ -391,78 +146,13 @@ void sobel(unsigned char (*imageIn)[188], unsigned char (*imageOut)[188], unsign
     }
 }
 
-/*
-    船新搬运过来的大津法
-    速度应该比逐飞写的要快一些，目前用的是这个
-*/
-short GetOSTU(unsigned char tmImage[MT9V03X_H][MT9V03X_W])
-{
-    signed short i, j;
-    unsigned long Amount = 0;
-    unsigned long PixelBack = 0;
-    unsigned long PixelshortegralBack = 0;
-    unsigned long Pixelshortegral = 0;
-    signed long PixelshortegralFore = 0;
-    signed long PixelFore = 0;
-    float OmegaBack, OmegaFore, MicroBack, MicroFore, SigmaB, Sigma; // 类间方差;
-    signed short MinValue, MaxValue;
-    signed short Threshold = 0;
-    unsigned char HistoGram[256];              
-
-    for (j = 0; j < 256; j++)
-        HistoGram[j] = 0; //初始化灰度直方图
-
-    for (j = 0; j < MT9V03X_H; j++)
-    {
-        for (i = 0; i < MT9V03X_W; i++)
-        {
-            HistoGram[tmImage[j][i]]++; //统计灰度级中每个像素在整幅图像中的个数
-        }
-    }
-
-    for (MinValue = 0; MinValue < 256 && HistoGram[MinValue] == 0; MinValue++);        //获取最小灰度的值
-    for (MaxValue = 255; MaxValue > MinValue && HistoGram[MinValue] == 0; MaxValue--); //获取最大灰度的值
-
-    if (MaxValue == MinValue)
-        return MaxValue;         // 图像中只有一个颜色
-    if (MinValue + 1 == MaxValue)
-        return MinValue;        // 图像中只有二个颜色
-
-    for (j = MinValue; j <= MaxValue; j++)
-        Amount += HistoGram[j];        //  像素总数
-
-    Pixelshortegral = 0;
-    for (j = MinValue; j <= MaxValue; j++)
-    {
-        Pixelshortegral += HistoGram[j] * j;        //灰度值总数
-    }
-    SigmaB = -1;
-    for (j = MinValue; j < MaxValue; j++)
-    {
-        PixelBack = PixelBack + HistoGram[j];     //前景像素点数
-        PixelFore = Amount - PixelBack;           //背景像素点数
-        OmegaBack = (float) PixelBack / Amount;   //前景像素百分比
-        OmegaFore = (float) PixelFore / Amount;   //背景像素百分比
-        PixelshortegralBack += HistoGram[j] * j;  //前景灰度值
-        PixelshortegralFore = Pixelshortegral - PixelshortegralBack;  //背景灰度值
-        MicroBack = (float) PixelshortegralBack / PixelBack;   //前景灰度百分比
-        MicroFore = (float) PixelshortegralFore / PixelFore;   //背景灰度百分比
-        Sigma = OmegaBack * OmegaFore * (MicroBack - MicroFore) * (MicroBack - MicroFore);   //计算类间方差
-        if (Sigma > SigmaB)                    //遍历最大的类间方差g //找出最大类间方差以及对应的阈值
-        {
-            SigmaB = Sigma;
-            Threshold = j;
-        }
-    }
-    return Threshold;                        //返回最佳阈值;
-}
-
 /************************************线性回归计算中线斜率************************************/
 // y = Ax+B
 int regression(int startline,int endline)
 {
     int i = 0, SumX = 0, SumY = 0, SumLines = 0; 
-    float SumUp = 0, SumDown = 0, avrX = 0, avrY=0 , B, A;
+    float SumUp = 0, SumDown = 0, avrX = 0, avrY=0;
+    int A, B;
     SumLines = endline - startline;   // startline 为开始行， //endline 结束行 //SumLines
 
     for(i=startline;i<endline;i++)     
@@ -470,8 +160,8 @@ int regression(int startline,int endline)
     SumX+=i;       
     SumY+=center_line[i];    //这里Middle_black为存放中线的数组
     }         
-    avrX=SumX/SumLines;     //X的平均值
-    avrY=SumY/SumLines;     //Y的平均值       
+    avrX=(float)SumX/SumLines;     //X的平均值
+    avrY=(float)SumY/SumLines;     //Y的平均值       
     SumUp=0;      
     SumDown=0;  
     for(i=startline;i<endline;i++)   
@@ -506,211 +196,8 @@ short Cal_BlackPoints(unsigned char (*binary_array)[188], unsigned char Start_Ro
     return blackpoint;
 }
 
-
-/************************************************************
-【函数名称】Eight_neighborhood
-【功    能】八邻域算法求边界
-【参    数】寻种子方式
-【返 回 值】无
-【实    例】Eight_neighborhood(0);
-【注意事项】
-    1*该算法需要你传入的二值化数组，是经过二值化之后的数组，白色为1  黑色为0
-    2*该算法输出的图像需要你自己定义一个与二值化数组尺寸相同的二维数组
-    3*下面的宏定义必须换成自己实际的图像数组尺寸和二维数组名
-    4*记得声明该函数
-************************************************************/
-
-//这里换上你二值化之后的图像数组
-//#define User_Image    image
-//这里是八邻域输出数组需要自己定义一个与原图像相同尺寸的二维数组
-//#define Edge_arr  image
-#define User_Image image_deal
-#define Edge_arr image_deal2
-
-void Eight_neighborhood(unsigned char flag){
-    unsigned char i,j;
-    //核子中心坐标  起始方向初始为6
-    unsigned char core_x,core_y,start;
-    //方向
-    char direction;
-    unsigned length = 0;
-    //清空边界数据
-    for(i=0;i<USER_SIZE_H;i++)
-        for(j=0;j<USER_SIZE_W;j++)
-            Edge_arr[i][j]=0;
-    if(flag==0)//从里向外找种子
-    {
-        start = 6;
-        //如果中间为白
-        if(User_Image[USER_SIZE_H-1][USER_SIZE_W/2]==255)
-        {
-            for(i=USER_SIZE_W/2;i>=1;i--)
-            {
-                if(User_Image[USER_SIZE_H-1][i-1]==0||i==0)
-                {//将左下第一个边界点作为种子
-                    core_x = i;
-                    core_y = USER_SIZE_H-1;
-                    break;
-                }
-            }
-        }//如果中间为黑则去两边找
-        else if(User_Image[USER_SIZE_H-1][USER_SIZE_W/2]==0)
-        {
-            if(User_Image[USER_SIZE_H-1][5]==255)
-                for(i=5;i>=1;i--)
-                {
-                    if(User_Image[USER_SIZE_H-1][i-1]==0||i==0)
-                    {//将左下第一个边界点作为种子
-                        core_x = i;
-                        core_y = USER_SIZE_H-1;
-                        break;
-                    }
-                }
-            else if(User_Image[USER_SIZE_H-1][USER_SIZE_W-5]==255)
-                for(i=USER_SIZE_W-5;i>=1;i--)
-                {
-                    if(User_Image[USER_SIZE_H-1][i-1]==0||i==0)
-                    {//将左下第一个边界点作为种子
-                        core_x = i;
-                        core_y = USER_SIZE_H-1;
-                        break;
-                    }
-                }
-            else//否则将视为无效图像不做处理
-                return;
-        }
-    }
-    else if(flag==1)
-    {
-        start = 6;
-        for(i=0;i<USER_SIZE_W;i++)
-        {
-            if(User_Image[USER_SIZE_H-1][i]==255||i==USER_SIZE_W-1)
-            {//将左下第一个边界点作为种子
-                core_x = i;
-                core_y = USER_SIZE_H-1;
-                break;
-            }
-        }
-    }
-    else if(flag==2)
-    {
-        start = 2;
-        //如果中间为白
-        if(User_Image[USER_SIZE_H-1][USER_SIZE_W/2]==255)
-        {
-            for(i=USER_SIZE_W/2;i<USER_SIZE_W;i++)
-            {
-                if(User_Image[USER_SIZE_H-1][i+1]==0||i==USER_SIZE_W-1)
-                {
-                    //将右下第一个边界点作为种子
-                    core_x = i;
-                    core_y = USER_SIZE_H-1;
-                    break;
-                }
-            }
-        }//如果中间为黑则去两边找
-        else if(User_Image[USER_SIZE_H-1][USER_SIZE_W/2]==0)
-        {
-            if(User_Image[USER_SIZE_H-1][5]==255)
-                for(i=5;i<USER_SIZE_W;i++)
-                {
-                    if(User_Image[USER_SIZE_H-1][i+1]==0||i==USER_SIZE_W-1)
-                    {//将右下第一个边界点作为种子
-                        core_x = i;
-                        core_y = USER_SIZE_H-1;
-                        break;
-                    }
-                }
-            else if(User_Image[USER_SIZE_H-1][USER_SIZE_W-5]==255)
-                for(i=USER_SIZE_W-5;i<USER_SIZE_W;i++)
-                {
-                    if(User_Image[USER_SIZE_H-1][i+1]==0||i==USER_SIZE_W-1)
-                    {//将右下第一个边界点作为种子
-                        core_x = i;
-                        core_y = USER_SIZE_H-1;
-                        break;
-                    }
-                }
-            else//否则将视为无效图像不做处理
-                return;
-        }
-    }
-    else if(flag==3)
-    {
-        start = 2;
-        for(i=USER_SIZE_W-1;i>=0;i--)
-        {
-            if(User_Image[USER_SIZE_H-1][i]==255||i==0)
-            {//将右下第一个边界点作为种子
-                core_x = i;
-                core_y = USER_SIZE_H-1;
-                break;
-            }
-        }
-    }
-    //寻找边缘
-  while(1)
-    {
-        direction = start;
-        Edge_arr[core_y][core_x]=255;
-        if(flag == 0||flag == 1)
-        {
-            for(i=0;i<8;i++)
-            {
-                if(direction == 0) {if(core_y!=0)                                                                               {if(User_Image[core_y-1][core_x]==255)      {core_y--;                      start=6;    break;}}}
-                if(direction == 1) {if(core_y!=0&&core_x!=USER_SIZE_W-1)                                {if(User_Image[core_y-1][core_x+1]==255)    {core_y--; core_x++;    start=6;    break;}}}
-                if(direction == 2) {if(core_x!=USER_SIZE_W-1)                                                       {if(User_Image[core_y][core_x+1]==255)      {core_x++;                      start=0;    break;}}}
-                if(direction == 3) {if(core_y!=USER_SIZE_H-1&&core_x!=USER_SIZE_W-1)        {if(User_Image[core_y+1][core_x+1]==255)    {core_y++; core_x++;    start=0;    break;}}}
-                if(direction == 4) {if(core_y!=USER_SIZE_H-1)                                                       {if(User_Image[core_y+1][core_x]==255)      {core_y++;                      start=2;    break;}}}
-                if(direction == 5) {if(core_y!=USER_SIZE_H-1&&core_x!=0)                                {if(User_Image[core_y+1][core_x-1]==255)    {core_y++; core_x--;    start=2;    break;}}}
-                if(direction == 6) {if(core_x!=0)                                                                               {if(User_Image[core_y][core_x-1]==255)      {core_x--;                      start=4;    break;}}}
-                if(direction == 7) {if(core_y!=0&&core_x!=0)                                                        {if(User_Image[core_y-1][core_x-1]==255)    {core_y--; core_x--;    start=4;    break;}}}
-                direction++;    if(direction>7) direction=0;
-            }
-        }
-        else if(flag == 2||flag == 3)
-        {
-            for(i=0;i<8;i++)
-            {
-                if(direction == 0) {if(core_y!=0)                                                                               {if(User_Image[core_y-1][core_x]==255)      {core_y--;                      start=2;    break;}}}
-                if(direction == 1) {if(core_y!=0&&core_x!=USER_SIZE_W-1)                                {if(User_Image[core_y-1][core_x+1]==255)    {core_y--; core_x++;    start=4;    break;}}}
-                if(direction == 2) {if(core_x!=USER_SIZE_W-1)                                                       {if(User_Image[core_y][core_x+1]==1)        {core_x++;                      start=4;    break;}}}
-                if(direction == 3) {if(core_y!=USER_SIZE_H-1&&core_x!=USER_SIZE_W-1)        {if(User_Image[core_y+1][core_x+1]==255)    {core_y++; core_x++;    start=6;    break;}}}
-                if(direction == 4) {if(core_y!=USER_SIZE_H-1)                                                       {if(User_Image[core_y+1][core_x]==255)      {core_y++;                      start=6;    break;}}}
-                if(direction == 5) {if(core_y!=USER_SIZE_H-1&&core_x!=0)                                {if(User_Image[core_y+1][core_x-1]==255)    {core_y++; core_x--;    start=0;    break;}}}
-                if(direction == 6) {if(core_x!=0)                                                                               {if(User_Image[core_y][core_x-1]==255)      {core_x--;                      start=0;    break;}}}
-                if(direction == 7) {if(core_y!=0&&core_x!=0)                                                        {if(User_Image[core_y-1][core_x-1]==255)    {core_y--; core_x--;    start=2;    break;}}}
-                direction--;    if(direction==-1)   direction=7;
-            }
-        }
-        if(core_y==USER_SIZE_H-1&&length>5)
-        {
-            Edge_arr[core_y][core_x]=255;
-            break;
-        }
-        length++;
-    }
-    if(flag==0&&length<80)
-    {
-        Eight_neighborhood(1);
-    }
-    if(flag==1&&length<80)
-    {
-        Eight_neighborhood(2);
-    }
-    if(flag==2&&length<80)
-    {
-        Eight_neighborhood(3);
-    }
-}
-
-
 // 以下为新的八邻域移植代码
 // 可用的八邻域处理方法
-
-
-
 
 /*
 函数名称：int my_abs(int value)
@@ -729,8 +216,8 @@ else return -value;
 
 int16 limit_a_b(int16 x, int a, int b)
 {
-    if(x<a) x = a;
-    if(x>b) x = b;
+    if(x<a) x = (short)a;
+    if(x>b) x = (short)b;
     return x;
 }
 
@@ -751,9 +238,7 @@ int16 limit1(int16 x, int16 y)
 }
 
 
-/*变量声明*/
-unsigned char original_image[image_h][image_w];
-unsigned char image_thereshold;//图像分割阈值
+
 //------------------------------------------------------------------------------------------------------------------
 //  @brief      获得一副灰度图像
 //  @since      v1.0 
@@ -762,7 +247,7 @@ void Get_image(unsigned char(*mt9v03x_image)[image_w])
 {
 #define use_num		1	//1就是不压缩，2就是压缩一倍	
 	unsigned char i = 0, j = 0, row = 0, line = 0;
-    for (i = 0; i < image_h; i += use_num)          //
+    for (i = 119; i < image_h; i -= use_num)          //
     {
         for (j = 0; j <image_w; j += use_num)     //
         {
@@ -773,13 +258,30 @@ void Get_image(unsigned char(*mt9v03x_image)[image_w])
         row++;
     }
 }
+
+// 针对现在的摄像头俯角，只处理80*188的图像
+void my_get_image(void)
+{
+    int row = BottomRow, line = StartCoL;
+
+    for (int i = BottomRow; i > BottomRow - 80; i--)
+    {
+        for (int j = StartCoL; j < EndCoL; j++)
+        {
+            original_image[row][line] = mt9v03x_image[i][j];
+            line++;
+        }
+        line = 0;
+        row--;
+    }
+}
 //------------------------------------------------------------------------------------------------------------------
 //  @brief     动态阈值
 //  @since      v1.0 
 //------------------------------------------------------------------------------------------------------------------
 unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned short row)
 {
-#define GrayScale 256
+    #define GrayScale 256
     unsigned short Image_Width  = col;
     unsigned short Image_Height = row;
     int X; unsigned short Y;
@@ -797,10 +299,10 @@ unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned s
     unsigned char Threshold = 0;
 	
 	
-    for (Y = 0; Y <Image_Height; Y++) //Y<Image_Height改为Y =Image_Height；以便进行 行二值化
+    for (Y = BottomRow; Y > BottomRow - 80; Y--) //Y<Image_Height改为Y =Image_Height；以便进行 行二值化
     {
         //Y=Image_Height;
-        for (X = 0; X < Image_Width; X++)
+        for (X = 0; X < EndCoL; X++)
         {
         HistGram[(int)data[Y*Image_Width + X]]++; //统计每个灰度值的个数信息
         }
@@ -855,14 +357,14 @@ unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned s
 //  @brief      图像二值化，这里用的是大津法二值化。
 //  @since      v1.0 
 //------------------------------------------------------------------------------------------------------------------
-unsigned char bin_image[image_h][image_w];//图像数组
+unsigned char bin_image[CLIP_IMAGE_H][MT9V03X_W];//图像数组
 void turn_to_bin(void)
 {
   unsigned char i,j;
- image_thereshold = OtsuThreshold(original_image[0], image_w, image_h);
-  for(i = 0;i<image_h;i++)
+ image_thereshold = OtsuThreshold(original_image[0], image_w, image_h - 80);
+  for(i = BottomRow; i > BottomRow - 80; i--)
   {
-      for(j = 0;j<image_w;j++)
+      for(j = 0;j<MT9V03X_W;j++)
       {
           if(original_image[i][j]>image_thereshold)bin_image[i][j] = white_pixel;
           else bin_image[i][j] = black_pixel;
@@ -1083,8 +585,8 @@ void search_l_r(unsigned short break_flag, unsigned char(*image)[image_w], unsig
 			&& (points_r[r_data_statics][1] > points_l[l_data_statics - 1][1]))//左边比右边高且已经向下生长了
 		{
 			//printf("\n左边开始向下了，等待右边，等待中... \n");
-			center_point_l[0] = points_l[l_data_statics - 1][0];//x
-			center_point_l[1] = points_l[l_data_statics - 1][1];//y
+			center_point_l[0] = (unsigned char)points_l[l_data_statics - 1][0];//x
+			center_point_l[1] = (unsigned char)points_l[l_data_statics - 1][1];//y
 			l_data_statics--;
 		}
 		r_data_statics++;//索引加一
@@ -1293,78 +795,31 @@ example： image_process();
 */
 void image_process(void)
 {
-unsigned short i;
-unsigned char hightest = 0;//定义一个最高行，tip：这里的最高指的是y值的最小
-/*这是离线调试用的*/
-Get_image(&mt9v03x_image[0]);
-turn_to_bin();
-/*提取赛道边界*/
-image_filter(&bin_image[0]);//滤波
-image_draw_rectan(&bin_image[0]);//预处理
-//清零
-data_stastics_l = 0;
-data_stastics_r = 0;
-if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找到就一直找
-{
-	// printf("正在开始八领域\n");
-	search_l_r((unsigned short)USE_num, &bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
-	// printf("八邻域已结束\n");
-	// 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
-	get_left(data_stastics_l);
-	get_right(data_stastics_r);
-	//处理函数放这里，不要放到if外面去了，不要放到if外面去了，不要放到if外面去了，重要的事说三遍
+    unsigned char hightest = 0;//定义一个最高行，tip：这里的最高指的是y值的最小
+    /*这是离线调试用的*/
+    // Get_image(&mt9v03x_image[0]);
+    my_get_image();
+    turn_to_bin();
+    /*提取赛道边界*/
+    image_filter(&bin_image[0]);//滤波
+    image_draw_rectan(&bin_image[0]);//预处理
+    //清零
+    data_stastics_l = 0;
+    data_stastics_r = 0;
+    if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找到就一直找
+    {
+        // printf("正在开始八领域\n");
+        search_l_r((unsigned short)USE_num, &bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
+        // printf("八邻域已结束\n");
+        // 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
+        get_left(data_stastics_l);
+        get_right(data_stastics_r);
+        //处理函数放这里，不要放到if外面去了，不要放到if外面去了，不要放到if外面去了，重要的事说三遍
+
+    }
+    centerline_k = regression(BottomRow - 50, BottomRow);
 
 }
-centerline_k = regression(BottomRow - 50, BottomRow);
-
-
-//显示图像   改成你自己的就行 等后期足够自信了，显示关掉，显示屏挺占资源的
-// tft180_show_gray_image(0, 0, &bin_image[0], image_w, image_h, image_w / 1.5, image_h / 1.5, 0);
-
-	// //根据最终循环次数画出边界点
-	// for (i = 0; i < data_stastics_l; i++)
-	// {
-	// 	tft180_draw_point(points_l[i][0]+2, points_l[i][1], uesr_BLUE);//显示起点
-	// }
-	// for (i = 0; i < data_stastics_r; i++)
-	// {
-	// 	tft180_draw_point(points_r[i][0]-2, points_r[i][1], uesr_RED);//显示起点
-	// }
-
-	// for (i = hightest; i < image_h-1; i++)
-	// {
-	// 	center_line[i] = (l_border[i] + r_border[i]) >> 1;//求中线
-	// 	//求中线最好最后求，不管是补线还是做状态机，全程最好使用一组边线，中线最后求出，不能干扰最后的输出
-	// 	//当然也有多组边线的找法，但是个人感觉很繁琐，不建议
-	// 	tft180_draw_point(center_line[i], i, uesr_GREEN);//显示起点 显示中线	
-	// 	tft180_draw_point(l_border[i], i, uesr_GREEN);//显示起点 显示左边线
-	// 	tft180_draw_point(r_border[i], i, uesr_GREEN);//显示起点 显示右边线
-	// }
-
-
-}
-
-
-
-
-
-/*
-
-这里是起点（0.0）***************——>*************x值最大
-************************************************************
-************************************************************
-************************************************************
-************************************************************
-********************假如这是一副图像*************************
-************************************************************
-************************************************************
-************************************************************
-************************************************************
-************************************************************
-************************************************************
-y值最大*******************************************(188,120)
-
-*/
 
 int Cal_centerline(void)
 {
@@ -1401,3 +856,274 @@ void Cal_lostline(void)
     }
 }
 
+
+void LocalThresholding(void)
+{
+    // unsigned char *image_ptr[188];
+    unsigned char thres;    // 定义局部二值化阈值  
+    for (int current_row = BottomRow; current_row > 3;)     // 自下而上遍历行数，到倒数第四行截止
+    {   
+        if (current_row < 3)                                // 限制条件
+            break;
+        for (int current_col = StartCoL; current_col < (187 - 4);)      // 从左到右遍历列数，到倒数第四列截止
+        {
+            if (current_col > (187 - 4))    
+                break;
+            // 将4x4范围内的图像矩阵存储在数组中
+            unsigned char image_data[16] = 
+            {
+                mt9v03x_image[current_row][current_col], mt9v03x_image[current_row][current_col + 1], mt9v03x_image[current_row][current_col + 1], mt9v03x_image[current_row][current_col + 3],
+                mt9v03x_image[current_row - 1][current_col], mt9v03x_image[current_row - 1][current_col + 1], mt9v03x_image[current_row - 1][current_col + 1], mt9v03x_image[current_row - 1][current_col + 3],
+                mt9v03x_image[current_row - 2][current_col], mt9v03x_image[current_row - 2][current_col + 1], mt9v03x_image[current_row - 2][current_col + 1], mt9v03x_image[current_row - 2][current_col + 3],
+                mt9v03x_image[current_row - 3][current_col], mt9v03x_image[current_row - 3][current_col + 1], mt9v03x_image[current_row - 3][current_col + 1], mt9v03x_image[current_row - 3][current_col + 3]
+            };
+            // 运行大津法
+            thres = OtsuThreshold(image_data, current_col, current_row);
+            // unsigned char temp[16];
+            for (int m = 0; m < 16; m++)
+            {
+                if (image_data > thres)     image_data[m] = 255;
+                if (image_data < thres)     image_data[m] = 0;
+            }
+            for (int row = current_row; row > current_row - 4; row--)
+            {
+                for (int col = current_col; col < current_col + 4; col++)
+                {
+                    image_deal[row][col] = image_data[row + col];
+                }
+            }
+            // image_deal
+            current_col -= 4;
+        }
+        current_row -= 4;
+    }
+}
+
+// 左手迷宫巡线
+void findline_lefthand_adaptive(unsigned char(*img)[188],unsigned char width,unsigned char height, unsigned char block_size, unsigned char clip_value, unsigned char x, unsigned char y, unsigned char (*pts)[2], unsigned char *num)
+{
+
+    int half = block_size / 2;
+    int step = 0, dir = 0, turn = 0;
+    while (step <*num && half < x && x < width - half - 1 && half < y && y < height - half - 1 && turn < 4) {
+
+        int local_thres = 0;
+        for (int8 dy = -half; dy <= half; dy++) {
+            for (int8 dx = -half; dx <= half; dx++) {
+                local_thres +=img[y + dy][x + dx];
+            }
+        }
+        local_thres /= block_size * block_size;
+        local_thres -= clip_value;//自适应二值的阈值
+
+//        unsigned char current_value = img[y][x];
+        unsigned char front_value =img[y + dir_front[dir][1]][x + dir_front[dir][0]]; //四个点顺时针转
+        unsigned char frontleft_value =img[y + dir_frontleft[dir][1]][x + dir_frontleft[dir][0]];//菱形顺时针转
+        if (front_value < local_thres) {
+            dir = (dir + 1) % 4;
+            turn++;
+        } else if (frontleft_value < local_thres) {
+            x += dir_front[dir][0];
+            y += dir_front[dir][1];
+            pts[step][0] = x;
+            pts[step][1] = y;
+            step++;
+            turn = 0;
+        } else {
+            x += dir_frontleft[dir][0];
+            y += dir_frontleft[dir][1];
+            dir = (dir + 3) % 4;
+            pts[step][0] = x;
+            pts[step][1] = y;
+            step++;
+            turn = 0;
+        }
+    }
+
+//    while (step <*num  && half < y && y < height - half - 1 && turn < 4) {
+//
+//        if(half < x && x < width - half - 1)
+//        {
+//            int local_thres = 0;
+//            for (int8 dy = -half; dy <= half; dy++) {
+//                for (int8 dx = -half; dx <= half; dx++) {
+//                    local_thres +=img[y + dy][x + dx];
+//                }
+//            }
+//            local_thres /= block_size * block_size;
+//            local_thres -= clip_value;//自适应二值的阈值
+//
+////            unsigned char current_value = img[y][x];
+//            unsigned char front_value =img[y + dir_front[dir][1]][x + dir_front[dir][0]]; //四个点顺时针转
+//            unsigned char frontleft_value =img[y + dir_frontleft[dir][1]][x + dir_frontleft[dir][0]];//菱形顺时针转
+//            if (front_value < local_thres) {
+//                dir = (dir + 1) % 4;
+//                turn++;
+//            } else if (frontleft_value < local_thres) {
+//                x += dir_front[dir][0];
+//                y += dir_front[dir][1];
+//                pts[step][0] = x;
+//                pts[step][1] = y;
+//                step++;
+//                turn = 0;
+//            } else {
+//                x += dir_frontleft[dir][0];
+//                y += dir_frontleft[dir][1];
+//                dir = (dir + 3) % 4;
+//                pts[step][0] = x;
+//                pts[step][1] = y;
+//                step++;
+//                turn = 0;
+//            }
+//        }
+//        else {
+//
+//                if(x==half)
+//                    x++;
+//                else if(x==width - half - 1)
+//                    x--;
+//            while(!Gray_Search_Line(img,y,x,y-1,x,10))
+//            {
+//                step++;
+//                y--;
+//                pts[step][0] = x;
+//                pts[step][1] = y;
+//
+//            }
+//
+//        }
+//       }
+    *num = step;
+}
+
+
+// 右手迷宫巡线
+void findline_righthand_adaptive(unsigned char(*img)[188],unsigned char width,unsigned char height, unsigned char block_size, unsigned char clip_value, unsigned char x, unsigned char y, unsigned char (*pts)[2], unsigned char *num)
+{
+    int half = block_size / 2;
+    int step = 0, dir = 0, turn = 0;
+    while (step <*num && half < x && x < width - half - 1 && half < y && y < height - half - 1 && turn < 4) {
+
+        int16 local_thres = 0;
+        for (int8 dy = -half; dy <= half; dy++) {
+            for (int8 dx = -half; dx <= half; dx++) {
+                local_thres += img[y + dy][x + dx];
+            }
+        }
+        local_thres /= block_size * block_size;
+        local_thres -= clip_value;
+
+//        unsigned char current_value =  img[y ][x ];
+        unsigned char front_value = img[y + dir_front[dir][1]][x + dir_front[dir][0]];
+        unsigned char frontright_value =img[y + dir_frontright[dir][1]][x + dir_frontright[dir][0]];
+        if (front_value < local_thres) {
+            dir = (dir + 3) % 4;
+            turn++;
+        } else if (frontright_value < local_thres) {
+            x += dir_front[dir][0];
+            y += dir_front[dir][1];
+            pts[step][0] = x;
+            pts[step][1] = y;
+            step++;
+            turn = 0;
+        } else {
+            x += dir_frontright[dir][0];
+            y += dir_frontright[dir][1];
+            dir = (dir + 1) % 4;
+            pts[step][0] = x;
+            pts[step][1] = y;
+            step++;
+            turn = 0;
+        }
+    }
+
+//while (step <*num && half < y && y < height - half - 1 && turn < 4) {
+//
+//    if(half < x && x < width - half - 1)
+//    {
+//        int local_thres = 0;
+//        for (int dy = -half; dy <= half; dy++) {
+//            for (int dx = -half; dx <= half; dx++) {
+//                local_thres += img[y + dy][x + dx];
+//            }
+//        }
+//        local_thres /= block_size * block_size;
+//        local_thres -= clip_value;
+//
+////        unsigned char current_value =  img[y ][x ];
+//        unsigned char front_value = img[y + dir_front[dir][1]][x + dir_front[dir][0]];
+//        unsigned char frontright_value =img[y + dir_frontright[dir][1]][x + dir_frontright[dir][0]];
+//        if (front_value < local_thres) {
+//            dir = (dir + 3) % 4;
+//            turn++;
+//        } else if (frontright_value < local_thres) {
+//            x += dir_front[dir][0];
+//            y += dir_front[dir][1];
+//            pts[step][0] = x;
+//            pts[step][1] = y;
+//            step++;
+//            turn = 0;
+//        } else {
+//            x += dir_frontright[dir][0];
+//            y += dir_frontright[dir][1];
+//            dir = (dir + 1) % 4;
+//            pts[step][0] = x;
+//            pts[step][1] = y;
+//            step++;
+//            turn = 0;
+//        }
+//    }else
+//    {
+//
+//        if(x==half)
+//           x++;
+//       else if(x==width - half - 1)
+//           x--;
+//        while(!Gray_Search_Line(img,y,x,y-1,x,10))
+//        {
+//            step++;
+//            y--;
+//            pts[step][0] = x;
+//            pts[step][1] = y;
+//
+//        }
+//
+//    }
+//
+//    }
+    *num = step;
+}
+
+void my_process_image(void) 
+{
+    // 原图找左右边线
+    int x1 = img_raw.width / 2 - 30, y1 = BottomRow - 5;
+    ipts0_num = sizeof(ipts0) / sizeof(ipts0[0]);
+    // for (; x1 > 0; x1--) if (mt9v03x_image[x1][y1] < 70) break;
+    // if (mt9v03x_image[x1][y1] >= 70)
+	for (; x1 > 0; x1--)
+		if (bin_image[y1][x1] == 0 && bin_image[y1][x1 + 1] == 255)
+        	findline_lefthand_adaptive(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, block_size, 0, x1, y1, ipts0, &ipts0_num);
+		//;
+    else ipts0_num = 0;
+    int x2 = img_raw.width / 2 + 30, y2 = BottomRow - 5;
+    ipts1_num = sizeof(ipts1) / sizeof(ipts1[0]);
+    // for (; x2 < img_raw.width - 1; x2++) if (mt9v03x_image[x2][y2] < 70) break;
+    // if (mt9v03x_image[x2][y2] >= 70)
+	for (; x2 < img_raw.width; x2++)
+		if (bin_image[y2][x2] == 0 && bin_image[y2][x2 - 1] == 255)
+		//;
+        	findline_righthand_adaptive(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, block_size, 0, x2, y2, ipts1, &ipts1_num);
+    else ipts1_num = 0;
+}
+
+// void new(void)
+// {
+// 	for (int i = 119; i > 0; i--)
+// 	{
+// 		ipts0[i][0] = 5;
+// 		ipts0[i][1] = i;
+// 		ipts1[i][0] = 187;
+// 		ipts1[i][1] = i;
+// 	}
+// }

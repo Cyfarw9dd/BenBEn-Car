@@ -58,28 +58,20 @@ int PlacePID_Control(PID *sprt, float *PID, int NowPiont, int SetPoint);
 
 int PID_Realize(PID *sptr, float *PID, int NowData, int Point);
 
-int16 PID_Increase(PID *sptr, float *PID, int NowData, int Point);
+short PID_Increase(PID *sptr, float *PID, int NowData, int Point);
 
 int PD_control(float *PID);
 
 void PID_Parameter_Init(PID *sptr);
 
-int16 range_protect(int16 duty, int16 min, int16 max);
-
-int16 PID_Increase_for_ProspectErr(PID *sptr, float *PID);
-
-int16 PID_Increase_for_BottomErr(PID *sptr, float *PID);
-
-int16 PID_Realize_for_ProspectErr(PID *sptr, float *PID);
-
-int16 PID_Realize_for_BottomErr(PID *sptr, float *PID);
+short range_protect(short duty, short min, short max);
 
 void PID_Init(void);
 
 int calculate_pid(float a);
 
-int16 LocP_DCalc(MyPID*sptr, int16 Setpoint, int16 Turepoint);
+short LocP_DCalc(MyPID*sptr, short Setpoint, short Turepoint);
 
-int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint);
+short IncPIDCalc(MyPID *sptr,short Setpoint,short Turepoint);
 
 #endif /* CODE_PID_H_ */

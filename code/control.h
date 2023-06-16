@@ -35,6 +35,13 @@ enum motor_mode
 
 extern short speed1, speed2;
 
+// typedef enum{
+//     Soft = 100,
+//     Roll,
+// }Speed_mode;
+
+// Speed_mode My_Speed_mode;
+
 void motor_ctrl(short Lmotor, short Rmotor);
 
 void get_motor_speed(void);

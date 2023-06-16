@@ -29,7 +29,6 @@ int core0_main(void)
 	clock_init();                   // 获取时钟频率<务必保留>
 	debug_init();                   // 初始化默认调试串口
     // 此处编写用户代码 例如外设初始化代码等
-
     // 此处编写用户代码 例如外设初始化代码等
     cpu_wait_event_ready();         // 等待所有核心初始化完毕
 	while (TRUE)

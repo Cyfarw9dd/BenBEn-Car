@@ -326,3 +326,5 @@ d:/BenBen/BEN_ben ver1.01/code/elements.h :
 d:/BenBen/BEN_ben ver1.01/code/fuse.h :
  control.o :	d:/BenBen/BEN_ben ver1.01/code/adc.h
 d:/BenBen/BEN_ben ver1.01/code/adc.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/road.h
+d:/BenBen/BEN_ben ver1.01/code/road.h :

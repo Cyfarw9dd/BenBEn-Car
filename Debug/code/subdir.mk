@@ -12,7 +12,8 @@ C_SRCS += \
 ../code/gyro.c \
 ../code/image.c \
 ../code/list.c \
-../code/pid.c 
+../code/pid.c \
+../code/road.c 
 
 OBJS += \
 ./code/\ control.o \
@@ -23,7 +24,8 @@ OBJS += \
 ./code/gyro.o \
 ./code/image.o \
 ./code/list.o \
-./code/pid.o 
+./code/pid.o \
+./code/road.o 
 
 COMPILED_SRCS += \
 ./code/\ control.src \
@@ -34,7 +36,8 @@ COMPILED_SRCS += \
 ./code/gyro.src \
 ./code/image.src \
 ./code/list.src \
-./code/pid.src 
+./code/pid.src \
+./code/road.src 
 
 C_DEPS += \
 ./code/\ control.d \
@@ -45,7 +48,8 @@ C_DEPS += \
 ./code/gyro.d \
 ./code/image.d \
 ./code/list.d \
-./code/pid.d 
+./code/pid.d \
+./code/road.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

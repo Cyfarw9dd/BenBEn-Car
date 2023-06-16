@@ -4,8 +4,6 @@
 
 code/gyro.o :	../code/gyro.c
 ../code/gyro.c :
-code/gyro.o :	../code/gyro.h
-../code/gyro.h :
 code/gyro.o :	d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h
 d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h :
 code/gyro.o :	d:/AURIX-Studio-1.8.0/plugins/com.infineon.aurix.tools_1.8.0/build_system/tools/Compilers/Tasking_1.1r8/ctc/include/math.h

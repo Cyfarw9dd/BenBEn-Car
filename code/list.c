@@ -1,5 +1,8 @@
 #include "list.h"
 
+extern icm_param_t imu_data;
+// extern euler_param_t eulerAngle;
+extern S_FLOAT_XYZ GyroOffset;
 
 char Key1_last_status;
 char Key2_last_status;
@@ -63,126 +66,12 @@ List MyList[] =
     {2323, "D", NULL, NULL},
     {2324, "go back", NULL, NULL},
     {233, "go back", NULL, NULL},
-    {24, "show params", NULL, NULL},
+    {24, "show params", show_params, NULL},
     {25, "go back", NULL, NULL},
     {3, "Departure", NULL, NULL},
 };
 
 List *current_list_item;
-
-
-// KeySatateEnum Key1;
-// KeySatateEnum Key2;
-// KeySatateEnum Key3;
-// KeySatateEnum Key4;
-
-// void KeyParams_Init(void)
-// {
-//     Key1 = nopress;
-//     Key2 = nopress;
-//     Key3 = nopress;
-//     Key4 = nopress;
-// }
-
-#if 0
-unsigned char Key1 = 0;
-unsigned char Key2 = 0;
-unsigned char Key3 = 0;
-unsigned char Key4 = 0;
-#endif
-
-
-// 一般来说同一时间只会按下一个按键，所以多个按键共用同一个按键标志位也是可以的
-// 待测试的按键扫描函数
-// void KeyScan(void)
-// {
-//     // Key_flag_clear();
-//     static unsigned char KeyPressNum = 0;
-//     static unsigned short KeyPressTime = 0;
-//     static unsigned char SomeKeyPress_Flag = 0; // 0松开 1按下 2消抖 3长按
-//     #define AlwaysPressTime 1200
-//     #define debouncing 5
-
-//     if(SomeKeyPress_Flag == 0 && (!gpio_get_level(KEY1) || !gpio_get_level(KEY2) || !gpio_get_level(KEY3) || !gpio_get_level(KEY4)))
-//     {
-//         SomeKeyPress_Flag = 1;
-//     }
-//     if(SomeKeyPress_Flag > 0)
-//     {
-//         KeyPressTime++;
-//         // 5ms消抖
-//         if(SomeKeyPress_Flag == 1 && KeyPressTime >= debouncing)
-//         {
-//             SomeKeyPress_Flag = 2;
-//             if(!gpio_get_level(KEY1))
-//             {
-//                 KeyPressNum = 1;
-//             }
-//             if(!gpio_get_level(KEY2))
-//             {
-//                 KeyPressNum = 2;
-//             }
-//             if(!gpio_get_level(KEY3))
-//             {
-//                 KeyPressNum = 3;
-//             }
-//             if(!gpio_get_level(KEY4))
-//             {
-//                 KeyPressNum = 4;
-//             }
-//         }
-//         // 短按
-//         if((gpio_get_level(KEY1) && gpio_get_level(KEY2) && gpio_get_level(KEY3) && gpio_get_level(KEY4)) && KeyPressTime < AlwaysPressTime && SomeKeyPress_Flag == 2)
-//         {
-//             SomeKeyPress_Flag = 0;
-//             if(KeyPressNum == 1)
-//             {
-//                 Key1 = onepress;
-//             }
-//             if(KeyPressNum == 2)
-//             {
-//                 Key2 = onepress;
-//             }
-//             if(KeyPressNum == 3)
-//             {
-//                 Key3 = onepress;
-//             }
-//             if(KeyPressNum == 4)
-//             {
-//                 Key4 = onepress;
-//             }  
-//         }
-//         // 长按
-//         if(KeyPressTime >= AlwaysPressTime && SomeKeyPress_Flag == 2)
-//         {
-//             if(KeyPressNum == 1)
-//             {
-//                 Key1 = holdpress;
-//             }
-//             if(KeyPressNum == 2)
-//             {
-//                 Key2 = holdpress;
-//             }
-//             if(KeyPressNum == 3)
-//             {
-//                 Key3 = holdpress;
-//             }
-//             if(KeyPressNum == 4)
-//             {
-//                 Key4 = holdpress;
-//             }
-//             if(gpio_get_level(KEY1) && gpio_get_level(KEY2) && gpio_get_level(KEY3) && gpio_get_level(KEY4))
-//             {
-//                 SomeKeyPress_Flag = 0;
-//                 KeyPressTime = 0;
-//                 Key1 = nopress;
-//                 Key2 = nopress;
-//                 Key3 = nopress;
-//                 Key4 = nopress;
-//             }
-//         }
-//     }
-// }
 
 void MyKeyScan(void)
 {
@@ -284,7 +173,7 @@ void List_Switch(void)
             highlight_col = 0;
             parent_list_index = parent_list_index / 10;
         }
-        else if (strcmp(current_list_item->ListName, "Departure") == 0)   // 如果当前菜单为go back，则返回上一级
+        else if (strcmp(current_list_item->ListName, "Departure") == 0)   // 发车模式
         {
             // Departure_PointFlag = 1;
             Departure_cnt = 50;
@@ -349,16 +238,26 @@ void show_boundaries(void)
     tft180_clear();
 }
 
-// void back_to_main(void)
-// {
-//     tft180_clear();
-//     Key_flag_clear();
-//     parent_list_index = parent_list_index / 10;
-// }
-
 void tuning(void)
 {
     tft180_clear();
     Key_flag_clear();
     tft180_show_string(0, 0, "start tuning");
+}
+
+void show_params(void)
+{
+    tft180_clear();
+    Key_flag_clear();
+    while(!Key3_flag)
+    {
+        MyKeyScan();  
+        // tft180_show_string(0, 65, "imu_data_x");        
+        // tft180_show_string(0, 80, "imu_data_x");        
+        // tft180_show_string(0, 100, "imu_data_x");     
+        tft180_show_float(0, 65, imu_data.gyro_x, 5, 5);
+        tft180_show_float(0, 80, imu_data.gyro_y, 5, 5);
+        tft180_show_float(0, 100, imu_data.gyro_z, 5, 5);  
+    }
+    tft180_clear();
 }

@@ -54,13 +54,14 @@ void core1_main(void)
     disable_Watchdog();                     // 关闭看门狗
     interrupt_global_enable(0);             // 打开全局中断
     // 此处编写用户代码 例如外设初始化代码等
-    outflag = 1;
+    // outflag = 1;
     mt9v03x_init();
     tft180_init();
     // ips200_init(IPS200_TYPE_PARALLEL8);
     imu660ra_init();
     wireless_uart_init();
     PID_int();
+    gyroOffsetInit();
     // 初始化pwm
     pwm_init(ATOM0_CH0_P21_2, 17 * 1000, 0);
     pwm_init(ATOM0_CH1_P21_3, 17 * 1000, 0);
@@ -101,12 +102,12 @@ void core1_main(void)
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        while (!Departure_PointFlag)
-        {
-            pit_disable(CCU60_CH0);
-            // pit_disable(CCU60_CH1);
-        }
-        pit_enable(CCU60_CH0);
+        // while (!Departure_PointFlag)
+        // {
+        //     pit_disable(CCU60_CH0);
+        //     // pit_disable(CCU60_CH1);
+        // }
+        // pit_enable(CCU60_CH0);
         // pit_enable(CCU60_CH1);
         // #if 0
         // while (outflag)
@@ -124,21 +125,13 @@ void core1_main(void)
         //     outflag = 0;
         // }
         // #endif 
-        // tft180_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        // tft180_show_string(0, 0, "left out"); 		tft180_show_int(60, 0, Left_Adc, 5);
-		// tft180_show_string(0, 30, "left in"); 		tft180_show_int(60, 30, Left_Shu_Adc, 5);
-		// tft180_show_string(0, 60, "right in"); 		tft180_show_int(60, 60, Right_Adc, 5);
-		// tft180_show_string(0, 90, "right out"); 		tft180_show_int(60, 90, Right_Shu_Adc, 5);
-		// tft180_show_int(0, 100, centerline_k, 5);  
-        // tft180_show_int(0, 120, image_thereshold, 5);  
-        gyroOffsetInit();
-        // Buzzer();
         TaskProcess();
         // ADC_TaskProcess();
         image_process();
-        Judging_Elements();
-        Deal_Road_Characteristics(&bin_image[0], &MyRoad_Characteristics);
-        // Hightlight_Lines(&bin_image[0]);                
+        // my_process_image();
+        // Judging_Elements();
+        Deal_Road_Characteristics(&bin_image[0], &MyRoad_Charac);      
+        // sendimg_binary_CHK(bin_image[0], MT9V03X_W, MT9V03X_H, image_thereshold, 25);       
         // 此处编写需要循环执行的代码
     }
 }
@@ -150,6 +143,3 @@ void core1_main(void)
 
 // *************************** 例程常见问题说明 ***************************
 // 遇到问题时请按照以下问题检查列表检查
-// 问题1：LED 不闪烁
-//      查看程序是否正常烧录，是否下载报错，确认正常按下复位按键
-//      万用表测量对应 LED 引脚电压是否变化，如果不变化证明程序未运行，如果变化证明 LED 灯珠损坏

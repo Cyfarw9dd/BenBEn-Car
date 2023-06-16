@@ -28,27 +28,6 @@ extern char Key4_flag;
 #define TOGGLE1 P33_12
 #define TOGGLE2 P33_13
 
-
-
-// typedef enum{
-//     nopress = 0,
-//     onepress,
-//     holdpress,
-// }KeySatateEnum;
-
-
-// extern KeySatateEnum Key1;
-// extern KeySatateEnum Key2;
-// extern KeySatateEnum Key3;
-// extern KeySatateEnum Key4;
-
-
-
-
-// void KeyParams_Init(void);
-
-// void KeyScan(void);
-
 void MyKeyScan(void);
 
 void Key_flag_clear(void);
@@ -65,8 +44,8 @@ void show_binary_image(void);
 
 void show_boundaries(void);
 
-void back_to_main(void);
-
 void tuning(void);
+
+void show_params(void);
 
 #endif /* CODE_LIST_H_ */

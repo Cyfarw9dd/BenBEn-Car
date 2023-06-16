@@ -8,21 +8,29 @@ extern float Real_Gyro_Y;
 
 extern float Angle_X_Final;
 extern float Angle_Y_Final;
-// extern S_FLOAT_XYZ GYRO_REAL;
-// extern S_INT16_XYZ GYRO;
-#define my_pow(a) ((a)*(a))
+
+typedef struct {
+    float gyro_x;
+    float gyro_y;
+    float gyro_z;
+    float acc_x;
+    float acc_y;
+    float acc_z;
+} icm_param_t;
+
+typedef struct {
+    float q0;
+    float q1;
+    float q2;
+    float q3;
+} quater_param_t;
 
 
-typedef struct
-{
-    unsigned char  cnt;
-
-    int lst_pow_sum;
-
-    int now_out;
-    int lst_out;
-    int now_velocity_xdt;
-} _steepest_st;
+typedef struct {
+    float pitch;    //俯仰角
+    float roll;     //偏航角
+    float yaw;       //翻滚角
+} euler_param_t;
 
 
 typedef struct
@@ -32,44 +40,21 @@ typedef struct
     short Z;
 }S_INT16_XYZ;
 
-typedef struct
+typedef struct 
 {
     float X;
     float Y;
     float Z;
 }S_FLOAT_XYZ;
 
-typedef struct
-{
-    unsigned char acc_CALIBRATE;
-    unsigned char gyr_CALIBRATE;
-    unsigned char vec3d_CALIBRATE;
-
-    S_INT16_XYZ Acc_I16;
-    S_INT16_XYZ Gyro_I16;
-
-    S_FLOAT_XYZ Acc;
-    S_FLOAT_XYZ Acc_mmss;
-    S_FLOAT_XYZ Gyro;
-    S_FLOAT_XYZ Gyro_deg;
-}_sensor_st;//__attribute__((packed))
-
-void steepest_descend(int arr[], unsigned char len, _steepest_st *steepest, unsigned char step_num, int in);
-
-void Data_steepest(void);
-
-unsigned short Get_fitter_distance(unsigned short real_distance);
-
-void Angle_Calcu(void);
-
-void Kalman_Filter_X(float Accel,float Gyro);
-
-void Kalman_Filter_Y(float Accel,float Gyro);
-
-void Get_IcmData(void);
-
-// void AngleGet(void);
+float fast_sqrt(float x);
 
 void gyroOffsetInit(void);
+
+void ICM_getValues(void); 
+
+void ICM_AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az);
+
+void ICM_getEulerianAngles(void);
 
 #endif /* CODE_GYRO_H_ */

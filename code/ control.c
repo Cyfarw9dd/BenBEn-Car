@@ -92,3 +92,10 @@ void Buzzer(void)
     if(buzzer_cnt < 25)
         pwm_set_duty(BUZZER, 8000);
 }
+
+// 速度决策将运行在速度环中，计算结果串在转向内环中
+
+// void Speed_Deal(void)
+// {
+//     if ()
+// }

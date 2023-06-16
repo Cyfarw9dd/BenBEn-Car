@@ -10,7 +10,7 @@ extern  MyPID SpeedPID,
         ADC_TurnPID,
         Turn_NeiPID;
         
-extern int All_PWM_left, All_PWM_right;
+extern short All_PWM_left, All_PWM_right;
 extern int16 real_speed;
 extern float real_real_speed;
 extern int Centerline_Err;

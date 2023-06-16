@@ -14,8 +14,6 @@
 changepoint Parking_L, Parking_R;                                                                   // 定义车库拐点结构体
 changepoint RoundAbout_LeftDown, RoundAbout_LeftAbove, RoundAbout_RightDown, RoundAbout_RightAbove; // 环岛拐点结构体
 
-short P_Crossing_LCounter = 0;  
-short P_Crossing_RCounter = 0;  
 short StartLine_Counter = 0;    // 斑马线识别计时器
 short Upslope_Counter = 0;      // 上坡识别计时器
 short Downslope_Counter = 0;    // 下坡识别计时器
@@ -448,7 +446,7 @@ void Judging_RoundAbout(unsigned char (*binary_array)[188]){
     }
     // Judging right roundabout point flag 3rd
     for(unsigned char i = BottomRow - 10; i > 60; i--){
-        if(leftline[BottomRow] != StartCoL && rightline != EndCoL && Right_RoadWidth[i + 10] - Right_RoadWidth[i + 5] > 3 && Right_RoadWidth[i + 5] - Right_RoadWidth[i] > 2
+        if(leftline[BottomRow] != StartCoL && rightline[BottomRow] != EndCoL && Right_RoadWidth[i + 10] - Right_RoadWidth[i + 5] > 3 && Right_RoadWidth[i + 5] - Right_RoadWidth[i] > 2
         && Right_RoadWidth[i] - Right_RoadWidth[i + 10] < -5 && Right_RoadWidth[i] - Right_RoadWidth[i - 5] < -2 && Right_RoadWidth[i - 5] - Right_RoadWidth[i - 10] < -3
         && Right_RoadWidth[i - 10] - Right_RoadWidth[i] > 5 && RoundAbout_PointFlag_R >= 2 && RoundAbout_PointFlag_R <= 3 && Rounding_RCounter < 300)
         {
@@ -581,7 +579,7 @@ void Judging_Slope(void){
 }
 
 //  --------------
-// -> start from here image_thereshold
+// -> start from here 
 // 2 * 188 = 376
 
 void Judging_Break_Road(unsigned char (*binary_array)[188])

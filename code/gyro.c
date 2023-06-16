@@ -1,14 +1,11 @@
-#include "gyro.h"
-#include "image.h"
+#include "zf_common_headfile.h"
 #include "math.h"
-#include "elements.h"
-#include "zf_device_icm20602.h"
 
-_steepest_st steepest_gz;
-_steepest_st steepest_gy;
-_sensor_st sensor;
-S_INT16_XYZ GYRO, MPU_ACC;
 S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
+S_FLOAT_XYZ GyroOffset;
+icm_param_t imu_data;
+quater_param_t Q_info = {1, 0, 0};  // 全局四元数
+euler_param_t eulerAngle; //欧拉角
 int steepest_gz_arr[2];
 int steepest_gy_arr[2];
 float Real_Gyro_Z = 0;
@@ -19,340 +16,168 @@ float GyroX_Zero = 10;
 float GyroY_Zero = 10;
 float GyroZ_Zero = 10;
 
+#define delta_T     0.001f  //1ms计算一次
+#define M_PI        3.1415926f
 
-// 加速度计返回的加速度不是一般意义的加速度
-// 只用加速度计就能得到车身的俯仰角，且是对地的绝对角度
-// 但因为加速度计的不稳定，叠加在重力测量信号上使输出信号不能很好的反映车模的倾角
+float param_Kp = 0.17;   // 加速度计的收敛速率比例增益 
+float param_Ki = 0.004;   //陀螺仪收敛速率的积分增益 0.004
 
-
-
-void steepest_descend(int32 arr[],unsigned char len,_steepest_st *steepest,unsigned char step_num,int32 in){
-    unsigned char updw = 1;//0 dw,1up
-    short i;
-    unsigned char step_cnt=0;
-    unsigned char step_slope_factor=1;
-    unsigned char on = 1;
-    char pn = 1;
-    //float last = 0;
-    float step = 0;
-    int32 start_point = 0;
-    int32 pow_sum = 0;
-
-    steepest->lst_out = steepest->now_out;
-
-    if( ++(steepest->cnt) >= len )
-    {
-        (steepest->cnt) = 0; //now
-    }
-
-    //last = arr[ (steepest->cnt) ];
-
-    arr[ (steepest->cnt) ] = in;
-
-    step = (float)(in - steepest->lst_out)/step_num ;
-
-    if(absolute(step)<1)
-    {
-        if(absolute(step)*step_num<2)
-        {
-            step = 0;
-        }
-        else
-        {
-          step = (step > 0) ? 1 : -1;
-        }
-    }
-
-    start_point = steepest->lst_out;
-    do
-    {
-        //start_point = steepest->lst_out;
-        for(i=0;i<len;i++)
-        {
-//          j = steepest->cnt + i + 1;
-//          if( j >= len )
-//          {
-//              j = j - len; 
-//          }
-            pow_sum += my_pow(arr[i] - start_point );
-
-            //start_point += pn *(step_slope_factor *step/len);
-        }
-
-        if(pow_sum - steepest->lst_pow_sum > 0)
-        {
-            if(updw==0)
-            {
-                on = 0;
-            }
-            updw = 1;
-            pn = (pn == 1 )? -1:1;
-
-        }
-        else
-        {
-            updw = 0; 
-            if(step_slope_factor<step_num)
-            {
-                step_slope_factor++;
-            }
-        }
-
-        steepest->lst_pow_sum = pow_sum;
-        pow_sum = 0;
-        start_point += pn *step;
-
-        if(++step_cnt > step_num)
-        {
-            on = 0;
-        }
-            //////
-            if(step_slope_factor>=2)
-            {
-                on = 0;
-
-            }
-            //////
-
-    }
-    while(on == 1);
-
-    steepest->now_out = start_point ;//0.5f *(start_point + steepest->lst_out);//
-
-    steepest->now_velocity_xdt = steepest->now_out - steepest->lst_out;
-}
-
-
-void Data_steepest(void){
-    steepest_descend(steepest_gz_arr, 2, &steepest_gz, 2, (int32)GYRO.Z);
-    steepest_descend(steepest_gy_arr, 2, &steepest_gy , 2, (int32) GYRO.Y);
-
-    sensor.Gyro_deg.Z = steepest_gz.now_out * 0.06404;
-    sensor.Gyro_deg.Y = steepest_gy.now_out * 0.06404;
-}
-
-
-
-//extern int16 aacx,aacy,aacz;
-//extern int16 gyrox,gyroy,gyroz;
-// extern int16 icm_gyro_x,icm_gyro_y,icm_gyro_z;
-// extern int16 icm_acc_x,icm_acc_y,icm_acc_z;
-float Accel_x;
-float Accel_y;
-float Accel_z;
-float Gyro_x;
-float Gyro_y;
-float Gyro_z;
-float Angle_x_temp;
-float Angle_y_temp;
-float Angle_X_Final;
-float Angle_Y_Final;
-
-
-void Angle_Calcu(void)
-{
-    float accx,accy,accz;
-    // get_icm20602_accdata_spi();
-    // get_icm20602_gyro_spi();
-    Get_IcmData();
-//    get_accdata();
-//    get_gyro();
-//    Accel_x = aacx;
-//    Accel_y = aacy;
-//    Accel_z = aacz;
-//    Gyro_x  = gyrox;
-//    Gyro_y  = gyroy;
-//    Gyro_z  = gyroz;
-
-    Accel_x = MPU_ACC.X;
-    Accel_y = MPU_ACC.Y;
-    Accel_z = MPU_ACC.Z;
-    Gyro_x  = GYRO.X;
-    Gyro_y  = GYRO.Y;
-    Gyro_z  = GYRO.Z;
-    if(Accel_x<32764) accx=Accel_x/16384;
-    else              accx=1-(Accel_x-49152)/16384;
-    if(Accel_y<32764) accy=Accel_y/16384;
-    else              accy=1-(Accel_y-49152)/16384;
-    if(Accel_z<32764) accz=Accel_z/16384;
-    else              accz=(Accel_z-49152)/16384;
-
-    Angle_x_temp=(atan(accy/accz))*180/3.14;
-    Angle_y_temp=(atan(accx/accz))*180/3.14;
-
-    if(Accel_x<32764) Angle_y_temp = +Angle_y_temp;
-    if(Accel_x>32764) Angle_y_temp = -Angle_y_temp;
-    if(Accel_y<32764) Angle_x_temp = +Angle_x_temp;
-    if(Accel_y>32764) Angle_x_temp = -Angle_x_temp;
-
-
-    if(Gyro_x<32768) Gyro_x=-(Gyro_x/16.4);
-    if(Gyro_x>32768) Gyro_x=+(65535-Gyro_x)/16.4;
-    if(Gyro_y<32768) Gyro_y=-(Gyro_y/16.4);
-    if(Gyro_y>32768) Gyro_y=+(65535-Gyro_y)/16.4;
-    if(Gyro_z<32768) Gyro_z=-(Gyro_z/16.4);
-    if(Gyro_z>32768) Gyro_z=+(65535-Gyro_z)/16.4;
-
-
-    Kalman_Filter_X(Angle_x_temp,Gyro_x);
-    Kalman_Filter_Y(Angle_y_temp,Gyro_y);
-}
-
-
-
-float Q_angle = 0.1;
-float Q_gyro  = 0.3;
-float R_angle = 0.5;
-float dt      = 0.008;
-char  C_0     = 1;
-float Q_bias, Angle_err;
-float PCt_0, PCt_1, E;
-float K_0, K_1, t_0, t_1;
-float P[4] ={0,0,0,0};
-float PP[2][2] = { { 1, 0 },{ 0, 1 } };
-
-void Kalman_Filter_X(float Accel,float Gyro)
-{
-
-    Angle_X_Final += (Gyro - Q_bias) * dt;
-
-
-    P[0]= Q_angle - PP[0][1] - PP[1][0];
-    P[1]= -PP[1][1];
-    P[2]= -PP[1][1];
-    P[3]= Q_gyro;
-    PP[0][0] += P[0] * dt;
-    PP[0][1] += P[1] * dt;
-    PP[1][0] += P[2] * dt;
-    PP[1][1] += P[3] * dt;
-    Angle_err = Accel - Angle_X_Final;
-
-
-    PCt_0 = C_0 * PP[0][0];
-    PCt_1 = C_0 * PP[1][0];
-    E = R_angle + C_0 * PCt_0;
-    K_0 = PCt_0 / E;
-    K_1 = PCt_1 / E;
-
-
-    t_0 = PCt_0;
-    t_1 = C_0 * PP[0][1];
-    PP[0][0] -= K_0 * t_0;
-    PP[0][1] -= K_0 * t_1;
-    PP[1][0] -= K_1 * t_0;
-    PP[1][1] -= K_1 * t_1;
-
-
-    Angle_X_Final += K_0 * Angle_err;
-    Q_bias        += K_1 * Angle_err;
-    Gyro_x         = Gyro - Q_bias;
-}
-
-
-void Kalman_Filter_Y(float Accel,float Gyro)
-{
-    Angle_Y_Final += (Gyro - Q_bias) * dt;
-    P[0]=Q_angle - PP[0][1] - PP[1][0];
-    P[1]=-PP[1][1];
-    P[2]=-PP[1][1];
-    P[3]=Q_gyro;
-    PP[0][0] += P[0] * dt;
-    PP[0][1] += P[1] * dt;
-    PP[1][0] += P[2] * dt;
-    PP[1][1] += P[3] * dt;
-    Angle_err = Accel - Angle_Y_Final;
-    PCt_0 = C_0 * PP[0][0];
-    PCt_1 = C_0 * PP[1][0];
-    E = R_angle + C_0 * PCt_0;
-    K_0 = PCt_0 / E;
-    K_1 = PCt_1 / E;
-    t_0 = PCt_0;
-    t_1 = C_0 * PP[0][1];
-    PP[0][0] -= K_0 * t_0;
-    PP[0][1] -= K_0 * t_1;
-    PP[1][0] -= K_1 * t_0;
-    PP[1][1] -= K_1 * t_1;
-    Angle_Y_Final   += K_0 * Angle_err;
-    Q_bias  += K_1 * Angle_err;
-    Gyro_y   = Gyro - Q_bias;
-}
-
-
-// 获取icm20602的数据
-// 获取角速度计，加速度计的原始数据并赋值，需在程序的开始的时候实时运行
-void Get_IcmData(void){
-    imu660ra_get_acc();
-    imu660ra_get_gyro();
-    // Data_steepest();                    
-    
-    GYRO.X = imu660ra_gyro_x;
-    GYRO.Y = imu660ra_gyro_y;
-    GYRO.Z = imu660ra_gyro_z;
-    MPU_ACC.X = imu660ra_acc_x;
-	MPU_ACC.Y = imu660ra_acc_y;
-	MPU_ACC.Z = imu660ra_acc_z;
-    // add
-    // GYRO_REAL.X = imu660ra_gyro_x;
-    // GYRO_REAL.Y = imu660ra_gyro_y;
-    // GYRO_REAL.Z = imu660ra_gyro_z;
-    // REAL_ACC.X = imu660ra_acc_x;
-    // REAL_ACC.Y = imu660ra_acc_y;
-    // REAL_ACC.Z = imu660ra_acc_z;
-
-
-    Real_Gyro_Z = sensor.Gyro_deg.Z;
-    Real_Gyro_Y = sensor.Gyro_deg.Y;
-}
-
-// “陀螺仪的使用方式其实很简单”
-// 转角值 = 图像or电感计算出的偏差值 * KP + (本次偏差 - 上次偏差) * KD + 陀螺仪数值 * GKD
-
-// 入口滤波，算数平均
-// void Anglefiltering(void){
-    
-// }
-
-// 互补滤波角度计算
-// void AngleGet(void){
-//     int Angle_acc, Angle_ratio;
-//     float dt = 0.0001249;   //Gy 2ms时间积分系数
-//     double angle_ratio;     //加速度比值
-//     // Anglefiltering();       //入口滤波，算数平均
-
-//     //以下为加速度计取反正切得到角度
-
-//     angle_ratio = ((double)REAL_ACC.X) / (REAL_ACC.Z + 0.1);
-//     Angle_acc = (float)atan(angle_ratio) * 57.29578049;  //加速度计得到的角
-//     if(Angle_acc > 89)
-//         Angle_acc = 89;
-//     if(Angle_acc < -89)
-//         Angle_acc = -89;
-    
-//     //以下为角速度计积分，同融合加速度，得到角度
-
-//     float GY = (float)(GYRO_REAL.Y);
-//     GY = GYRO_REAL.Y - GyroY_Zero;      //去零漂之后的陀螺仪采集值
-
-//     float Angle = (float)(Angle-(float)(GY * dt));
-//     Angle = Angle + (Angle_acc-Angle)*0.001; 
-//     //相当于Angle = Angle*(1-0.00105) + Angle_acc*0.
-// }   
-
+float I_ex, I_ey, I_ez;  // 误差积分
 
 // 陀螺仪滤除零漂
 
 void gyroOffsetInit(void){
-    GYRO_REAL.X = 0;
-    GYRO_REAL.Y = 0;
-    GYRO_REAL.Z = 0;
+    GyroOffset.X = 0;
+    GyroOffset.Y = 0;
+    GyroOffset.Z = 0;
     for(unsigned char i = 0; i < 200; i++){
-        Get_IcmData();
-        GYRO_REAL.X += GYRO.X;
-        GYRO_REAL.Y += GYRO.Y;
-        GYRO_REAL.Z += GYRO.Z;
-        // system_delay_us(50);
+        imu660ra_get_acc();
+        imu660ra_get_gyro();
+        GyroOffset.X += imu660ra_gyro_x;
+        GyroOffset.Y += imu660ra_gyro_y;
+        GyroOffset.Z += imu660ra_gyro_z;
+        system_delay_us(10);
     }
-    GYRO_REAL.X /= 200;
-    GYRO_REAL.Y /= 200;
-    GYRO_REAL.Z /= 200;
+    GyroOffset.X /= 200;
+    GyroOffset.Y /= 200;
+    GyroOffset.Z /= 200;
+}
+
+float fast_sqrt(float x) 
+{
+    float halfx = 0.5f * x;
+    float y = x;
+    long i = *(long *) &y;
+    i = 0x5f3759df - (i >> 1);
+    y = *(float *) &i;
+    y = y * (1.5f - (halfx * y * y));
+    return y;
+}
+
+
+void ICM_getValues(void) 
+{
+    // imu_data.acc_x = (((float) imu660ra_acc_x) * 0.3f) * 8 / 4096 + imu_data.acc_x * (1 - 0.3f);
+    // imu_data.acc_y = (((float) imu660ra_acc_y) * 0.3f) * 8 / 4096 + imu_data.acc_y * (1 - 0.3f);
+    // imu_data.acc_z = (((float) imu660ra_acc_z) * 0.3f) * 8 / 4096 + imu_data.acc_z * (1 - 0.3f);
+
+
+    // //陀螺仪角度转弧度
+    // imu_data.gyro_x = ((float) imu660ra_gyro_x - GyroOffset.X) * M_PI / 180 / 16.4f;
+    // imu_data.gyro_y = ((float) imu660ra_gyro_x - GyroOffset.Y) * M_PI / 180 / 16.4f;
+    // imu_data.gyro_z = ((float) imu660ra_gyro_x - GyroOffset.Z) * M_PI / 180 / 16.4f;
+
+    imu_data.gyro_x = imu660ra_gyro_transition(imu660ra_gyro_x - GyroOffset.X);
+    imu_data.gyro_y = imu660ra_gyro_transition(imu660ra_gyro_y - GyroOffset.Y);
+    imu_data.gyro_z = imu660ra_gyro_transition(imu660ra_gyro_z - GyroOffset.Z);
+}
+
+//互补滤波
+void ICM_AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az) {
+    float halfT = 0.5 * delta_T;
+    float vx, vy, vz;    //当前的机体坐标系上的重力单位向量
+    float ex, ey, ez;    //四元数计算值与加速度计测量值的误差
+    float q0 = Q_info.q0;
+    float q1 = Q_info.q1;
+    float q2 = Q_info.q2;
+    float q3 = Q_info.q3;
+    float q0q0 = q0 * q0;
+    float q0q1 = q0 * q1;
+    float q0q2 = q0 * q2;
+    // float q0q3 = q0 * q3;
+    float q1q1 = q1 * q1;
+    // float q1q2 = q1 * q2;
+    float q1q3 = q1 * q3;
+    float q2q2 = q2 * q2;
+    float q2q3 = q2 * q3;
+    float q3q3 = q3 * q3;
+    // float delta_2 = 0;
+
+    //对加速度数据进行归一化 得到单位加速度
+    float norm = fast_sqrt(ax * ax + ay * ay + az * az);
+    ax = ax * norm;
+    ay = ay * norm;
+    az = az * norm;
+
+    //根据当前四元数的姿态值来估算出各重力分量。用于和加速计实际测量出来的各重力分量进行对比，从而实现对四轴姿态的修正
+    vx = 2 * (q1q3 - q0q2);
+    vy = 2 * (q0q1 + q2q3);
+    vz = q0q0 - q1q1 - q2q2 + q3q3;
+    //vz = (q0*q0-0.5f+q3 * q3) * 2;
+
+    //叉积来计算估算的重力和实际测量的重力这两个重力向量之间的误差。
+    ex = ay * vz - az * vy;
+    ey = az * vx - ax * vz;
+    ez = ax * vy - ay * vx;
+
+    //用叉乘误差来做PI修正陀螺零偏，
+    //通过调节 param_Kp，param_Ki 两个参数，
+    //可以控制加速度计修正陀螺仪积分姿态的速度。
+    I_ex += halfT * ex;   // integral error scaled by Ki
+    I_ey += halfT * ey;
+    I_ez += halfT * ez;
+
+    gx = gx + param_Kp * ex + param_Ki * I_ex;
+    gy = gy + param_Kp * ey + param_Ki * I_ey;
+    gz = gz + param_Kp * ez + param_Ki * I_ez;
+
+
+    /*数据修正完成，下面是四元数微分方程*/
+
+
+    //四元数微分方程，其中halfT为测量周期的1/2，gx gy gz为陀螺仪角速度，以下都是已知量，这里使用了一阶龙哥库塔求解四元数微分方程
+    q0 = q0 + (-q1 * gx - q2 * gy - q3 * gz) * halfT;
+    q1 = q1 + (q0 * gx + q2 * gz - q3 * gy) * halfT;
+    q2 = q2 + (q0 * gy - q1 * gz + q3 * gx) * halfT;
+    q3 = q3 + (q0 * gz + q1 * gy - q2 * gx) * halfT;
+    //    delta_2=(2*halfT*gx)*(2*halfT*gx)+(2*halfT*gy)*(2*halfT*gy)+(2*halfT*gz)*(2*halfT*gz);
+    // 整合四元数率    四元数微分方程  四元数更新算法，二阶毕卡法
+    //    q0 = (1-delta_2/8)*q0 + (-q1*gx - q2*gy - q3*gz)*halfT;			
+    //    q1 = (1-delta_2/8)*q1 + (q0*gx + q2*gz - q3*gy)*halfT;
+    //    q2 = (1-delta_2/8)*q2 + (q0*gy - q1*gz + q3*gx)*halfT;
+    //    q3 = (1-delta_2/8)*q3 + (q0*gz + q1*gy - q2*gx)*halfT
+
+
+    // normalise quaternion
+    norm = fast_sqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
+    Q_info.q0 = q0 * norm;
+    Q_info.q1 = q1 * norm;
+    Q_info.q2 = q2 * norm;
+    Q_info.q3 = q3 * norm;
+}
+
+/*把四元数转换成欧拉角*/
+void ICM_getEulerianAngles(void) {
+
+    //采集陀螺仪数据
+    imu660ra_get_acc();
+    imu660ra_get_gyro();
+
+    ICM_getValues();
+    ICM_AHRSupdate(imu_data.gyro_x, imu_data.gyro_y, imu_data.gyro_z, imu_data.acc_x, imu_data.acc_y, imu_data.acc_z);
+    float q0 = Q_info.q0;
+    float q1 = Q_info.q1;
+    float q2 = Q_info.q2;
+    float q3 = Q_info.q3;
+
+    //四元数计算欧拉角
+    eulerAngle.pitch = asin(-2 * q1 * q3 + 2 * q0 * q2) * 180 / M_PI; // pitch
+    eulerAngle.roll = atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2 * q2 + 1) * 180 / M_PI; // roll
+    eulerAngle.yaw = atan2(2 * q1 * q2 + 2 * q0 * q3, -2 * q2 * q2 - 2 * q3 * q3 + 1) * 180 / M_PI; // yaw
+
+/*   姿态限制*/
+    if (eulerAngle.roll > 90 || eulerAngle.roll < -90) {
+        if (eulerAngle.pitch > 0) {
+            eulerAngle.pitch = 180 - eulerAngle.pitch;
+        }
+        if (eulerAngle.pitch < 0) {
+            eulerAngle.pitch = -(180 + eulerAngle.pitch);
+        }
+    }
+
+    if (eulerAngle.yaw > 360) {
+        eulerAngle.yaw -= 360;
+    } else if (eulerAngle.yaw < 0) {
+        eulerAngle.yaw += 360;
+    }
 }

@@ -1,6 +1,8 @@
 #include "zf_common_headfile.h"
 
-extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
+extern icm_param_t imu_data;
+// extern euler_param_t eulerAngle;
+extern S_FLOAT_XYZ GyroOffset;
 int16 aim_speed = 0;       // 目标速度
 int16 real_speed = 0;      // 左右轮平均速度
 float real_real_speed = 0; // 左右轮平均速度换算成实际速度
@@ -13,26 +15,24 @@ MyPID TurnPID = {0};
 MyPID Turn_NeiPID = {0};
 MyPID ADC_TurnPID = {0};
 
-int Steer_pwm;
-int All_PWM_left, All_PWM_right;
-int Prospect_err;
-int Speed_pwm_all;
+short Steer_pwm;
+short All_PWM_left, All_PWM_right;
+short Prospect_err;
+short Speed_pwm_all;
 int Centerline_Err;
 
 static TASK_COMPONENTS TaskComps[] =
-    {
-        {0, 2, 2, Motor_output_control}, // 角速度内环和D车速度环2ms
-        {0, 10, 10, Trailing_control},   // 转向外环10ms
-        {0, 2, 2, Speed_control},        // C车速度环20ms
-        // {0,  1,  1, KeyScan},                       // 按键扫描函数
+{
+    {0, 2, 2, Motor_output_control}, // 角速度内环和D车速度环2ms
+    {0, 10, 10, Trailing_control},   // 转向外环10ms
+    {0, 2, 2, Speed_control},        // C车速度环20ms
 };
 
 static TASK_COMPONENTS ADC_TaskComps[] =
-    {
-        {0, 2, 2, ADC_Motor_output_control}, // 角速度内环和D车速度环2ms
-        {0, 10, 10, ADC_Trailing_control},   // 转向外环10ms
-        {0, 2, 2, ADC_Speed_control},        // C车速度环20ms
-        // {0,  1,  1, KeyScan},                       // 按键扫描函数
+{
+    {0, 2, 2, ADC_Motor_output_control}, // 角速度内环和D车速度环2ms
+    {0, 10, 10, ADC_Trailing_control},   // 转向外环10ms
+    {0, 2, 2, ADC_Speed_control},        // C车速度环20ms
 };
 
 void PID_int(void)
@@ -57,7 +57,7 @@ void PID_int(void)
     ADC_TurnPID.Ki = 0;
     ADC_TurnPID.Kd = 0;
 
-    Turn_NeiPID.Kp = 2; // 转向内环PID参数（D车用） 4.89
+    Turn_NeiPID.Kp = 2.8; // 转向内环PID参数（D车用） 4.89
     Turn_NeiPID.Ki = 0;
     Turn_NeiPID.Kd = 0;
 }
@@ -145,23 +145,26 @@ void ADC_TaskProcess(void)
 ***************************************************************************************/
 void Motor_output_control()
 {
-    // icm20602_get_gyro();   //获取陀螺仪角速度值
+    // ICM_getEulerianAngles();
+    gyroOffsetInit();
     // imu660ra_get_gyro();
-    Steer_pwm = LocP_DCalc(&Turn_NeiPID, GYRO_REAL.Z, Prospect_err); // 转向内环PWM	 icm20602_gyro_z
+    // ICM_getValues();
+    Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
     Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
 
-    All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
-    All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
+    All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+    All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
 
     motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
 }
 
 void ADC_Motor_output_control()
 {
-    // icm20602_get_gyro();   //获取陀螺仪角速度值
-    // gyroOffsetInit();
-
-    Steer_pwm = LocP_DCalc(&Turn_NeiPID, GYRO_REAL.Z, ADC_PWM); // 转向内环PWM	 icm20602_gyro_z
+    // imu660ra_get_gyro();
+    gyroOffsetInit();
+    // ICM_getEulerianAngles();
+    // ICM_getValues();
+    Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, ADC_PWM); // 转向内环PWM	 icm20602_gyro_z
     Steer_pwm = range_protect(Steer_pwm, -6000, 6000);          // 转向内环PWM限幅
 
     All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出
@@ -178,23 +181,15 @@ void ADC_Motor_output_control()
 ***************************************************************************************/
 void Trailing_control()
 {
-    // Get_deviation();  //电磁采集并获取赛道偏差
-    // Annulus_assist(); //环岛辅助函数
-    // cal_curvature(&(MyRoad_Characteristics.Curve_Err));
     Centerline_Err = Cal_centerline();
-    Prospect_err = LocP_DCalc(&TurnPID, Centerline_Err, 0); // 位置式PD控制转向
-    // ADC_PWM = PlacePID_Control(&TurnPID,Current_Dir,0);//动态位置式PID控制 (用于转向控制)
-    // Steering_Control_Out(ADC_PWM);//(C车用控制舵机转向)
+    Prospect_err = LocP_DCalc(&TurnPID, (short)Centerline_Err, 0); // 位置式PD控制转向
 }
 
 void ADC_Trailing_control()
 {
     Get_deviation(); // 电磁采集并获取赛道偏差
-    // Annulus_assist(); //环岛辅助函数
     ADC_PWM = LocP_DCalc(&ADC_TurnPID, Current_Dir, 0); // 位置式PD控制转向
     ADC_PWM = -ADC_PWM;
-    // ADC_PWM = PlacePID_Control(&TurnPID,Current_Dir,0);//动态位置式PID控制 (用于转向控制)
-    // Steering_Control_Out(ADC_PWM);//(C车用控制舵机转向)
 }
 /****************************速度环（C车用）**************************************
 函数：  void Speed_control()
@@ -209,20 +204,8 @@ void Speed_control()
     get_motor_speed(); // 编码器测量
     real_speed = (speed1 + speed2) / 2;
     real_real_speed = speed1 * 0.0432f; // 0.0432f
-    // Speed_pwm_left+=real_speed;
-    //	  if(Speed_pwm_left>20000)
-    //		{
-    //			DisableGlobalIRQ();//关闭总中断
-    //		  go_motor(0,0);
-    //		}
     aim_speed = 350; // 目标速度
-
-    // Speed_pwm_all = LocP_DCalc(&SpeedPID,aim_speed ,real_speed); //D车速度环（位置式）
     Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
-
-    // Speed_pwm_left += IncPIDCalc(&L_SpeedPID,aim_speed , left_speed); //C车左轮速度环（位置式）
-    // Speed_pwm_right += IncPIDCalc(&R_SpeedPID, aim_speed, right_speed); //C车右轮速度环（位置式）
-    // go_motor(Speed_pwm_left,Speed_pwm_rig .ht);                         //动力输出
 }
 
 void ADC_Speed_control()
@@ -231,18 +214,6 @@ void ADC_Speed_control()
     get_motor_speed();      //编码器测量
     real_speed = (speed1 + speed2) / 2;
     real_real_speed = speed1 * 0.0432f; // 0.0432f
-    // Speed_pwm_left+=real_speed;
-    //	  if(Speed_pwm_left>20000)
-    //		{
-    //			DisableGlobalIRQ();//关闭总中断
-    //		  go_motor(0,0);
-    //		}
     aim_speed = 350; // 目标速度
-
-    // Speed_pwm_all = LocP_DCalc(&SpeedPID,aim_speed ,real_speed); //D车速度环（位置式）
     Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
-
-    // Speed_pwm_left += IncPIDCalc(&L_SpeedPID,aim_speed , left_speed); //C车左轮速度环（位置式）
-    // Speed_pwm_right += IncPIDCalc(&R_SpeedPID, aim_speed, right_speed); //C车右轮速度环（位置式）
-    // go_motor(Speed_pwm_left,Speed_pwm_rig .ht);                         //动力输出
 }

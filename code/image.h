@@ -15,6 +15,7 @@
 //宏定义
 #define image_h	120//图像高度
 #define image_w	188//图像宽度
+#define CLIP_IMAGE_H 80
 
 #define white_pixel	255
 #define black_pixel	0
@@ -22,6 +23,9 @@
 #define bin_jump_num	1//跳过的点数
 #define border_max	image_w-2 //边界最大值
 #define border_min	1	//边界最小值
+
+#define AT_IMAGE(img, x, y)          ((img)->data[(y)*(img)->step+(x)])
+#define AT_IMAGE_CLIP(img, x, y)     AT_IMAGE(img, clip(x, 0, (img)->width-1), clip(y, 0, (img)->height-1))
 
 extern unsigned char centerline[120], leftline[120], rightline[120];
 extern unsigned char image_deal[MT9V03X_H][MT9V03X_W];
@@ -33,8 +37,7 @@ extern int BlackPoints_Nums;
 // extern short image_threshold;
 
 
-extern unsigned char original_image[image_h][image_w];
-extern unsigned char bin_image[image_h][image_w];  //图像数组
+extern unsigned char bin_image[CLIP_IMAGE_H][MT9V03X_W];  //图像数组
 extern unsigned char l_border[image_h];//左线数组
 extern unsigned char r_border[image_h];//右线数组
 extern unsigned char center_line[image_h];//中线数组
@@ -42,6 +45,10 @@ extern unsigned char left_lost_line; // 左边丢线数目
 extern unsigned char right_lost_line;  // 右边丢线数目
 extern unsigned char image_thereshold;
 extern int centerline_k;
+extern int ipts0[MT9V03X_H][2];
+extern int ipts1[MT9V03X_H][2];
+extern int ipts0_num, ipts1_num;
+extern float block_size;
 
 extern void image_process(void);   //直接在中断或循环里调用此程序就可以循环执行了
 
@@ -53,39 +60,34 @@ typedef struct
     int Left_Curve;         // 左线弧度
     int Right_Curve;        // 右线弧度
     int Curve_Err;          // 中线弧度偏差
-}Road_Characteristics;
+} Road_Charac;
+
+typedef struct image {
+    uint8_t *data;
+    uint32_t width;
+    uint32_t height;
+    uint32_t step;
+} image_t;
+
+typedef struct fimage {
+    float *data;
+    uint32_t width;
+    uint32_t height;
+    uint32_t step;
+} fimage_t;
 
 
-extern Road_Characteristics MyRoad_Characteristics;
+extern Road_Charac MyRoad_Charac;
 
-void Camera(void);
-
-unsigned char otsuThreshold(unsigned char *image, unsigned short col, unsigned short row);
-
-void Searching_for_boundaries(unsigned char (*binary_array)[188]);
-
-void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Characteristics *);
+void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Charac *);
 
 void Hightlight_Lines(unsigned char (*binary_array)[188]);
 
-void lcd_binaryzation032_zoom(unsigned char *p, unsigned char *q, unsigned short width, unsigned short height, unsigned char threshold);
-
-void Four_neighbourhood_Filter(unsigned char (*binary_array)[188]);
-
-float one_curvature(int x1, int y1);
-
-void cal_curvature(int *);
-
 void sobel(unsigned char (*imageIn)[188], unsigned char (*imageOut)[188], unsigned char Threshold);
-
-short GetOSTU (unsigned char tmImage[MT9V03X_H][MT9V03X_W]);
 
 int regression(int startline,int endline);
 
 short Cal_BlackPoints(unsigned char (*binary_array)[188], unsigned char Start_Row, unsigned char End_Row);
-
-void Eight_neighborhood(unsigned char flag);
-
 
 int my_abs(int value);
 
@@ -117,5 +119,12 @@ int Cal_centerline(void);
 
 void Cal_lostline(void);
 
+void LocalThresholding(void);
+
+void findline_lefthand_adaptive(unsigned char(*img)[188],unsigned char width,unsigned char height, unsigned char block_size, unsigned char clip_value, unsigned char x, unsigned char y, unsigned char (*pts)[2], unsigned char *num);
+
+void findline_righthand_adaptive(unsigned char(*img)[188],unsigned char width,unsigned char height, unsigned char block_size, unsigned char clip_value, unsigned char x, unsigned char y, unsigned char (*pts)[2], unsigned char *num);
+
+void my_process_image(void);
 
 #endif /* CODE_IMAGE_H_ */
