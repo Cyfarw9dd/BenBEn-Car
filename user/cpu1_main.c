@@ -81,12 +81,12 @@ void core1_main(void)
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        while (outflag)
-        {
-            motor_ctrl(3000, 2000);
-            system_delay_ms(500);
-            outflag = 0;
-        }
+        // while (outflag)
+        // {
+        //     motor_ctrl(3000, 2000);
+        //     system_delay_ms(500);
+        //     outflag = 0;
+        // }
         // List_Switch();
         // cal_curvature(&(MyRoad_Characteristics.Curve_Err));
         // 以下为常用的测试代码
