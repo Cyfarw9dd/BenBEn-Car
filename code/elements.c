@@ -34,7 +34,7 @@ unsigned char Downslope_PointFlag = 0;      // 下坡标志位
 unsigned char Parking_PointFlag = 0;        // 停车标志位
 unsigned char BreakRoad_PointFlag = 0;      // 断路标志位
 unsigned char Obstacle_PointFlag = 0;       // 障碍标志位
-unsigned char Departure_PointFlag;          // 发车标志位
+unsigned char Departure_PointFlag = 0;          // 发车标志位
 
 
 void Judging_Elements(void)
@@ -606,5 +606,13 @@ void Judging_Break_Road(unsigned char (*binary_array)[188])
     else                    BreakRoad_PointFlag = 0;
 }
 
-
-
+void Departure(void)
+{
+    while (!Departure_PointFlag)
+    {
+        pit_disable(CCU60_CH0);
+        // pit_disable(CCU60_CH1);
+    }
+    Departure_PointFlag = 1;
+    pit_enable(CCU60_CH0);
+}

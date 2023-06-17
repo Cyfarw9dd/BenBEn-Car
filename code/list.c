@@ -1,7 +1,7 @@
 #include "list.h"
 
 extern icm_param_t imu_data;
-// extern euler_param_t eulerAngle;
+extern euler_param_t eulerAngle;
 extern S_FLOAT_XYZ GyroOffset;
 
 char Key1_last_status;
@@ -175,7 +175,8 @@ void List_Switch(void)
         }
         else if (strcmp(current_list_item->ListName, "Departure") == 0)   // 发车模式
         {
-            // Departure_PointFlag = 1;
+            highlight_col = 0;
+            Departure_PointFlag = 1;
             Departure_cnt = 50;
         }
     }
@@ -255,9 +256,9 @@ void show_params(void)
         // tft180_show_string(0, 65, "imu_data_x");        
         // tft180_show_string(0, 80, "imu_data_x");        
         // tft180_show_string(0, 100, "imu_data_x");     
-        tft180_show_float(0, 65, imu_data.gyro_x, 5, 5);
-        tft180_show_float(0, 80, imu_data.gyro_y, 5, 5);
-        tft180_show_float(0, 100, imu_data.gyro_z, 5, 5);  
+        tft180_show_float(0, 65, eulerAngle.pitch, 5, 5);
+        tft180_show_float(0, 80, eulerAngle.roll, 5, 5);
+        tft180_show_float(0, 100, eulerAngle.yaw, 5, 5);  
     }
     tft180_clear();
 }

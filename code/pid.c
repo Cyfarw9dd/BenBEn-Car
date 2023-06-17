@@ -210,5 +210,5 @@ int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint)
 
     sptr->LastError = iError;
 
-    return(iIncpid);
+    return (iIncpid);
 }

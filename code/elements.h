@@ -78,6 +78,6 @@ void Judging_Slope(void);
 
 void Judging_Break_Road(unsigned char (*binary_array)[188]);
 
-
+void Departure(void);
 
 #endif /* CODE_ELEMENTS_H_ */

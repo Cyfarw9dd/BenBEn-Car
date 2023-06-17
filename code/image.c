@@ -16,7 +16,8 @@ unsigned char image_deal[MT9V03X_H][MT9V03X_W]; //声明一个二维数组，用
 unsigned char Left_RoadWidth[120];              //定义左半边赛道宽度，即中线到左边线的距离
 unsigned char Right_RoadWidth[120];             //定义右半边赛道宽度
 
-unsigned char original_image[CLIP_IMAGE_H][MT9V03X_W];
+unsigned char original_image[image_h][MT9V03X_W];
+unsigned char bin_image[image_h][image_w];//图像数组
 unsigned char image_thereshold;//图像分割阈值
 
 
@@ -247,7 +248,7 @@ void Get_image(unsigned char(*mt9v03x_image)[image_w])
 {
 #define use_num		1	//1就是不压缩，2就是压缩一倍	
 	unsigned char i = 0, j = 0, row = 0, line = 0;
-    for (i = 119; i < image_h; i -= use_num)          //
+    for (i = 0; i < image_h; i += use_num)          //
     {
         for (j = 0; j <image_w; j += use_num)     //
         {
@@ -258,30 +259,13 @@ void Get_image(unsigned char(*mt9v03x_image)[image_w])
         row++;
     }
 }
-
-// 针对现在的摄像头俯角，只处理80*188的图像
-void my_get_image(void)
-{
-    int row = BottomRow, line = StartCoL;
-
-    for (int i = BottomRow; i > BottomRow - 80; i--)
-    {
-        for (int j = StartCoL; j < EndCoL; j++)
-        {
-            original_image[row][line] = mt9v03x_image[i][j];
-            line++;
-        }
-        line = 0;
-        row--;
-    }
-}
 //------------------------------------------------------------------------------------------------------------------
 //  @brief     动态阈值
 //  @since      v1.0 
 //------------------------------------------------------------------------------------------------------------------
 unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned short row)
 {
-    #define GrayScale 256
+#define GrayScale 256
     unsigned short Image_Width  = col;
     unsigned short Image_Height = row;
     int X; unsigned short Y;
@@ -299,10 +283,10 @@ unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned s
     unsigned char Threshold = 0;
 	
 	
-    for (Y = BottomRow; Y > BottomRow - 80; Y--) //Y<Image_Height改为Y =Image_Height；以便进行 行二值化
+    for (Y = 0; Y <Image_Height; Y++) //Y<Image_Height改为Y =Image_Height；以便进行 行二值化
     {
         //Y=Image_Height;
-        for (X = 0; X < EndCoL; X++)
+        for (X = 0; X < Image_Width; X++)
         {
         HistGram[(int)data[Y*Image_Width + X]]++; //统计每个灰度值的个数信息
         }
@@ -357,14 +341,14 @@ unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned s
 //  @brief      图像二值化，这里用的是大津法二值化。
 //  @since      v1.0 
 //------------------------------------------------------------------------------------------------------------------
-unsigned char bin_image[CLIP_IMAGE_H][MT9V03X_W];//图像数组
+unsigned char bin_image[image_h][image_w];//图像数组
 void turn_to_bin(void)
 {
   unsigned char i,j;
- image_thereshold = OtsuThreshold(original_image[0], image_w, image_h - 80);
-  for(i = BottomRow; i > BottomRow - 80; i--)
+ image_thereshold = OtsuThreshold(original_image[0], image_w, image_h);
+  for(i = 0;i<image_h;i++)
   {
-      for(j = 0;j<MT9V03X_W;j++)
+      for(j = 0;j<image_w;j++)
       {
           if(original_image[i][j]>image_thereshold)bin_image[i][j] = white_pixel;
           else bin_image[i][j] = black_pixel;
@@ -585,8 +569,8 @@ void search_l_r(unsigned short break_flag, unsigned char(*image)[image_w], unsig
 			&& (points_r[r_data_statics][1] > points_l[l_data_statics - 1][1]))//左边比右边高且已经向下生长了
 		{
 			//printf("\n左边开始向下了，等待右边，等待中... \n");
-			center_point_l[0] = (unsigned char)points_l[l_data_statics - 1][0];//x
-			center_point_l[1] = (unsigned char)points_l[l_data_statics - 1][1];//y
+			center_point_l[0] = points_l[l_data_statics - 1][0];//x
+			center_point_l[1] = points_l[l_data_statics - 1][1];//y
 			l_data_statics--;
 		}
 		r_data_statics++;//索引加一
@@ -795,29 +779,29 @@ example： image_process();
 */
 void image_process(void)
 {
-    unsigned char hightest = 0;//定义一个最高行，tip：这里的最高指的是y值的最小
-    /*这是离线调试用的*/
-    // Get_image(&mt9v03x_image[0]);
-    my_get_image();
-    turn_to_bin();
-    /*提取赛道边界*/
-    image_filter(&bin_image[0]);//滤波
-    image_draw_rectan(&bin_image[0]);//预处理
-    //清零
-    data_stastics_l = 0;
-    data_stastics_r = 0;
-    if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找到就一直找
-    {
-        // printf("正在开始八领域\n");
-        search_l_r((unsigned short)USE_num, &bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
-        // printf("八邻域已结束\n");
-        // 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
-        get_left(data_stastics_l);
-        get_right(data_stastics_r);
-        //处理函数放这里，不要放到if外面去了，不要放到if外面去了，不要放到if外面去了，重要的事说三遍
+unsigned short i;
+unsigned char hightest = 0;//定义一个最高行，tip：这里的最高指的是y值的最小
+/*这是离线调试用的*/
+Get_image(&mt9v03x_image[0]);
+turn_to_bin();
+/*提取赛道边界*/
+image_filter(&bin_image[0]);//滤波
+image_draw_rectan(&bin_image[0]);//预处理
+//清零
+data_stastics_l = 0;
+data_stastics_r = 0;
+if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找到就一直找
+{
+	// printf("正在开始八领域\n");
+	search_l_r((unsigned short)USE_num, &bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
+	// printf("八邻域已结束\n");
+	// 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
+	get_left(data_stastics_l);
+	get_right(data_stastics_r);
+	//处理函数放这里，不要放到if外面去了，不要放到if外面去了，不要放到if外面去了，重要的事说三遍
 
-    }
-    centerline_k = regression(BottomRow - 50, BottomRow);
+}
+centerline_k = regression(BottomRow - 50, BottomRow);
 
 }
 

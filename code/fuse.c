@@ -25,7 +25,7 @@ static TASK_COMPONENTS TaskComps[] =
 {
     {0, 2, 2, Motor_output_control}, // 角速度内环和D车速度环2ms
     {0, 10, 10, Trailing_control},   // 转向外环10ms
-    {0, 2, 2, Speed_control},        // C车速度环20ms
+    {0, 20, 20, Speed_control},        // C车速度环20ms
 };
 
 static TASK_COMPONENTS ADC_TaskComps[] =
@@ -49,7 +49,7 @@ void PID_int(void)
     R_SpeedPID.Ki = 0.9;
     R_SpeedPID.Kd = 0;
 
-    TurnPID.Kp = 100; // 转向环PID参数 （C车只用调这个，不用串级转向）
+    TurnPID.Kp = 130; // 转向环PID参数 （C车只用调这个，不用串级转向）
     TurnPID.Ki = 0;
     TurnPID.Kd = 0;
 
@@ -152,8 +152,8 @@ void Motor_output_control()
     Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
     Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
 
-    All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
-    All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
+    All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+    All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
 
     motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
 }
@@ -165,7 +165,7 @@ void ADC_Motor_output_control()
     // ICM_getEulerianAngles();
     // ICM_getValues();
     Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, ADC_PWM); // 转向内环PWM	 icm20602_gyro_z
-    Steer_pwm = range_protect(Steer_pwm, -6000, 6000);          // 转向内环PWM限幅
+    Steer_pwm = range_protect(Steer_pwm, -3000, 3000);          // 转向内环PWM限幅
 
     All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出
     All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
@@ -204,8 +204,9 @@ void Speed_control()
     get_motor_speed(); // 编码器测量
     real_speed = (speed1 + speed2) / 2;
     real_real_speed = speed1 * 0.0432f; // 0.0432f
-    aim_speed = 350; // 目标速度
+    aim_speed = 450; // 目标速度
     Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
+    range_protect(Speed_pwm_all, -6000, 6000); 
 }
 
 void ADC_Speed_control()
@@ -214,6 +215,6 @@ void ADC_Speed_control()
     get_motor_speed();      //编码器测量
     real_speed = (speed1 + speed2) / 2;
     real_real_speed = speed1 * 0.0432f; // 0.0432f
-    aim_speed = 350; // 目标速度
+    aim_speed = 200; // 目标速度
     Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
 }

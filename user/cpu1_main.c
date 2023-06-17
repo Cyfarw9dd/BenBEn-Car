@@ -102,12 +102,6 @@ void core1_main(void)
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        // while (!Departure_PointFlag)
-        // {
-        //     pit_disable(CCU60_CH0);
-        //     // pit_disable(CCU60_CH1);
-        // }
-        // pit_enable(CCU60_CH0);
         // pit_enable(CCU60_CH1);
         // #if 0
         // while (outflag)
@@ -125,6 +119,7 @@ void core1_main(void)
         //     outflag = 0;
         // }
         // #endif 
+        Departure();
         TaskProcess();
         // ADC_TaskProcess();
         image_process();
