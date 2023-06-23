@@ -24,8 +24,8 @@
 
 #define BUZZER ATOM2_CH0_P33_10                                                  // 定义蜂鸣器引脚
 
-extern char buzzer_flag;
-extern char buzzer_cnt;
+extern int buzzer_flag;
+extern int buzzer_cnt;
 // #define CURVE_ERR 50
 enum motor_mode
 {

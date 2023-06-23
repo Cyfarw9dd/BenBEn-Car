@@ -41,13 +41,8 @@
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU1的RAM中
 
 // **************************** 代码区域 ****************************
-// buzzer p33.1
-#define PIT_CCU60_ms 5
-#define BUZZER ATOM2_CH0_P33_10
 unsigned char outflag = 0;      // 出库标志位
 
-extern short speed1, speed2;
-extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
 
 void core1_main(void)
 {
@@ -119,14 +114,14 @@ void core1_main(void)
         //     outflag = 0;
         // }
         // #endif 
-        Departure();
+        Traits_process();
         TaskProcess();
         // ADC_TaskProcess();
         image_process();
         // my_process_image();
-        // Judging_Elements();
         Deal_Road_Characteristics(&bin_image[0], &MyRoad_Charac);      
-        // sendimg_binary_CHK(bin_image[0], MT9V03X_W, MT9V03X_H, image_thereshold, 25);       
+        // sendimg_binary_CHK(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, 0, 25);     
+        // sendimg_A(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);  
         // 此处编写需要循环执行的代码
     }
 }

@@ -43,7 +43,7 @@ IFX_INTERRUPT(cc60_pit_ch0_isr, 0, CCU6_0_CH0_ISR_PRIORITY)
 {
     interrupt_global_enable(0);                     // ¿ªÆôÖÐ¶ÏÇ¶Ì×
     pit_clear_flag(CCU60_CH0);
-    TaskRemarks();
+    TaskRemarks(); 
 
 }
 
@@ -62,18 +62,7 @@ IFX_INTERRUPT(cc61_pit_ch0_isr, 0, CCU6_1_CH0_ISR_PRIORITY)
     interrupt_global_enable(0);                     // ¿ªÆôÖÐ¶ÏÇ¶Ì×
     pit_clear_flag(CCU61_CH0);
 
-    // if (buzzer_flag == 0)   buzzer_cnt = 0;
-    // if (buzzer_flag == 1)
-    // {
-    //     buzzer_cnt++;
-    // }   
     List_Switch(); 
-    // Departure_cnt--;
-    // if (Departure_cnt < 0)
-    // {
-    //     Departure_PointFlag = 1;
-    //     Departure_cnt = 0;
-    // }
 
 }
 

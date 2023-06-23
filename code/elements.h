@@ -31,6 +31,7 @@ extern short Rounding_RCounter;
 extern short RoundAbout_LCounter;
 extern short RoundAbout_RCounter;
 extern short Departure_cnt;
+extern int blackpoints;
 
 extern unsigned char Present_RoundAbout_PointFlagL;
 extern unsigned char Present_RoundAbout_PointFlagR;

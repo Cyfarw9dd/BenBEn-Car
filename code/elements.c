@@ -4,12 +4,7 @@
     elements -> 环岛 车库 断路 路障 十字 坡道
     移植代码 -> 去除三叉和回环
 */
-#include "elements.h"
-#include "image.h"
-#include "gyro.h"
-#include "cycle.h"
-#include "control.h"
-#include "pid.h"
+#include "zf_common_headfile.h"
                          
 changepoint Parking_L, Parking_R;                                                                   // 定义车库拐点结构体
 changepoint RoundAbout_LeftDown, RoundAbout_LeftAbove, RoundAbout_RightDown, RoundAbout_RightAbove; // 环岛拐点结构体
@@ -20,6 +15,7 @@ short Downslope_Counter = 0;    // 下坡识别计时器
 short Rounding_LCounter = 0;    // 左环岛识别计时器
 short Rounding_RCounter = 0;    // 右环岛识别计时器
 short Departure_cnt = 0;        // 发车计数器
+int blackpoints = 0;
 
 unsigned char Present_RoundAbout_PointFlagL = 1;    /*********************/
 unsigned char Present_RoundAbout_PointFlagR = 1;
@@ -584,25 +580,25 @@ void Judging_Slope(void){
 
 void Judging_Break_Road(unsigned char (*binary_array)[188])
 {
-    int blackpoints = 0;
-    for (int row = 119; row > 118; row --)
+    blackpoints = 0;
+    for (int row = 119; row > 117; row --)
     {
-        for (int left_col = 93; left_col > 0; left_col--)
+        for (int left_col = 93; left_col > 0; left_col -= 3)
         {
-            if (mt9v03x_image[row][left_col] < THRESHOLD)
+            if (mt9v03x_image[row][left_col + 3] < image_thereshold)
             {
                 blackpoints++;
             }
         }
-        for (int right_col = 0; right_col < 187; right_col++)
+        for (int right_col = 0; right_col < 187; right_col += 3)
         {
-            if (mt9v03x_image[row][right_col] < THRESHOLD)
+            if (mt9v03x_image[row][right_col - 3] < image_thereshold)
             {
                 blackpoints++;
             }
         }
     }
-    if (blackpoints > 300)  BreakRoad_PointFlag = 1;
+    if (blackpoints > 70)  BreakRoad_PointFlag = 1;
     else                    BreakRoad_PointFlag = 0;
 }
 

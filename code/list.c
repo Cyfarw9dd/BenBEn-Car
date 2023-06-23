@@ -37,7 +37,8 @@ List MyList[] =
     {11, "gray image", show_gray_image, NULL},             // 显示灰度图像
     {12, "binary Imange", show_binary_image, NULL},          // 显示二值化图像
     {13, "show boudaries", show_boundaries, NULL},         // 显示图像边界
-    {14, "back to main", NULL, NULL},           // 返回主菜单
+    {14, "show road traits", show_roadtraits, NULL},
+    {15, "back to main", NULL, NULL},           // 返回主菜单
     {2, "Tuning", NULL, NULL},
     {21, "Speed Cycle", NULL, NULL},
     {211, "Camera", NULL, NULL},
@@ -177,7 +178,11 @@ void List_Switch(void)
         {
             highlight_col = 0;
             Departure_PointFlag = 1;
-            Departure_cnt = 50;
+        }
+        else if (strcmp(current_list_item->ListName, "buzzer test") == 0)   // 发车模式
+        {
+            highlight_col = 0;
+            buzzer_flag = 1;
         }
     }
     else if (Key4_flag)
@@ -199,8 +204,8 @@ void show_gray_image(void)
     {
         MyKeyScan();
         tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 2, MT9V03X_H / 2, 0);
-        tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(110, 65, StartLine_PointFlag, 2);
-        tft180_show_string(0, 80, "LRoundAbout_PFlag");     tft180_show_int(110, 80, RoundAbout_PointFlag_L, 2);
+        tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(100, 65, lnum, 3);
+        tft180_show_string(0, 80, "LRoundAbout_PFlag");     tft180_show_int(110, 80, rnum, 2);
         tft180_show_string(0, 95, "RRoundAbout_PFlag");     tft180_show_int(110, 95, RoundAbout_PointFlag_R, 2);
         tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad_PointFlag, 2);
         tft180_show_string(0, 125, "Obstacle_PFlag");      tft180_show_int(110, 125, Obstacle_PointFlag, 2);
@@ -221,7 +226,10 @@ void show_binary_image(void)
         tft180_show_string(0, 95, "RRoundAbout_PFlag");     tft180_show_int(110, 95, RoundAbout_PointFlag_R, 2);
         tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad_PointFlag, 2);
         tft180_show_string(0, 125, "Obstacle_PFlag");      tft180_show_int(110, 125, Obstacle_PointFlag, 2);
-        
+        tft180_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] / 2, RGB565_BLUE);
+        tft180_draw_point(checkline_l.col[1] / 2, checkline_l.row[1] / 2, RGB565_RED);
+        tft180_draw_point(checkline_r.col[0] / 2, checkline_r.row[0] / 2, RGB565_BLUE);
+        tft180_draw_point(checkline_r.col[1] / 2, checkline_r.row[1] / 2, RGB565_RED);
     }
     tft180_clear();
         
@@ -233,7 +241,23 @@ void show_boundaries(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        Hightlight_Lines(&bin_image[0]);
+        // tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        Hightlight_Lines(bin_image[0]);
+        // tft180_show_int(0, 65, ipts0_num, 3);
+        // tft180_show_int(0, 80, ipts1_num, 3);
+        // tft180_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] / 2, RGB565_WHITE);
+        // tft180_draw_point(checkline_l.col[0] + 1 / 2, checkline_l.row[0] / 2, RGB565_WHITE);
+        // tft180_draw_point(checkline_l.col[0] - 1 / 2, checkline_l.row[0] / 2, RGB565_WHITE);
+        // tft180_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] + 1 / 2, RGB565_WHITE);
+        // tft180_draw_point(checkline_l.col[0] + 1 / 2, checkline_l.row[0] + 1 / 2, RGB565_WHITE);
+        // tft180_draw_point(checkline_l.col[0] - 1 / 2, checkline_l.row[0] + 1 / 2, RGB565_WHITE);
+        // tft180_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] - 1 / 2, RGB565_WHITE);
+        // tft180_draw_point(checkline_l.col[0] + 1 / 2, checkline_l.row[0] - 1 / 2, RGB565_WHITE);
+        // tft180_draw_point(checkline_l.col[0] - 1 / 2, checkline_l.row[0] - 1 / 2, RGB565_WHITE);
+
+        // tft180_draw_point(checkline_l.col[1] / 2, checkline_l.row[1] / 2, RGB565_WHITE);
+        // tft180_draw_point(checkline_r.col[0] / 2, checkline_r.row[0] / 2, RGB565_WHITE);
+        // tft180_draw_point(checkline_r.col[1] / 2, checkline_r.row[1] / 2, RGB565_WHITE);
         tft180_clear();
     }
     tft180_clear();
@@ -256,9 +280,24 @@ void show_params(void)
         // tft180_show_string(0, 65, "imu_data_x");        
         // tft180_show_string(0, 80, "imu_data_x");        
         // tft180_show_string(0, 100, "imu_data_x");     
-        tft180_show_float(0, 65, eulerAngle.pitch, 5, 5);
-        tft180_show_float(0, 80, eulerAngle.roll, 5, 5);
-        tft180_show_float(0, 100, eulerAngle.yaw, 5, 5);  
+        tft180_show_float(0, 65, adc_value[0], 5, 5);
+        tft180_show_float(0, 80, adc_value[1], 5, 5);
+        tft180_show_float(0, 100, adc_value[2], 5, 5); 
+        tft180_show_float(0, 120, adc_value[3], 5, 5); 
+    }
+    tft180_clear();
+}
+
+void show_roadtraits(void)
+{
+    tft180_clear();
+    Key_flag_clear();
+    while (!Key3_flag)
+    {
+        MyKeyScan();
+        tft180_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 2, MT9V03X_H / 2, 0);
+        tft180_show_string(0, 65, "lnum");      tft180_show_int(110, 65, lnum, 2);
+        tft180_show_string(0, 80, "rnum");      tft180_show_int(110, 80, rnum, 2);
     }
     tft180_clear();
 }

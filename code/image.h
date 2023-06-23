@@ -3,6 +3,13 @@
 
 #include "zf_common_headfile.h"
 
+extern int position_x;
+extern int position_y;
+extern int position1_x;
+extern int position1_y;
+extern int ipts0_num;
+extern int ipts1_num;
+
 #define USER_SIZE_H 120
 #define USER_SIZE_W 188
 
@@ -10,6 +17,7 @@
 #define uesr_RED     0XF800    //红色
 #define uesr_GREEN   0X07E0    //绿色
 #define uesr_BLUE    0X001F    //蓝色
+#define TopRow  0
 
 
 //宏定义
@@ -48,7 +56,7 @@ extern int centerline_k;
 extern int ipts0[MT9V03X_H][2];
 extern int ipts1[MT9V03X_H][2];
 extern int ipts0_num, ipts1_num;
-extern float block_size;
+extern float Block_size;
 
 extern void image_process(void);   //直接在中断或循环里调用此程序就可以循环执行了
 
@@ -117,8 +125,6 @@ void image_draw_rectan(unsigned char(*image)[image_w]);
 
 int Cal_centerline(void);
 
-void Cal_lostline(void);
-
 void LocalThresholding(void);
 
 void findline_lefthand_adaptive(unsigned char(*img)[188],unsigned char width,unsigned char height, unsigned char block_size, unsigned char clip_value, unsigned char x, unsigned char y, unsigned char (*pts)[2], unsigned char *num);
@@ -126,5 +132,7 @@ void findline_lefthand_adaptive(unsigned char(*img)[188],unsigned char width,uns
 void findline_righthand_adaptive(unsigned char(*img)[188],unsigned char width,unsigned char height, unsigned char block_size, unsigned char clip_value, unsigned char x, unsigned char y, unsigned char (*pts)[2], unsigned char *num);
 
 void my_process_image(void);
+
+unsigned char Gray_Search_Line(unsigned char(*img)[188],unsigned char i1,unsigned char j1,unsigned char i2,unsigned char j2,unsigned char thres);
 
 #endif /* CODE_IMAGE_H_ */

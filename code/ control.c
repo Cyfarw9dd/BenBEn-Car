@@ -1,12 +1,10 @@
 #include "zf_common_headfile.h"
-#include "control.h"
-#include "pid.h"
-#include "cycle.h"
+
 
 
 short speed1 = 0, speed2 = 0; // 定义编码器值获取变量
-char buzzer_cnt = 0;
-char buzzer_flag = 0;
+int buzzer_cnt = 0;
+int buzzer_flag = 0;
 
 float speed_array[2];
 
@@ -89,8 +87,10 @@ void Quick_Break(void)
 void Buzzer(void)
 {
     // 蜂鸣器相应函数，计数在中断中执行
-    if(buzzer_cnt < 25)
-        pwm_set_duty(BUZZER, 8000);
+    pwm_set_duty(BUZZER, 7000);
+    system_delay_ms(1000);
+    pwm_set_duty(BUZZER, 0);
+    system_delay_ms(1000);
 }
 
 // 速度决策将运行在速度环中，计算结果串在转向内环中

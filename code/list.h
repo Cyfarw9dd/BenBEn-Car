@@ -48,4 +48,6 @@ void tuning(void);
 
 void show_params(void);
 
+void show_roadtraits(void);
+
 #endif /* CODE_LIST_H_ */

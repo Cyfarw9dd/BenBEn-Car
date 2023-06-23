@@ -1,10 +1,17 @@
 #include "zf_common_headfile.h"
-
+#define USE_num	image_h*3	//定义找点的数组成员个数按理说300个点能放下，但是有些特殊情况确实难顶，多定义了一点
 #define Eightboundary 1
 #define AT                  AT_IMAGE
 #define AT_CLIP(img, x, y)  AT_IMAGE((img), clip((x), 0, (img)->width-1), clip((y), 0, (img)->height-1));
 #define DEF_IMAGE(ptr, w, h)         {.data=ptr, .width=w, .height=h, .step=w}
 #define ROI_IMAGE(img, x1, y1, w, h) {.data=&AT_IMAGE(img, x1, y1), .width=w, .height=h, .step=img.width}
+unsigned short points_l[(unsigned short)USE_num][2] = { {  0 } };//左线
+unsigned short points_r[(unsigned short)USE_num][2] = { {  0 } };//右线
+unsigned short dir_r[(unsigned short)USE_num] = { 0 };//用来存储右边生长方向
+unsigned short dir_l[(unsigned short)USE_num] = { 0 };//用来存储左边生长方向
+unsigned short data_stastics_l = 0;//统计左边找到点的个数
+unsigned short data_stastics_r = 0;//统计右边找到点的个数
+unsigned char hightest = 0;//最高点
 
 image_t img_raw = DEF_IMAGE(NULL, MT9V03X_W, MT9V03X_H);
 
@@ -25,7 +32,13 @@ int BlackPoints_Nums = 0;
 int ipts0[MT9V03X_H][2];
 int ipts1[MT9V03X_H][2];
 int ipts0_num, ipts1_num;
-float block_size = 5;
+int *ipts0_nump = &ipts0_num;
+int *ipts1_nump = &ipts1_num;
+int position_x;
+int position_y;
+int position1_x;
+int position1_y;
+float Block_size = 5;
 
 
 /* 前进方向定义：
@@ -80,11 +93,18 @@ void Hightlight_Lines(unsigned char (*binary_array)[188]){
     //     tft180_draw_point(center_line[i] / 2, i / 2, RGB565_RED);
     //     tft180_draw_point((r_border[i] - 5)  / 2, i / 2, RGB565_GREEN);
     // }
-	for (int i = BottomRow; i > 0; i--)
-	{
-		tft180_draw_point(ipts0[i][0] / 2, ipts0[i][1] / 2, RGB565_BLUE);
-		tft180_draw_point(ipts1[i][0] / 2, ipts1[i][1] / 2, RGB565_GREEN);
-	}
+	// for (int i = BottomRow; i > 0; i--)
+	// {
+    //     // binary_array[ipts0[i][0]][ipts0[i][1] + 3] == 0;
+    //     // binary_array[ipts1[i][0]][ipts1[i][1] - 3] == 0;
+		// tft180_draw_point(ipts0[i][0] / 1.5, ipts0[i][1] / 1.5, RGB565_WHITE);
+		// tft180_draw_point(ipts1[i][0] / 1.5, ipts1[i][1] / 1.5, RGB565_WHITE);
+	// }
+    for (int i = 0; i < 359; i++)
+    {
+        tft180_draw_point(points_l[i][0] / 1.5, points_l[i][1] / 1.5, RGB565_WHITE);
+        tft180_draw_point(points_r[i][0] / 1.5, points_r[i][1] / 1.5, RGB565_WHITE);
+    }
 }
 
 /*
@@ -162,7 +182,7 @@ int regression(int startline,int endline)
     SumY+=center_line[i];    //这里Middle_black为存放中线的数组
     }         
     avrX=(float)SumX/SumLines;     //X的平均值
-    avrY=(float)SumY/SumLines;     //Y的平均值       
+    avrY=(float)SumY/SumLines;     //Y的平均值
     SumUp=0;      
     SumDown=0;  
     for(i=startline;i<endline;i++)   
@@ -246,7 +266,7 @@ int16 limit1(int16 x, int16 y)
 //------------------------------------------------------------------------------------------------------------------
 void Get_image(unsigned char(*mt9v03x_image)[image_w])
 {
-#define use_num		1	//1就是不压缩，2就是压缩一倍	
+#define use_num		1	//1就是不压缩，2就是压缩一倍
 	unsigned char i = 0, j = 0, row = 0, line = 0;
     for (i = 0; i < image_h; i += use_num)          //
     {
@@ -283,7 +303,7 @@ unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned s
     unsigned char Threshold = 0;
 	
 	
-    for (Y = 0; Y <Image_Height; Y++) //Y<Image_Height改为Y =Image_Height；以便进行 行二值化
+    for (Y = Image_Height; Y > Image_Height - 80; Y--) //Y<Image_Height改为Y =Image_Height；以便进行 行二值化
     {
         //Y=Image_Height;
         for (X = 0; X < Image_Width; X++)
@@ -433,16 +453,8 @@ example：
 	search_l_r((unsigned short)USE_num,image,&data_stastics_l, &data_stastics_r,start_point_l[0],
 				start_point_l[1], start_point_r[0], start_point_r[1],&hightest);
  */
-#define USE_num	image_h*3	//定义找点的数组成员个数按理说300个点能放下，但是有些特殊情况确实难顶，多定义了一点
 
  //存放点的x，y坐标
-unsigned short points_l[(unsigned short)USE_num][2] = { {  0 } };//左线
-unsigned short points_r[(unsigned short)USE_num][2] = { {  0 } };//右线
-unsigned short dir_r[(unsigned short)USE_num] = { 0 };//用来存储右边生长方向
-unsigned short dir_l[(unsigned short)USE_num] = { 0 };//用来存储左边生长方向
-unsigned short data_stastics_l = 0;//统计左边找到点的个数
-unsigned short data_stastics_r = 0;//统计右边找到点的个数
-unsigned char hightest = 0;//最高点
 void search_l_r(unsigned short break_flag, unsigned char(*image)[image_w], unsigned short *l_stastic, unsigned short *r_stastic, unsigned char l_start_x, unsigned char l_start_y, unsigned char r_start_x, unsigned char r_start_y, unsigned char*hightest)
 {
 
@@ -555,14 +567,14 @@ void search_l_r(unsigned short break_flag, unsigned char(*image)[image_w], unsig
 			&& my_abs(points_r[r_data_statics][1] - points_l[l_data_statics - 1][1] < 2)
 			)
 		{
-			//printf("\n左右相遇退出\n");	
+			//printf("\n左右相遇退出\n");
 			*hightest = (points_r[r_data_statics][1] + points_l[l_data_statics - 1][1]) >> 1;//取出最高点
 			//printf("\n在y=%d处退出\n",*hightest);
 			break;
 		}
 		if ((points_r[r_data_statics][1] < points_l[l_data_statics - 1][1]))
 		{
-			// printf("\n如果左边比右边高了，左边等待右边\n");	
+			// printf("\n如果左边比右边高了，左边等待右边\n");
 			continue;//如果左边比右边高了，左边等待右边
 		}
 		if (dir_l[l_data_statics - 1] == 7
@@ -639,13 +651,13 @@ void get_left(unsigned short total_L)
 	unsigned char i = 0;
 	unsigned short j = 0;
 	unsigned char h = 0;
-	//初始化
-	for (i = 0;i<image_h;i++)
-	{
-		l_border[i] = border_min;
-	}
+	// 初始化
+	// for (i = 0;i<image_h;i++)
+	// {
+	// 	l_border[i] = border_min;
+	// }
 	h = image_h - 2;
-	//左边
+	// 左边
 	for (j = 0; j < total_L; j++)
 	{
 		//printf("%d\n", j);
@@ -676,10 +688,10 @@ void get_right(unsigned short total_R)
 	unsigned char i = 0;
 	unsigned short j = 0;
 	unsigned char h = 0;
-	for (i = 0; i < image_h; i++)
-	{
-		r_border[i] = border_max;//右边线初始化放到最右边，左边线放到最左边，这样八邻域闭合区域外的中线就会在中间，不会干扰得到的数据
-	}
+	// for (i = 0; i < image_h; i++)
+	// {
+	// 	r_border[i] = border_max;//右边线初始化放到最右边，左边线放到最左边，这样八邻域闭合区域外的中线就会在中间，不会干扰得到的数据
+	// }
 	h = image_h - 2;
 	//右边
 	for (j = 0; j < total_R; j++)
@@ -785,6 +797,8 @@ unsigned char hightest = 0;//定义一个最高行，tip：这里的最高指的
 Get_image(&mt9v03x_image[0]);
 turn_to_bin();
 /*提取赛道边界*/
+// blur_points(points_l, data_stastics_l, 7);
+// blur_points(points_r, data_stastics_l, 7);
 image_filter(&bin_image[0]);//滤波
 image_draw_rectan(&bin_image[0]);//预处理
 //清零
@@ -825,26 +839,12 @@ int Cal_centerline(void)
     return centerline_err_sum / ratio_sum;
 }
 
-void Cal_lostline(void)
-{
-    for (unsigned char i = 119; i > 0; i--)
-    {
-        if (l_border[i] == 0)
-        {
-            left_lost_line++;
-        }
-        if (r_border[i] == 187)
-        {
-            right_lost_line++;
-        }
-    }
-}
 
 
 void LocalThresholding(void)
 {
     // unsigned char *image_ptr[188];
-    unsigned char thres;    // 定义局部二值化阈值  
+    unsigned char thres;    // 定义局部二值化阈值
     for (int current_row = BottomRow; current_row > 3;)     // 自下而上遍历行数，到倒数第四行截止
     {   
         if (current_row < 3)                                // 限制条件
@@ -889,94 +889,94 @@ void findline_lefthand_adaptive(unsigned char(*img)[188],unsigned char width,uns
 
     int half = block_size / 2;
     int step = 0, dir = 0, turn = 0;
-    while (step <*num && half < x && x < width - half - 1 && half < y && y < height - half - 1 && turn < 4) {
+//     while (step < *num && half < x && x < width - half - 1 && half < y && y < height - half - 1 && turn < 4) {
 
-        int local_thres = 0;
-        for (int8 dy = -half; dy <= half; dy++) {
-            for (int8 dx = -half; dx <= half; dx++) {
-                local_thres +=img[y + dy][x + dx];
-            }
-        }
-        local_thres /= block_size * block_size;
-        local_thres -= clip_value;//自适应二值的阈值
+//         int local_thres = 0;
+//         for (int8 dy = -half; dy <= half; dy++) {
+//             for (int8 dx = -half; dx <= half; dx++) {
+//                 local_thres +=img[y + dy][x + dx];
+//             }
+//         }
+//         local_thres /= block_size * block_size;
+//         local_thres -= clip_value;//自适应二值的阈值
 
-//        unsigned char current_value = img[y][x];
-        unsigned char front_value =img[y + dir_front[dir][1]][x + dir_front[dir][0]]; //四个点顺时针转
-        unsigned char frontleft_value =img[y + dir_frontleft[dir][1]][x + dir_frontleft[dir][0]];//菱形顺时针转
-        if (front_value < local_thres) {
-            dir = (dir + 1) % 4;
-            turn++;
-        } else if (frontleft_value < local_thres) {
-            x += dir_front[dir][0];
-            y += dir_front[dir][1];
-            pts[step][0] = x;
-            pts[step][1] = y;
-            step++;
-            turn = 0;
-        } else {
-            x += dir_frontleft[dir][0];
-            y += dir_frontleft[dir][1];
-            dir = (dir + 3) % 4;
-            pts[step][0] = x;
-            pts[step][1] = y;
-            step++;
-            turn = 0;
-        }
-    }
+// //        unsigned char current_value = img[y][x];
+//         unsigned char front_value =img[y + dir_front[dir][1]][x + dir_front[dir][0]]; //四个点顺时针转
+//         unsigned char frontleft_value =img[y + dir_frontleft[dir][1]][x + dir_frontleft[dir][0]];//菱形顺时针转
+//         if (front_value < local_thres) {
+//             dir = (dir + 1) % 4;
+//             turn++;
+//         } else if (frontleft_value < local_thres) {
+//             x += dir_front[dir][0];
+//             y += dir_front[dir][1];
+//             pts[step][0] = x;
+//             pts[step][1] = y;
+//             step++;
+//             turn = 0;
+//         } else {
+//             x += dir_frontleft[dir][0];
+//             y += dir_frontleft[dir][1];
+//             dir = (dir + 3) % 4;
+//             pts[step][0] = x;
+//             pts[step][1] = y;
+//             step++;
+//             turn = 0;
+//         }
+//     }
 
-//    while (step <*num  && half < y && y < height - half - 1 && turn < 4) {
-//
-//        if(half < x && x < width - half - 1)
-//        {
-//            int local_thres = 0;
-//            for (int8 dy = -half; dy <= half; dy++) {
-//                for (int8 dx = -half; dx <= half; dx++) {
-//                    local_thres +=img[y + dy][x + dx];
-//                }
-//            }
-//            local_thres /= block_size * block_size;
-//            local_thres -= clip_value;//自适应二值的阈值
-//
-////            unsigned char current_value = img[y][x];
-//            unsigned char front_value =img[y + dir_front[dir][1]][x + dir_front[dir][0]]; //四个点顺时针转
-//            unsigned char frontleft_value =img[y + dir_frontleft[dir][1]][x + dir_frontleft[dir][0]];//菱形顺时针转
-//            if (front_value < local_thres) {
-//                dir = (dir + 1) % 4;
-//                turn++;
-//            } else if (frontleft_value < local_thres) {
-//                x += dir_front[dir][0];
-//                y += dir_front[dir][1];
-//                pts[step][0] = x;
-//                pts[step][1] = y;
-//                step++;
-//                turn = 0;
-//            } else {
-//                x += dir_frontleft[dir][0];
-//                y += dir_frontleft[dir][1];
-//                dir = (dir + 3) % 4;
-//                pts[step][0] = x;
-//                pts[step][1] = y;
-//                step++;
-//                turn = 0;
-//            }
-//        }
-//        else {
-//
-//                if(x==half)
-//                    x++;
-//                else if(x==width - half - 1)
-//                    x--;
-//            while(!Gray_Search_Line(img,y,x,y-1,x,10))
-//            {
-//                step++;
-//                y--;
-//                pts[step][0] = x;
-//                pts[step][1] = y;
-//
-//            }
-//
-//        }
-//       }
+   while (step <*num  && half < y && y < height - half - 1 && turn < 4) {
+
+       if(half < x && x < width - half - 1)
+       {
+           int local_thres = 0;
+           for (int8 dy = -half; dy <= half; dy++) {
+               for (int8 dx = -half; dx <= half; dx++) {
+                   local_thres +=img[y + dy][x + dx];
+               }
+           }
+           local_thres /= block_size * block_size;
+           local_thres -= clip_value;//自适应二值的阈值
+
+//            unsigned char current_value = img[y][x];
+           unsigned char front_value =img[y + dir_front[dir][1]][x + dir_front[dir][0]]; //四个点顺时针转
+           unsigned char frontleft_value =img[y + dir_frontleft[dir][1]][x + dir_frontleft[dir][0]];//菱形顺时针转
+           if (front_value < local_thres) {
+               dir = (dir + 1) % 4;
+               turn++;
+           } else if (frontleft_value < local_thres) {
+               x += dir_front[dir][0];
+               y += dir_front[dir][1];
+               pts[step][0] = x;
+               pts[step][1] = y;
+               step++;
+               turn = 0;
+           } else {
+               x += dir_frontleft[dir][0];
+               y += dir_frontleft[dir][1];
+               dir = (dir + 3) % 4;
+               pts[step][0] = x;
+               pts[step][1] = y;
+               step++;
+               turn = 0;
+           }
+       }
+       else {
+
+               if(x==half)
+                   x++;
+               else if(x==width - half - 1)
+                   x--;
+           while(!Gray_Search_Line(img,y,x,y-1,x,10))
+           {
+               step++;
+               y--;
+               pts[step][0] = x;
+               pts[step][1] = y;
+
+           }
+
+       }
+      }
     *num = step;
 }
 
@@ -986,128 +986,141 @@ void findline_righthand_adaptive(unsigned char(*img)[188],unsigned char width,un
 {
     int half = block_size / 2;
     int step = 0, dir = 0, turn = 0;
-    while (step <*num && half < x && x < width - half - 1 && half < y && y < height - half - 1 && turn < 4) {
+//     while (step < *num && half < x && x < width - half - 1 && half < y && y < height - half - 1 && turn < 4) {
 
-        int16 local_thres = 0;
-        for (int8 dy = -half; dy <= half; dy++) {
-            for (int8 dx = -half; dx <= half; dx++) {
-                local_thres += img[y + dy][x + dx];
-            }
-        }
-        local_thres /= block_size * block_size;
-        local_thres -= clip_value;
+//         int16 local_thres = 0;
+//         for (int8 dy = -half; dy <= half; dy++) {
+//             for (int8 dx = -half; dx <= half; dx++) {
+//                 local_thres += img[y + dy][x + dx];
+//             }
+//         }
+//         local_thres /= block_size * block_size;
+//         local_thres -= clip_value;
+
+// //        unsigned char current_value =  img[y ][x ];
+//         unsigned char front_value = img[y + dir_front[dir][1]][x + dir_front[dir][0]];
+//         unsigned char frontright_value =img[y + dir_frontright[dir][1]][x + dir_frontright[dir][0]];
+//         if (front_value < local_thres) {
+//             dir = (dir + 3) % 4;
+//             turn++;
+//         } else if (frontright_value < local_thres) {
+//             x += dir_front[dir][0];
+//             y += dir_front[dir][1];
+//             pts[step][0] = x;
+//             pts[step][1] = y;
+//             step++;
+//             turn = 0;
+//         } else {
+//             x += dir_frontright[dir][0];
+//             y += dir_frontright[dir][1];
+//             dir = (dir + 1) % 4;
+//             pts[step][0] = x;
+//             pts[step][1] = y;
+//             step++;
+//             turn = 0;
+//         }
+//     }
+
+while (step <*num && half < y && y < height - half - 1 && turn < 4) {
+
+   if(half < x && x < width - half - 1)
+   {
+       int local_thres = 0;
+       for (int dy = -half; dy <= half; dy++) {
+           for (int dx = -half; dx <= half; dx++) {
+               local_thres += img[y + dy][x + dx];
+           }
+       }
+       local_thres /= block_size * block_size;
+       local_thres -= clip_value;
 
 //        unsigned char current_value =  img[y ][x ];
-        unsigned char front_value = img[y + dir_front[dir][1]][x + dir_front[dir][0]];
-        unsigned char frontright_value =img[y + dir_frontright[dir][1]][x + dir_frontright[dir][0]];
-        if (front_value < local_thres) {
-            dir = (dir + 3) % 4;
-            turn++;
-        } else if (frontright_value < local_thres) {
-            x += dir_front[dir][0];
-            y += dir_front[dir][1];
-            pts[step][0] = x;
-            pts[step][1] = y;
-            step++;
-            turn = 0;
-        } else {
-            x += dir_frontright[dir][0];
-            y += dir_frontright[dir][1];
-            dir = (dir + 1) % 4;
-            pts[step][0] = x;
-            pts[step][1] = y;
-            step++;
-            turn = 0;
-        }
-    }
+       unsigned char front_value = img[y + dir_front[dir][1]][x + dir_front[dir][0]];
+       unsigned char frontright_value =img[y + dir_frontright[dir][1]][x + dir_frontright[dir][0]];
+       if (front_value < local_thres) {
+           dir = (dir + 3) % 4;
+           turn++;
+       } else if (frontright_value < local_thres) {
+           x += dir_front[dir][0];
+           y += dir_front[dir][1];
+           pts[step][0] = x;
+           pts[step][1] = y;
+           step++;
+           turn = 0;
+       } else {
+           x += dir_frontright[dir][0];
+           y += dir_frontright[dir][1];
+           dir = (dir + 1) % 4;
+           pts[step][0] = x;
+           pts[step][1] = y;
+           step++;
+           turn = 0;
+       }
+   }else
+   {
 
-//while (step <*num && half < y && y < height - half - 1 && turn < 4) {
-//
-//    if(half < x && x < width - half - 1)
-//    {
-//        int local_thres = 0;
-//        for (int dy = -half; dy <= half; dy++) {
-//            for (int dx = -half; dx <= half; dx++) {
-//                local_thres += img[y + dy][x + dx];
-//            }
-//        }
-//        local_thres /= block_size * block_size;
-//        local_thres -= clip_value;
-//
-////        unsigned char current_value =  img[y ][x ];
-//        unsigned char front_value = img[y + dir_front[dir][1]][x + dir_front[dir][0]];
-//        unsigned char frontright_value =img[y + dir_frontright[dir][1]][x + dir_frontright[dir][0]];
-//        if (front_value < local_thres) {
-//            dir = (dir + 3) % 4;
-//            turn++;
-//        } else if (frontright_value < local_thres) {
-//            x += dir_front[dir][0];
-//            y += dir_front[dir][1];
-//            pts[step][0] = x;
-//            pts[step][1] = y;
-//            step++;
-//            turn = 0;
-//        } else {
-//            x += dir_frontright[dir][0];
-//            y += dir_frontright[dir][1];
-//            dir = (dir + 1) % 4;
-//            pts[step][0] = x;
-//            pts[step][1] = y;
-//            step++;
-//            turn = 0;
-//        }
-//    }else
-//    {
-//
-//        if(x==half)
-//           x++;
-//       else if(x==width - half - 1)
-//           x--;
-//        while(!Gray_Search_Line(img,y,x,y-1,x,10))
-//        {
-//            step++;
-//            y--;
-//            pts[step][0] = x;
-//            pts[step][1] = y;
-//
-//        }
-//
-//    }
-//
-//    }
+       if(x==half)
+          x++;
+      else if(x==width - half - 1)
+          x--;
+       while(!Gray_Search_Line(img,y,x,y-1,x,10))
+       {
+           step++;
+           y--;
+           pts[step][0] = x;
+           pts[step][1] = y;
+
+       }
+
+   }
+
+   }
     *num = step;
 }
 
 void my_process_image(void) 
 {
     // 原图找左右边线
-    int x1 = img_raw.width / 2 - 30, y1 = BottomRow - 5;
+    int x1 = MT9V03X_W / 2 - 20, y1 = BottomRow - 30;
     ipts0_num = sizeof(ipts0) / sizeof(ipts0[0]);
-    // for (; x1 > 0; x1--) if (mt9v03x_image[x1][y1] < 70) break;
-    // if (mt9v03x_image[x1][y1] >= 70)
-	for (; x1 > 0; x1--)
-		if (bin_image[y1][x1] == 0 && bin_image[y1][x1 + 1] == 255)
-        	findline_lefthand_adaptive(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, block_size, 0, x1, y1, ipts0, &ipts0_num);
-		//;
-    else ipts0_num = 0;
-    int x2 = img_raw.width / 2 + 30, y2 = BottomRow - 5;
+    for (; x1 > StartCoL; x1--){
+        if(abs(((mt9v03x_image[y1][x1] - mt9v03x_image[y1][x1 + 1]) * 100) / (mt9v03x_image[y1][x1] + mt9v03x_image[y1][x1 + 1])) > 28)
+        {
+            findline_lefthand_adaptive(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, Block_size, 2, x1 + 1, y1, ipts0, ipts0_nump);
+            position_x = x1 + 1;
+            position_y = y1;
+            break;
+        }
+        else ipts0_num = 0;
+    }
+    int x2 = MT9V03X_W / 2 + 20, y2 = BottomRow - 30;
     ipts1_num = sizeof(ipts1) / sizeof(ipts1[0]);
-    // for (; x2 < img_raw.width - 1; x2++) if (mt9v03x_image[x2][y2] < 70) break;
-    // if (mt9v03x_image[x2][y2] >= 70)
-	for (; x2 < img_raw.width; x2++)
-		if (bin_image[y2][x2] == 0 && bin_image[y2][x2 - 1] == 255)
-		//;
-        	findline_righthand_adaptive(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, block_size, 0, x2, y2, ipts1, &ipts1_num);
-    else ipts1_num = 0;
+    for (; x2 < EndCoL; x2++)
+    { 
+        if(abs(((mt9v03x_image[y2][x2] - mt9v03x_image[y2][x2 - 1]) * 100) / (mt9v03x_image[y2][x2] + mt9v03x_image[y2][x2 - 1])) > 28)
+        {
+            findline_righthand_adaptive(mt9v03x_image[0], MT9V03X_W, MT9V03X_H, Block_size, 2, x2 - 1, y2, ipts1, ipts1_nump);
+            position1_x = x2 - 1;
+            position1_y = y2;
+            break;
+        }
+        else ipts1_num = 0;
+    }
+    
 }
 
-// void new(void)
-// {
-// 	for (int i = 119; i > 0; i--)
-// 	{
-// 		ipts0[i][0] = 5;
-// 		ipts0[i][1] = i;
-// 		ipts1[i][0] = 187;
-// 		ipts1[i][1] = i;
-// 	}
-// }
+
+//两点像素做差比和比较
+unsigned char Gray_Search_Line(unsigned char(*img)[188],unsigned char i1,unsigned char j1,unsigned char i2,unsigned char j2,unsigned char thres)
+{
+    int16 pixel_sum=img[i1][j1]+img[i2][j2];
+    int16 pixel_deff=(img[i1][j1]>img[i2][j2]) ?
+                     (img[i1][j1]-img[i2][j2]) :
+                     (img[i2][j2]-img[i1][j1]) ;
+    if(thres*pixel_sum<=pixel_deff*100)           //存在边界
+    {
+      return j2;                                  //返回列坐标
+    }else{
+      return 0;
+    }
+}
