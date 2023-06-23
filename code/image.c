@@ -1,10 +1,13 @@
 #include "zf_common_headfile.h"
+// #pragma section all "cpu1_dsram"
+
 #define USE_num	image_h*3	//定义找点的数组成员个数按理说300个点能放下，但是有些特殊情况确实难顶，多定义了一点
 #define Eightboundary 1
 #define AT                  AT_IMAGE
 #define AT_CLIP(img, x, y)  AT_IMAGE((img), clip((x), 0, (img)->width-1), clip((y), 0, (img)->height-1));
 #define DEF_IMAGE(ptr, w, h)         {.data=ptr, .width=w, .height=h, .step=w}
 #define ROI_IMAGE(img, x1, y1, w, h) {.data=&AT_IMAGE(img, x1, y1), .width=w, .height=h, .step=img.width}
+
 unsigned short points_l[(unsigned short)USE_num][2] = { {  0 } };//左线
 unsigned short points_r[(unsigned short)USE_num][2] = { {  0 } };//右线
 unsigned short dir_r[(unsigned short)USE_num] = { 0 };//用来存储右边生长方向
@@ -12,6 +15,8 @@ unsigned short dir_l[(unsigned short)USE_num] = { 0 };//用来存储左边生长
 unsigned short data_stastics_l = 0;//统计左边找到点的个数
 unsigned short data_stastics_r = 0;//统计右边找到点的个数
 unsigned char hightest = 0;//最高点
+unsigned char start_point_l[2] = { 0 };//左边起点的x，y值
+unsigned char start_point_r[2] = { 0 };//右边起点的x，y值
 
 image_t img_raw = DEF_IMAGE(NULL, MT9V03X_W, MT9V03X_H);
 
@@ -22,6 +27,15 @@ unsigned char rightline[120];                   //定义右边线数组
 unsigned char image_deal[MT9V03X_H][MT9V03X_W]; //声明一个二维数组，用于存放二值化后的图像，其中，下标MT9V03X_H，MT9V03X_W表示总钻风图像的高和宽
 unsigned char Left_RoadWidth[120];              //定义左半边赛道宽度，即中线到左边线的距离
 unsigned char Right_RoadWidth[120];             //定义右半边赛道宽度
+// 裁剪后图像，分辨率为80*188
+unsigned char clip_image[CLIP_IMAGE_H][MT9V03X_W];
+unsigned char clip_bin_image[CLIP_IMAGE_H][MT9V03X_W];
+// 裁剪后图像边线
+unsigned char clip_lfline[CLIP_IMAGE_H];
+unsigned char clip_rtline[CLIP_IMAGE_H];
+unsigned char clip_ctline[CLIP_IMAGE_H];
+// 裁剪后图像分割阈值
+unsigned char clip_image_thereshold; 
 
 unsigned char original_image[image_h][MT9V03X_W];
 unsigned char bin_image[image_h][image_w];//图像数组
@@ -29,17 +43,20 @@ unsigned char image_thereshold;//图像分割阈值
 
 
 int BlackPoints_Nums = 0;
+// 迷宫寻线边线数组
 int ipts0[MT9V03X_H][2];
 int ipts1[MT9V03X_H][2];
+// 迷宫边线数目
 int ipts0_num, ipts1_num;
 int *ipts0_nump = &ipts0_num;
 int *ipts1_nump = &ipts1_num;
+// 追踪用坐标
 int position_x;
 int position_y;
 int position1_x;
 int position1_y;
+// 定义局部阈值方块大小
 float Block_size = 5;
-
 
 /* 前进方向定义：
  *   0
@@ -75,11 +92,13 @@ Road_Charac MyRoad_Charac;    // 图像特征处理结构体
 
 
 void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Charac *rsptr){
-    for(unsigned char i = BottomRow; i > 0; i--){
-        center_line[i] = (l_border[i] + r_border[i]) / 2;
-        rsptr->Left_RoadWidth[i] = (unsigned char)absolute(93 - l_border[i]);
-        rsptr->Right_RoadWidth[i] = (unsigned char)absolute(r_border[i] - 93);
-    }
+    // for(unsigned char i = BottomRow; i > 0; i--){
+    //     center_line[i] = (l_border[i] + r_border[i]) / 2;
+    //     rsptr->Left_RoadWidth[i] = (unsigned char)absolute(93 - l_border[i]);
+    //     rsptr->Right_RoadWidth[i] = (unsigned char)absolute(r_border[i] - 93);
+    // }
+    for (int i = CLIP_IMAGE_H - 1; i > 0; i--)
+        clip_ctline[i] = (clip_lfline[i] + clip_rtline[i]) / 2;
     // 最小二乘法拟合中线，扫描平放下方的一块矩形区域，(187, 0)->(137, 187)
     // for (int i = BottomRow; i > BottomRow - 50; i--)
     // {
@@ -88,10 +107,12 @@ void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Charac *
 }
 
 void Hightlight_Lines(unsigned char (*binary_array)[188]){
-    // for(unsigned char i = BottomRow; i > 0; i--){
-    //     tft180_draw_point((l_border[i] + 5) / 2, i / 2, RGB565_BLUE);
-    //     tft180_draw_point(center_line[i] / 2, i / 2, RGB565_RED);
-    //     tft180_draw_point((r_border[i] - 5)  / 2, i / 2, RGB565_GREEN);
+    // for(int i = 0; i < 359; i++){
+
+    //     binary_array[points_l[i][1]][points_l[i][0] + 10] = 0;
+    //     binary_array[i][center_line[i]] = 0;
+    //     binary_array[points_r[i][1]][points_l[i][0] - 10] = 0;
+    //     // tft180_draw_point((r_border[i] - 5)  / 2, i / 2, RGB565_GREEN);
     // }
 	// for (int i = BottomRow; i > 0; i--)
 	// {
@@ -105,6 +126,10 @@ void Hightlight_Lines(unsigned char (*binary_array)[188]){
         tft180_draw_point(points_l[i][0] / 1.5, points_l[i][1] / 1.5, RGB565_WHITE);
         tft180_draw_point(points_r[i][0] / 1.5, points_r[i][1] / 1.5, RGB565_WHITE);
     }
+    // for (int i = 0; i < 80; i++)
+    // {
+    //     tft180_draw_point(clip_ctline[i] / 1.5, i / 1.5, RGB565_WHITE);
+    // }
 }
 
 /*
@@ -279,6 +304,19 @@ void Get_image(unsigned char(*mt9v03x_image)[image_w])
         row++;
     }
 }
+
+void my_get_image(unsigned char (*mt9v03x_image)[188], unsigned char (*clip_image)[188])
+{
+    int height = CLIP_IMAGE_H - 1;
+    for (int i = BottomRow; i > BottomRow - 80; i--)
+    {
+        for (int j = StartCoL; j < EndCoL; j++)
+        {
+            clip_image[height][j] = mt9v03x_image[i][j];
+        }
+        height--;
+    }
+}
 //------------------------------------------------------------------------------------------------------------------
 //  @brief     动态阈值
 //  @since      v1.0 
@@ -303,7 +341,7 @@ unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned s
     unsigned char Threshold = 0;
 	
 	
-    for (Y = Image_Height; Y > Image_Height - 80; Y--) //Y<Image_Height改为Y =Image_Height；以便进行 行二值化
+    for (Y = Image_Height; Y > 0; Y--) //Y<Image_Height改为Y =Image_Height；以便进行 行二值化
     {
         //Y=Image_Height;
         for (X = 0; X < Image_Width; X++)
@@ -361,7 +399,7 @@ unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned s
 //  @brief      图像二值化，这里用的是大津法二值化。
 //  @since      v1.0 
 //------------------------------------------------------------------------------------------------------------------
-unsigned char bin_image[image_h][image_w];//图像数组
+
 void turn_to_bin(void)
 {
   unsigned char i,j;
@@ -376,6 +414,19 @@ void turn_to_bin(void)
   }
 }
 
+void myturn_to_binary(unsigned char (*clip_image)[188], unsigned char (*clip_bin_image)[188])
+{
+    clip_image_thereshold = OtsuThreshold(clip_image[0], CLIP_IMAGE_H, MT9V03X_W);
+    for (int i = 0; i < CLIP_IMAGE_H; i++)
+    {
+        for (int j = StartCoL; j < EndCoL; j++)
+        {
+            if (clip_image[i][j] > clip_image_thereshold)   clip_bin_image[i][j] = white_pixel;
+            else    clip_bin_image[i][j] = black_pixel;
+        }
+    }
+}
+
 
 /*
 函数名称：void get_start_point(unsigned char start_row)
@@ -386,8 +437,6 @@ void turn_to_bin(void)
 备    注：
 example：  get_start_point(image_h-2)
  */
-unsigned char start_point_l[2] = { 0 };//左边起点的x，y值
-unsigned char start_point_r[2] = { 0 };//右边起点的x，y值
 unsigned char get_start_point(unsigned char start_row)
 {
 	unsigned char i = 0,l_found = 0,r_found = 0;
@@ -430,6 +479,48 @@ unsigned char get_start_point(unsigned char start_row)
 	} 
 }
 
+unsigned char my_getstart_point(unsigned char start_row, unsigned char (*clip_bin_image)[188])
+{
+    	unsigned char i = 0,l_found = 0,r_found = 0;
+	//清零
+	start_point_l[0] = 0;//x
+	start_point_l[1] = 0;//y
+
+	start_point_r[0] = 0;//x
+	start_point_r[1] = 0;//y
+
+		//从中间往左边，先找起点
+	for (i = image_w / 2; i > border_min; i--)
+	{
+		start_point_l[0] = i;//x
+		start_point_l[1] = start_row;//y
+		if (clip_bin_image[start_row][i] == 255 && clip_bin_image[start_row][i - 1] == 0)
+		{
+			//printf("找到左边起点image[%d][%d]\n", start_row,i);
+			l_found = 1;
+			break;
+		}
+	}
+
+	for (i = image_w / 2; i < border_max; i++)
+	{
+		start_point_r[0] = i;//x
+		start_point_r[1] = start_row;//y
+		if (clip_bin_image[start_row][i] == 255 && clip_bin_image[start_row][i + 1] == 0)
+		{
+			//printf("找到右边起点image[%d][%d]\n",start_row, i);
+			r_found = 1;
+			break;
+		}
+	}
+
+	if(l_found&&r_found)return 1;
+	else {
+		//printf("未找到起点\n");
+		return 0;
+	} 
+}
+
 /*
 函数名称：void search_l_r(unsigned short break_flag, unsigned char(*image)[image_w],unsigned short *l_stastic, unsigned short *r_stastic,
 							unsigned char l_start_x, unsigned char l_start_y, unsigned char r_start_x, unsigned char r_start_y,unsigned char*hightest)
@@ -455,7 +546,7 @@ example：
  */
 
  //存放点的x，y坐标
-void search_l_r(unsigned short break_flag, unsigned char(*image)[image_w], unsigned short *l_stastic, unsigned short *r_stastic, unsigned char l_start_x, unsigned char l_start_y, unsigned char r_start_x, unsigned char r_start_y, unsigned char*hightest)
+void search_l_r(unsigned short break_flag, unsigned char(*image)[image_w], unsigned short *l_stastic, unsigned short *r_stastic, unsigned char l_start_x, unsigned char l_start_y, unsigned char r_start_x, unsigned char r_start_y, unsigned char *hightest)
 {
 
 	unsigned char i = 0, j = 0;
@@ -652,10 +743,10 @@ void get_left(unsigned short total_L)
 	unsigned short j = 0;
 	unsigned char h = 0;
 	// 初始化
-	// for (i = 0;i<image_h;i++)
-	// {
-	// 	l_border[i] = border_min;
-	// }
+	for (i = 0;i<image_h;i++)
+	{
+		l_border[i] = border_min;
+	}
 	h = image_h - 2;
 	// 左边
 	for (j = 0; j < total_L; j++)
@@ -664,6 +755,31 @@ void get_left(unsigned short total_L)
 		if (points_l[j][1] == h)
 		{
 			l_border[h] = points_l[j][0]+1;
+		}
+		else continue; //每行只取一个点，没到下一行就不记录
+		h--;
+		if (h == 0) 
+		{
+			break;//到最后一行退出
+		}
+	}
+}
+
+void my_get_left(unsigned short total_L)
+{
+    int	h = CLIP_IMAGE_H - 2;
+	// 初始化
+	// for (int i = 0 ;i < CLIP_IMAGE_H; i++)
+	// {
+	// 	clip_lfline[i] = border_min;
+	// }
+	// 左边
+	for (int j = 0; j < total_L; j++)
+	{
+		//printf("%d\n", j);
+		if (points_l[j][1] == h)
+		{
+			clip_lfline[h] = points_l[j][0]+1;
 		}
 		else continue; //每行只取一个点，没到下一行就不记录
 		h--;
@@ -688,10 +804,10 @@ void get_right(unsigned short total_R)
 	unsigned char i = 0;
 	unsigned short j = 0;
 	unsigned char h = 0;
-	// for (i = 0; i < image_h; i++)
-	// {
-	// 	r_border[i] = border_max;//右边线初始化放到最右边，左边线放到最左边，这样八邻域闭合区域外的中线就会在中间，不会干扰得到的数据
-	// }
+	for (i = 0; i < image_h; i++)
+	{
+		r_border[i] = border_max;//右边线初始化放到最右边，左边线放到最左边，这样八邻域闭合区域外的中线就会在中间，不会干扰得到的数据
+	}
 	h = image_h - 2;
 	//右边
 	for (j = 0; j < total_R; j++)
@@ -706,10 +822,24 @@ void get_right(unsigned short total_R)
 	}
 }
 
-void get_centerline_ver2(void){
-    for(unsigned char i = 119; i > 0; i--){
-        centerline[i] = (r_border[i] + l_border[i]) / 2;
-    }
+void my_get_right(unsigned short total_R)
+{
+    int h = CLIP_IMAGE_H - 2;
+	// for (int i = 0; i < CLIP_IMAGE_H; i++)
+	// {
+	// 	clip_rtline[i] = border_max;//右边线初始化放到最右边，左边线放到最左边，这样八邻域闭合区域外的中线就会在中间，不会干扰得到的数据
+	// }
+	//右边
+	for (int j = 0; j < total_R; j++)
+	{
+		if (points_r[j][1] == h)
+		{
+			clip_rtline[h] = points_r[j][0] - 1;
+		}
+		else continue;//每行只取一个点，没到下一行就不记录
+		h--;
+		if (h == 0)break;//到最后一行退出
+	}    
 }
 
 //定义膨胀和腐蚀的阈值区间
@@ -721,7 +851,7 @@ void image_filter(unsigned char(*bin_image)[image_w])//形态学滤波，简单�
 	unsigned int num = 0;
 
 
-	for (i = 1; i < image_h - 1; i++)
+	for (i = 1; i < image_h - 1; i++)       // change to clip_image_h
 	{
 		for (j = 1; j < (image_w - 1); j++)
 		{
@@ -763,7 +893,7 @@ void image_draw_rectan(unsigned char(*image)[image_w])
 {
 
 	unsigned char i = 0;
-	for (i = 0; i < image_h; i++)
+	for (i = 0; i < image_h; i++)   // change to clip_image_h
 	{
 		image[i][0] = 0;
 		image[i][1] = 0;
@@ -789,34 +919,47 @@ void image_draw_rectan(unsigned char(*image)[image_w])
 备    注：
 example： image_process();
 */
+
 void image_process(void)
 {
-unsigned short i;
-unsigned char hightest = 0;//定义一个最高行，tip：这里的最高指的是y值的最小
-/*这是离线调试用的*/
+// unsigned short i;
+unsigned char hightest = 0;     // 定义循环结束的最高行，试试40
 Get_image(&mt9v03x_image[0]);
 turn_to_bin();
-/*提取赛道边界*/
-// blur_points(points_l, data_stastics_l, 7);
-// blur_points(points_r, data_stastics_l, 7);
-image_filter(&bin_image[0]);//滤波
-image_draw_rectan(&bin_image[0]);//预处理
+image_filter(&bin_image[0]);        // 滤波，但是很占资源
+image_draw_rectan(&bin_image[0]);   // 画框，让边界找到边框上
 //清零
 data_stastics_l = 0;
 data_stastics_r = 0;
-if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找到就一直找
+if (get_start_point(image_h - 10))  // 把起点限定的高一点
 {
-	// printf("正在开始八领域\n");
 	search_l_r((unsigned short)USE_num, &bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
-	// printf("八邻域已结束\n");
 	// 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
 	get_left(data_stastics_l);
 	get_right(data_stastics_r);
-	//处理函数放这里，不要放到if外面去了，不要放到if外面去了，不要放到if外面去了，重要的事说三遍
-
 }
 centerline_k = regression(BottomRow - 50, BottomRow);
+}
 
+void clip_imageprocess(void)
+{
+    unsigned short i;
+    unsigned char hightest = 0;     // 定义循环结束的最高行，试试40
+    my_get_image(mt9v03x_image[0], clip_image[0]);
+    myturn_to_binary(clip_image[0], clip_bin_image[0]);
+    image_filter(clip_bin_image[0]);        // 滤波，但是很占资源
+    image_draw_rectan(clip_bin_image[0]);   // 画框，让边界找到边框上
+    //清零
+    data_stastics_l = 0;
+    data_stastics_r = 0;
+
+    if (my_getstart_point(CLIP_IMAGE_H - 3, clip_bin_image[0]))  // 把起点限定的高一点
+    {
+        search_l_r((unsigned short)USE_num, clip_bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
+        // 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
+        my_get_left(data_stastics_l);
+        my_get_right(data_stastics_r);
+    }
 }
 
 int Cal_centerline(void)
@@ -834,7 +977,7 @@ int Cal_centerline(void)
     for (int i = sizeof(centerline_ratio) / sizeof(unsigned char); i > 0; i--)
     {
         ratio_sum += centerline_ratio[i];
-        centerline_err_sum += (center_line[MT9V03X_H - i] - 93) * centerline_ratio[i]; ;
+        centerline_err_sum += (clip_ctline[(CLIP_IMAGE_H - 1) - i] - 93) * centerline_ratio[i]; ;
     }
     return centerline_err_sum / ratio_sum;
 }
@@ -1124,3 +1267,6 @@ unsigned char Gray_Search_Line(unsigned char(*img)[188],unsigned char i1,unsigne
       return 0;
     }
 }
+
+
+// #pragma section all restore

@@ -44,6 +44,9 @@ extern unsigned char Left_RoadWidth[120], Right_RoadWidth[120];
 extern int BlackPoints_Nums;
 // extern short image_threshold;
 
+extern unsigned short data_stastics_l;//统计左边找到点的个数
+extern unsigned short data_stastics_r;//统计右边找到点的个数
+
 
 extern unsigned char bin_image[image_h][MT9V03X_W];  //图像数组
 extern unsigned char l_border[image_h];//左线数组
@@ -57,6 +60,13 @@ extern int ipts0[MT9V03X_H][2];
 extern int ipts1[MT9V03X_H][2];
 extern int ipts0_num, ipts1_num;
 extern float Block_size;
+
+extern unsigned char clip_image[CLIP_IMAGE_H][MT9V03X_W];
+extern unsigned char clip_bin_image[CLIP_IMAGE_H][MT9V03X_W];
+extern unsigned char clip_image_thereshold;
+extern unsigned char clip_lfline[CLIP_IMAGE_H];
+extern unsigned char clip_rtline[CLIP_IMAGE_H];
+extern unsigned char clip_ctline[CLIP_IMAGE_H];
 
 extern void image_process(void);   //直接在中断或循环里调用此程序就可以循环执行了
 
@@ -103,17 +113,27 @@ short limit_a_b(short x, int a, int b);
 
 void Get_image(unsigned char(*mt9v03x_image)[image_w]);
 
+void my_get_image(unsigned char (*mt9v03x_image)[188], unsigned char (*clip_image)[188]);
+
 unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned short row);
 
 void turn_to_bin(void);
 
+void myturn_to_binary(unsigned char (*clip_image)[188], unsigned char (*clip_bin_image)[188]);
+
 unsigned char get_start_point(unsigned char start_row);
+
+unsigned char my_getstart_point(unsigned char start_row, unsigned char (*clip_bin_image)[188]);
 
 void search_l_r(unsigned short break_flag, unsigned char(*image)[image_w], unsigned short *l_stastic, unsigned short *r_stastic, unsigned char l_start_x, unsigned char l_start_y, unsigned char r_start_x, unsigned char r_start_y, unsigned char*hightest);
 
 void get_left(unsigned short total_L);
 
+void my_get_left(unsigned short total_L);
+
 void get_right(unsigned short total_R);
+
+void my_get_right(unsigned short total_R);
 
 void get_centerline_ver2(void);
 
@@ -122,6 +142,8 @@ void image_filter(unsigned char(*bin_image)[image_w]); //形态学滤波，简�
 void image_draw_rectan(unsigned char(*image)[image_w]);
 
 // void image_process(void);
+
+void clip_imageprocess(void);
 
 int Cal_centerline(void);
 

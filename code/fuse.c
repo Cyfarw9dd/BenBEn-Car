@@ -49,7 +49,7 @@ void PID_int(void)
     R_SpeedPID.Ki = 0.9;
     R_SpeedPID.Kd = 0;
 
-    TurnPID.Kp = 130; // 转向环PID参数 （C车只用调这个，不用串级转向）
+    TurnPID.Kp = 120; // 转向环PID参数 （C车只用调这个，不用串级转向）
     TurnPID.Ki = 0;
     TurnPID.Kd = 0;
 
@@ -152,8 +152,8 @@ void Motor_output_control()
     Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
     Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
 
-    All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
-    All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
+    All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+    All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
 
     motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
 }
@@ -204,7 +204,7 @@ void Speed_control()
     get_motor_speed(); // 编码器测量
     real_speed = (speed1 + speed2) / 2;
     real_real_speed = speed1 * 0.0432f; // 0.0432f
-    aim_speed = 450; // 目标速度
+    aim_speed = 150; // 目标速度 450
     Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
     range_protect(Speed_pwm_all, -6000, 6000); 
 }

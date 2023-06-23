@@ -203,8 +203,8 @@ void show_gray_image(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 2, MT9V03X_H / 2, 0);
-        tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(100, 65, lnum, 3);
+        tft180_show_gray_image(0, 0, clip_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
+        tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(100, 65, clip_image_thereshold, 3);
         tft180_show_string(0, 80, "LRoundAbout_PFlag");     tft180_show_int(110, 80, rnum, 2);
         tft180_show_string(0, 95, "RRoundAbout_PFlag");     tft180_show_int(110, 95, RoundAbout_PointFlag_R, 2);
         tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad_PointFlag, 2);
@@ -220,16 +220,16 @@ void show_binary_image(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        tft180_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 2, MT9V03X_H / 2, 0);
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
         tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(110, 65, StartLine_PointFlag, 2);
         tft180_show_string(0, 80, "LRoundAbout_PFlag");     tft180_show_int(110, 80, RoundAbout_PointFlag_L, 2);
         tft180_show_string(0, 95, "RRoundAbout_PFlag");     tft180_show_int(110, 95, RoundAbout_PointFlag_R, 2);
         tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad_PointFlag, 2);
         tft180_show_string(0, 125, "Obstacle_PFlag");      tft180_show_int(110, 125, Obstacle_PointFlag, 2);
-        tft180_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] / 2, RGB565_BLUE);
-        tft180_draw_point(checkline_l.col[1] / 2, checkline_l.row[1] / 2, RGB565_RED);
-        tft180_draw_point(checkline_r.col[0] / 2, checkline_r.row[0] / 2, RGB565_BLUE);
-        tft180_draw_point(checkline_r.col[1] / 2, checkline_r.row[1] / 2, RGB565_RED);
+        // tft180_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] / 2, RGB565_BLUE);
+        // tft180_draw_point(checkline_l.col[1] / 2, checkline_l.row[1] / 2, RGB565_RED);
+        // tft180_draw_point(checkline_r.col[0] / 2, checkline_r.row[0] / 2, RGB565_BLUE);
+        // tft180_draw_point(checkline_r.col[1] / 2, checkline_r.row[1] / 2, RGB565_RED);
     }
     tft180_clear();
         
@@ -241,10 +241,10 @@ void show_boundaries(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        // tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
+        // tft180_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
         Hightlight_Lines(bin_image[0]);
-        // tft180_show_int(0, 65, ipts0_num, 3);
-        // tft180_show_int(0, 80, ipts1_num, 3);
+        tft180_show_int(0, 80, data_stastics_l, 3);
+        tft180_show_int(0, 90, data_stastics_r, 3);
         // tft180_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] / 2, RGB565_WHITE);
         // tft180_draw_point(checkline_l.col[0] + 1 / 2, checkline_l.row[0] / 2, RGB565_WHITE);
         // tft180_draw_point(checkline_l.col[0] - 1 / 2, checkline_l.row[0] / 2, RGB565_WHITE);
@@ -295,9 +295,20 @@ void show_roadtraits(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        tft180_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 2, MT9V03X_H / 2, 0);
-        tft180_show_string(0, 65, "lnum");      tft180_show_int(110, 65, lnum, 2);
-        tft180_show_string(0, 80, "rnum");      tft180_show_int(110, 80, rnum, 2);
+        // tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
+        // for (int i = 0; i < CLIP_IMAGE_H; i ++)
+        // {
+        //     tft180_draw_point(clip_lfline[i] / 1.5, i / 1.5, RGB565_BLUE);
+        //     tft180_draw_point(clip_rtline[i] / 1.5 , i / 1.5, RGB565_GREEN);
+        //     tft180_draw_point(clip_ctline[i] / 1.5 , i / 1.5, RGB565_YELLOW);
+        // }
+        for (int i = 0; i < CLIP_IMAGE_H; i ++)
+        {
+            tft180_draw_point(l_border[i] / 1.5, i / 1.5, RGB565_BLUE);
+            tft180_draw_point(r_border[i] / 1.5 , i / 1.5, RGB565_GREEN);
+            tft180_draw_point(center_line[i] / 1.5 , i / 1.5, RGB565_YELLOW);
+        }
+        tft180_clear();
     }
     tft180_clear();
 }

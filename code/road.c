@@ -1,4 +1,16 @@
 #include "zf_common_headfile.h"
+
+// Y角点
+int Ypt0_rpts0s_id, Ypt1_rpts1s_id;
+bool Ypt0_found, Ypt1_found;
+
+// L角点
+int Lpt0_rpts0s_id, Lpt1_rpts1s_id;
+bool Lpt0_found, Lpt1_found;
+
+// 长直道
+bool is_straight0, is_straight1;
+
 unsigned char bend_flag;
 // 左右线丢线数目
 unsigned char lnum = 0;
@@ -172,8 +184,6 @@ void BreakRoad_process(Trait_smachine *road_smachine)
 
 void Startline_process(Trait_smachine *road_smachine, unsigned char (*binary_array)[188])
 {
-    Findchangepoint_L(&Parking_L, 70, 40, &image_deal[0], CROSSING_ABOVE);
-    Findchangepoint_R(&Parking_R, 70, 40, &image_deal[0], CROSSING_ABOVE);
     unsigned char times = 0;
     for (unsigned char i = BottomRow - 18; i >= BottomRow - 23; i--)
     {
