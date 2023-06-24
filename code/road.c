@@ -1,4 +1,6 @@
 #include "zf_common_headfile.h"
+// 八邻域左右边线 points_l, points_r
+// 0代表左，1为右
 
 // Y角点
 int Ypt0_rpts0s_id, Ypt1_rpts1s_id;
@@ -10,6 +12,9 @@ bool Lpt0_found, Lpt1_found;
 
 // 长直道
 bool is_straight0, is_straight1;
+
+// 弯道
+bool is_bend0, is_bend1;
 
 unsigned char bend_flag;
 // 左右线丢线数目
@@ -254,7 +259,23 @@ float fclip(float x, float low, float up)
 }
 
 
-void Find_corners(void)
+void local_angle_points(float pts_in[][2], int num, float angle_out[], int dist)
 {
-
+    for (int i = 0; i < num; i++) {
+        if (i <= 0 || i >= num - 1) {
+            angle_out[i] = 0;
+            continue;
+        }
+        float dx1 = pts_in[i][0] - pts_in[clip(i - dist, 0, num - 1)][0];
+        float dy1 = pts_in[i][1] - pts_in[clip(i - dist, 0, num - 1)][1];
+        float dn1 = sqrtf(dx1 * dx1 + dy1 * dy1);
+        float dx2 = pts_in[clip(i + dist, 0, num - 1)][0] - pts_in[i][0];
+        float dy2 = pts_in[clip(i + dist, 0, num - 1)][1] - pts_in[i][1];
+        float dn2 = sqrtf(dx2 * dx2 + dy2 * dy2);
+        float c1 = dx1 / dn1;
+        float s1 = dy1 / dn1;
+        float c2 = dx2 / dn2;
+        float s2 = dy2 / dn2;
+        angle_out[i] = atan2f(c1 * s2 - c2 * s1, c2 * c1 + s2 * s1);
+    }
 }

@@ -767,13 +767,13 @@ void get_left(unsigned short total_L)
 
 void my_get_left(unsigned short total_L)
 {
-    int	h = CLIP_IMAGE_H - 2;
 	// 初始化
 	// for (int i = 0 ;i < CLIP_IMAGE_H; i++)
 	// {
 	// 	clip_lfline[i] = border_min;
 	// }
 	// 左边
+        int	h = CLIP_IMAGE_H - 2;
 	for (int j = 0; j < total_L; j++)
 	{
 		//printf("%d\n", j);
@@ -824,12 +824,12 @@ void get_right(unsigned short total_R)
 
 void my_get_right(unsigned short total_R)
 {
-    int h = CLIP_IMAGE_H - 2;
 	// for (int i = 0; i < CLIP_IMAGE_H; i++)
 	// {
 	// 	clip_rtline[i] = border_max;//右边线初始化放到最右边，左边线放到最左边，这样八邻域闭合区域外的中线就会在中间，不会干扰得到的数据
 	// }
 	//右边
+    int h = CLIP_IMAGE_H - 2;
 	for (int j = 0; j < total_R; j++)
 	{
 		if (points_r[j][1] == h)
@@ -851,7 +851,7 @@ void image_filter(unsigned char(*bin_image)[image_w])//形态学滤波，简单�
 	unsigned int num = 0;
 
 
-	for (i = 1; i < image_h - 1; i++)       // change to clip_image_h
+	for (i = 1; i < CLIP_IMAGE_H - 1; i++)
 	{
 		for (j = 1; j < (image_w - 1); j++)
 		{
@@ -893,7 +893,7 @@ void image_draw_rectan(unsigned char(*image)[image_w])
 {
 
 	unsigned char i = 0;
-	for (i = 0; i < image_h; i++)   // change to clip_image_h
+	for (i = 0; i < CLIP_IMAGE_H; i++)
 	{
 		image[i][0] = 0;
 		image[i][1] = 0;
@@ -919,47 +919,56 @@ void image_draw_rectan(unsigned char(*image)[image_w])
 备    注：
 example： image_process();
 */
-
 void image_process(void)
 {
-// unsigned short i;
-unsigned char hightest = 0;     // 定义循环结束的最高行，试试40
+unsigned short i;
+unsigned char hightest = 0;//定义一个最高行，tip：这里的最高指的是y值的最小
+/*这是离线调试用的*/
 Get_image(&mt9v03x_image[0]);
 turn_to_bin();
-image_filter(&bin_image[0]);        // 滤波，但是很占资源
-image_draw_rectan(&bin_image[0]);   // 画框，让边界找到边框上
+/*提取赛道边界*/
+image_filter(&bin_image[0]);//滤波
+image_draw_rectan(&bin_image[0]);//预处理
 //清零
 data_stastics_l = 0;
 data_stastics_r = 0;
-if (get_start_point(image_h - 10))  // 把起点限定的高一点
+if (get_start_point(image_h - 2))//找到起点了，再执行八领域，没找到就一直找
 {
+	// printf("正在开始八领域\n");
 	search_l_r((unsigned short)USE_num, &bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
+	// printf("八邻域已结束\n");
 	// 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
 	get_left(data_stastics_l);
 	get_right(data_stastics_r);
+	//处理函数放这里，不要放到if外面去了，不要放到if外面去了，不要放到if外面去了，重要的事说三遍
+
 }
 centerline_k = regression(BottomRow - 50, BottomRow);
 }
 
 void clip_imageprocess(void)
 {
-    unsigned short i;
-    unsigned char hightest = 0;     // 定义循环结束的最高行，试试40
-    my_get_image(mt9v03x_image[0], clip_image[0]);
-    myturn_to_binary(clip_image[0], clip_bin_image[0]);
-    image_filter(clip_bin_image[0]);        // 滤波，但是很占资源
-    image_draw_rectan(clip_bin_image[0]);   // 画框，让边界找到边框上
-    //清零
-    data_stastics_l = 0;
-    data_stastics_r = 0;
-
-    if (my_getstart_point(CLIP_IMAGE_H - 3, clip_bin_image[0]))  // 把起点限定的高一点
+    if (mt9v03x_finish_flag)
     {
-        search_l_r((unsigned short)USE_num, clip_bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
-        // 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
-        my_get_left(data_stastics_l);
-        my_get_right(data_stastics_r);
+        unsigned short i;
+        unsigned char hightest = 0;     // 定义循环结束的最高行，试试40
+        my_get_image(mt9v03x_image[0], clip_image[0]);
+        myturn_to_binary(clip_image[0], clip_bin_image[0]);
+        image_filter(clip_bin_image[0]);        // 滤波，但是很占资源
+        image_draw_rectan(clip_bin_image[0]);   // 画框，让边界找到边框上
+        //清零
+        data_stastics_l = 0;
+        data_stastics_r = 0;
+
+        if (my_getstart_point(CLIP_IMAGE_H - 2, clip_bin_image[0]))  // 把起点限定的高一点
+        {
+            search_l_r((unsigned short)USE_num, clip_bin_image[0], &data_stastics_l, &data_stastics_r, start_point_l[0], start_point_l[1], start_point_r[0], start_point_r[1], &hightest);
+            // 从爬取的边界线内提取边线 ， 这个才是最终有用的边线
+            my_get_left(data_stastics_l);
+            my_get_right(data_stastics_r);
+        }
     }
+
 }
 
 int Cal_centerline(void)

@@ -220,6 +220,11 @@ void show_binary_image(void)
     while (!Key3_flag)
     {
         MyKeyScan();
+        for(unsigned char i = CLIP_IMAGE_H - 1; i > 0; i--){
+            clip_bin_image[i][clip_lfline[i] + 3] = 70;
+            clip_bin_image[i][clip_rtline[i] - 3] = 70;
+            clip_bin_image[i][clip_ctline[i]] = 70;
+        }
         tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
         tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(110, 65, StartLine_PointFlag, 2);
         tft180_show_string(0, 80, "LRoundAbout_PFlag");     tft180_show_int(110, 80, RoundAbout_PointFlag_L, 2);
@@ -296,18 +301,24 @@ void show_roadtraits(void)
     {
         MyKeyScan();
         // tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
-        // for (int i = 0; i < CLIP_IMAGE_H; i ++)
-        // {
-        //     tft180_draw_point(clip_lfline[i] / 1.5, i / 1.5, RGB565_BLUE);
-        //     tft180_draw_point(clip_rtline[i] / 1.5 , i / 1.5, RGB565_GREEN);
-        //     tft180_draw_point(clip_ctline[i] / 1.5 , i / 1.5, RGB565_YELLOW);
-        // }
         for (int i = 0; i < CLIP_IMAGE_H; i ++)
         {
-            tft180_draw_point(l_border[i] / 1.5, i / 1.5, RGB565_BLUE);
-            tft180_draw_point(r_border[i] / 1.5 , i / 1.5, RGB565_GREEN);
-            tft180_draw_point(center_line[i] / 1.5 , i / 1.5, RGB565_YELLOW);
+            tft180_draw_point(clip_lfline[i] / 1.5, i / 1.5, RGB565_BLUE);
+            tft180_draw_point(clip_rtline[i] / 1.5 , i / 1.5, RGB565_GREEN);
+            tft180_draw_point(clip_ctline[i] / 1.5 , i / 1.5, RGB565_YELLOW);
         }
+        
+        // for (int i = 0; i < CLIP_IMAGE_H; i ++)
+        // {
+        //     tft180_draw_point(l_border[i] / 1.5, i / 1.5, RGB565_BLUE);
+        //     tft180_draw_point(r_border[i] / 1.5 , i / 1.5, RGB565_GREEN);
+        //     tft180_draw_point(center_line[i] / 1.5 , i / 1.5, RGB565_YELLOW);
+        // }
+        // for(unsigned char i = BottomRow; i > 0; i--){
+        //     tft180_draw_point((l_border[i] + 5) / 2, i / 2, RGB565_BLUE);
+        //     tft180_draw_point(center_line[i] / 2, i / 2, RGB565_RED);
+        //     tft180_draw_point((r_border[i] - 5)  / 2, i / 2, RGB565_GREEN);
+        // }
         tft180_clear();
     }
     tft180_clear();
