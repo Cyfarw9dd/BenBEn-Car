@@ -34,6 +34,7 @@ extern int ipts1_num;
 
 #define AT_IMAGE(img, x, y)          ((img)->data[(y)*(img)->step+(x)])
 #define AT_IMAGE_CLIP(img, x, y)     AT_IMAGE(img, clip(x, 0, (img)->width-1), clip(y, 0, (img)->height-1))
+#define USE_num	image_h*3	//定义找点的数组成员个数按理说300个点能放下，但是有些特殊情况确实难顶，多定义了一点
 
 extern unsigned char centerline[120], leftline[120], rightline[120];
 extern unsigned char image_deal[MT9V03X_H][MT9V03X_W];
@@ -61,6 +62,9 @@ extern int ipts1[MT9V03X_H][2];
 extern int ipts0_num, ipts1_num;
 extern float Block_size;
 
+
+extern unsigned short points_l[(unsigned short)USE_num][2];
+extern unsigned short points_r[(unsigned short)USE_num][2];
 extern unsigned char clip_image[CLIP_IMAGE_H][MT9V03X_W];
 extern unsigned char clip_bin_image[CLIP_IMAGE_H][MT9V03X_W];
 extern unsigned char clip_image_thereshold;
@@ -156,5 +160,7 @@ void findline_righthand_adaptive(unsigned char(*img)[188],unsigned char width,un
 void my_process_image(void);
 
 unsigned char Gray_Search_Line(unsigned char(*img)[188],unsigned char i1,unsigned char j1,unsigned char i2,unsigned char j2,unsigned char thres);
+
+void highlight_Lcorners(void);
 
 #endif /* CODE_IMAGE_H_ */

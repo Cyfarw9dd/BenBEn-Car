@@ -50,4 +50,8 @@ void show_params(void);
 
 void show_roadtraits(void);
 
+void show_corners(void);
+
+void show_sample_boundaries(void);
+
 #endif /* CODE_LIST_H_ */

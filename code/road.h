@@ -2,6 +2,33 @@
 #define CODE_ROAD_H_
 
 #include "zf_common_headfile.h"
+
+// 边线等距采样
+extern unsigned short points_ls[MT9V03X_H * 3][2];
+extern unsigned short points_rs[MT9V03X_H * 3][2];
+extern int points_lnum, points_rnum;
+// 左右边线局部角度变化率
+extern float rpts0a[MT9V03X_H * 3];
+extern float rpts1a[MT9V03X_H * 3];
+extern int rpts0a_num, rpts1a_num;
+// 左右边线局部角度变化率+非极大抑制
+extern float rpts0an[MT9V03X_H * 3];
+extern float rpts1an[MT9V03X_H * 3];
+extern int rpts0an_num, rpts1an_num;
+// Y角点
+extern int Ypt0_rpts0s_id, Ypt1_rpts1s_id;
+extern bool Ypt0_found, Ypt1_found;
+
+// L角点
+extern int Lpt0_rpts0s_id, Lpt1_rpts1s_id;
+extern bool Lpt0_found, Lpt1_found;
+
+// 长直道
+extern bool is_straight0, is_straight1;
+
+// 弯道
+extern bool is_bend0, is_bend1;
+
 extern unsigned char lnum;
 extern unsigned char rnum;
 extern unsigned char bend_flag;
@@ -11,7 +38,10 @@ typedef enum{
 }Road_Type;
 
 typedef struct{
+    unsigned char status;
     unsigned char pointflag;
+    unsigned char cpt0_row, cpt0_col;
+    unsigned char cpt1_row, cpt1_col;
     int trait_cnt;                  // 计时器
     float turn_value;               // 转角值
 }Trait_smachine;
@@ -61,7 +91,15 @@ void blur_points(float pts_in[][2], int num, int kernel);
 int clip(int x, int low, int up);
 
 float fclip(float x, float low, float up);
-
-void Find_corners(void);
+// 八邻域边界等距采样, 每隔三个点取一个点
+void sample_border(float *(points)[2], int num1, float *(points_s)[2], int *num2, int dist_point);
+// 边线等距采样
+void resample_points2(float pts_in[][2], int num1, float pts_out[][2], int *num2, float dist);
+// 角度变化率非极大抑制
+void local_angle_points(float pts_in[][2], int num, float angle_out[], int dist);
+// 角度变化率非极大抑制
+void nms_angle(float angle_in[], int num, float angle_out[], int kernel);
+// 寻找角点
+void find_corners(void);
 
 #endif /* CODE_ROAD_H_ */

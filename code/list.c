@@ -36,9 +36,12 @@ List MyList[] =
     {1, "Image Mode", NULL, NULL},              // 图像模式
     {11, "gray image", show_gray_image, NULL},             // 显示灰度图像
     {12, "binary Imange", show_binary_image, NULL},          // 显示二值化图像
-    {13, "show boudaries", show_boundaries, NULL},         // 显示图像边界
+    {13, "show boudaries", NULL, NULL},         // 显示图像边界
+    {131, "show ori bound", show_boundaries, NULL},
+    {132, "show sample", show_sample_boundaries, NULL},
     {14, "show road traits", show_roadtraits, NULL},
-    {15, "back to main", NULL, NULL},           // 返回主菜单
+    {15, "show corners", show_corners, NULL},
+    {16, "back to main", NULL, NULL},           // 返回主菜单
     {2, "Tuning", NULL, NULL},
     {21, "Speed Cycle", NULL, NULL},
     {211, "Camera", NULL, NULL},
@@ -250,6 +253,8 @@ void show_boundaries(void)
         Hightlight_Lines(bin_image[0]);
         tft180_show_int(0, 80, data_stastics_l, 3);
         tft180_show_int(0, 90, data_stastics_r, 3);
+        // tft180_show_int(0, 100, speed1, 3);
+        // tft180_show_int(0, 110, speed2, 3);
         // tft180_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] / 2, RGB565_WHITE);
         // tft180_draw_point(checkline_l.col[0] + 1 / 2, checkline_l.row[0] / 2, RGB565_WHITE);
         // tft180_draw_point(checkline_l.col[0] - 1 / 2, checkline_l.row[0] / 2, RGB565_WHITE);
@@ -321,5 +326,43 @@ void show_roadtraits(void)
         // }
         tft180_clear();
     }
+    tft180_clear();
+}
+
+void show_corners(void)
+{
+    tft180_clear();
+    Key_flag_clear();
+    while (!Key3_flag)
+    {
+        MyKeyScan();
+        // 将角点周围的五个点都高亮
+        // 显示二值化图像
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
+        // 显示坐标
+        tft180_show_int(0, 80, Ypt0_rpts0s_id, 3);
+        tft180_show_int(0, 100, Ypt1_rpts1s_id, 3);
+        // 显示左L角点
+        highlight_Lcorners();
+    }
+    tft180_clear();
+}
+
+void show_sample_boundaries(void)
+{
+    tft180_clear();
+    Key_flag_clear();
+    while (!Key3_flag)
+    {
+        MyKeyScan();
+        // for (int i = 0; i < 359; i++)
+        // {
+        //     tft180_draw_point(points_ls[i][0] / 1.5, points_ls[i][1] / 1.5, RGB565_YELLOW);
+        //     tft180_draw_point(points_rs[i][0] / 1.5, points_rs[i][1] / 1.5, RGB565_YELLOW);
+        // }
+        // tft180_show_float(0, 80, points_ls[30][30], 3, 2);
+        tft180_show_int(0, 90, data_stastics_l, 3);
+        tft180_show_int(0, 100, data_stastics_r, 3);
+    }    
     tft180_clear();
 }

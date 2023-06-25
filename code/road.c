@@ -2,6 +2,19 @@
 // 八邻域左右边线 points_l, points_r
 // 0代表左，1为右
 
+// 边线等距采样
+unsigned short points_ls[MT9V03X_H * 3][2];
+unsigned short points_rs[MT9V03X_H * 3][2];
+int points_lnum, points_rnum;
+// 左右边线局部角度变化率
+float rpts0a[MT9V03X_H * 3];
+float rpts1a[MT9V03X_H * 3];
+int rpts0a_num, rpts1a_num;
+// 左右边线局部角度变化率+非极大抑制
+float rpts0an[MT9V03X_H * 3];
+float rpts1an[MT9V03X_H * 3];
+int rpts0an_num, rpts1an_num;
+
 // Y角点
 int Ypt0_rpts0s_id, Ypt1_rpts1s_id;
 bool Ypt0_found, Ypt1_found;
@@ -42,27 +55,8 @@ void Traits_process(void)
     // Track_line_r(&checkline_r);
     BreakRoad_process(&BreakRoad);
     Startline_process(&Startline, &bin_image[0]);
-    // if (BreakRoad.pointflag == 1)
-    // {
-    //     pit_disable(CCU60_CH0);     // 关闭摄像头中断
-    //     pit_enable(CCU60_CH1);      // 打开电磁中断
-    // }
-    // if (BreakRoad.pointflag == 0)
-    // {
-    //     pit_disable(CCU60_CH1);
-    //     pit_enable(CCU60_CH0);
-    // }
-    // if (Startline.pointflag == 1)
-    // {
-    //     // Buzzer();
-    //     // 当检测到斑马线的时候，关中断停车
-    //     while (1)
-    //     {
-    //         pit_disable(CCU60_CH1);
-    //         pit_disable(CCU60_CH0);
-    //     }
-    // }
 }
+
 
 void Lostline_count(unsigned char LlineF[120], unsigned char RlineF[120], unsigned char *lcnt, unsigned char *rcnt)
 {
@@ -258,7 +252,62 @@ float fclip(float x, float low, float up)
     return x > up ? up : x < low ? low : x;
 }
 
+// num1 = points_num;
+// num2 = points_num;
+// 八邻域边界等距采样, 每隔三个点取一个点
+void sample_border(float *(points)[2], int num1, float *(points_s)[2], int *num2, int dist_point)
+{
+    int len = 0;
+    for (int i = 0; i < num1 && len < *num2; i++)
+    {
+        len++;
+        if (i % dist_point == 0)
+        {
+            points_s[len][0] = points[i][0];
+            points_s[len][1] = points[i][1];
+        }
+    }
+}
 
+// 边线等距采样
+void resample_points2(float pts_in[][2], int num1, float pts_out[][2], int *num2, float dist)
+{
+    pts_out[0][0] = pts_in[0][0];
+    pts_out[0][1] = pts_in[0][1];
+    int len = 1;
+    for (int i = 0; i < num1 - 1 && len < *num2; i++) {
+        float x0 = pts_in[i][0];
+        float y0 = pts_in[i][1];
+        float x1 = pts_in[i + 1][0];
+        float y1 = pts_in[i + 1][1];
+
+        do {
+            float x = pts_out[len - 1][0];
+            float y = pts_out[len - 1][1];
+
+            float dx0 = x0 - x;
+            float dy0 = y0 - y;
+            float dx1 = x1 - x;
+            float dy1 = y1 - y;
+
+            float dist0 = sqrt(dx0 * dx0 + dy0 * dy0);
+            float dist1 = sqrt(dx1 * dx1 + dy1 * dy1);
+
+            float r0 = (dist1 - dist) / (dist1 - dist0);
+            float r1 = 1 - r0;
+
+            if (r0 < 0 || r1 < 0) break;
+            x0 = x0 * r0 + x1 * r1;
+            y0 = y0 * r0 + y1 * r1;
+            pts_out[len][0] = x0;
+            pts_out[len][1] = y0;
+            len++;
+        } while (len < *num2);
+
+    }
+    *num2 = len;    
+}
+// 角度变化率
 void local_angle_points(float pts_in[][2], int num, float angle_out[], int dist)
 {
     for (int i = 0; i < num; i++) {
@@ -279,3 +328,107 @@ void local_angle_points(float pts_in[][2], int num, float angle_out[], int dist)
         angle_out[i] = atan2f(c1 * s2 - c2 * s1, c2 * c1 + s2 * s1);
     }
 }
+// 非极大值抑制
+void nms_angle(float angle_in[], int num, float angle_out[], int kernel)
+{
+    // zf_assert(kernel % 2 == 1);
+    int half = kernel / 2;
+    for (int i = 0; i < num; i++) {
+        angle_out[i] = angle_in[i];
+        for (int j = -half; j <= half; j++) {
+            if (fabs(angle_in[clip(i + j, 0, num - 1)]) > fabs(angle_out[i])) {
+                angle_out[i] = 0;
+                break;
+            }
+        }
+    }
+}
+
+// 寻找角点
+void find_corners(void)
+{
+    // 识别Y,L拐点
+    Ypt0_found = Ypt1_found = Lpt0_found = Lpt1_found = false;      // 初始化角点标志位
+    is_straight0 = data_stastics_l > 1. / 0.1;   // 左右边界直线判断？                  
+    is_straight1 = data_stastics_r > 1. / 0.1;
+    for (int i = 0; i < data_stastics_l; i++) {
+        if (rpts0an[i] == 0) continue;
+        int im1 = clip(i - (int) round(10), 0, data_stastics_l - 1);   // round(angle_dist / sample_dist)
+        int ip1 = clip(i + (int) round(10), 0, data_stastics_l - 1);
+        float conf = fabs(rpts0a[i]) - (fabs(rpts0a[im1]) + fabs(rpts0a[ip1])) / 2;
+
+        //Y角点阈值
+        if (Ypt0_found == false && 30. / 180. * PI < conf && conf < 65. / 180. * PI && i < 0.8 / 0.1) {     // sample_dist
+            Ypt0_rpts0s_id = i;
+            Ypt0_found = true;
+        }
+        //L角点阈值
+        if (Lpt0_found == false && 70. / 180. * PI < conf && conf < 140. / 180. * PI && i < 0.8 / 0.1) {    // sample_dist
+            Lpt0_rpts0s_id = i;
+            Lpt0_found = true;
+        }
+        //长直道阈值
+        if (conf > 5. / 180. * PI && i < 1.0 / 0.1) is_straight0 = false;
+        if (Ypt0_found == true && Lpt0_found == true && is_straight0 == false) break;
+    }
+    for (int i = 0; i < data_stastics_r; i++) {
+        if (rpts1an[i] == 0) continue;
+        int im1 = clip(i - (int) round(10), 0, data_stastics_r - 1);
+        int ip1 = clip(i + (int) round(10), 0, data_stastics_r - 1);
+        float conf = fabs(rpts1a[i]) - (fabs(rpts1a[im1]) + fabs(rpts1a[ip1])) / 2;
+        if (Ypt1_found == false && 30. / 180. * PI < conf && conf < 65. / 180. * PI && i < 0.8 / 0.1) {
+            Ypt1_rpts1s_id = i;
+            Ypt1_found = true;
+        }
+        if (Lpt1_found == false && 70. / 180. * PI < conf && conf < 140. / 180. * PI && i < 0.8 / 0.1) {
+            Lpt1_rpts1s_id = i;
+            Lpt1_found = true;
+        }
+
+        if (conf > 5. / 180. * PI && i < 1.0 / 0.1) is_straight1 = false;
+
+        if (Ypt1_found == true && Lpt1_found == true && is_straight1 == false) break;
+    }
+    // // Y点二次检查,依据两角点距离及角点后张开特性
+    // if (Ypt0_found && Ypt1_found) {
+    //     float dx = points_l[Ypt0_rpts0s_id][0] - points_r[Ypt1_rpts1s_id][0];
+    //     float dy = points_l[Ypt0_rpts0s_id][1] - points_r[Ypt1_rpts1s_id][1];
+    //     float dn = sqrtf(dx * dx + dy * dy);
+    //     if (fabs(dn - 0.45 * pixel_per_meter) < 0.15 * pixel_per_meter) {
+    //         float dwx = points_l[clip(Ypt0_rpts0s_id + 50, 0, data_stastics_l - 1)][0] -
+    //                     points_r[clip(Ypt1_rpts1s_id + 50, 0, data_stastics_r - 1)][0];
+    //         float dwy = points_l[clip(Ypt0_rpts0s_id + 50, 0, data_stastics_l - 1)][1] -
+    //                     points_r[clip(Ypt1_rpts1s_id + 50, 0, data_stastics_r - 1)][1];
+    //         float dwn = sqrtf(dwx * dwx + dwy * dwy);
+    //         if (!(dwn > 0.7 * pixel_per_meter &&
+    //               points_l[clip(Ypt0_rpts0s_id + 50, 0, data_stastics_l - 1)][0] < points_l[Ypt0_rpts0s_id][0] &&
+    //               points_r[clip(Ypt1_rpts1s_id + 50, 0, data_stastics_r - 1)][0] > points_r[Ypt1_rpts1s_id][0])) {
+    //             Ypt0_found = Ypt1_found = false;
+    //         }
+    //     } else {
+    //         Ypt0_found = Ypt1_found = false;
+    //     }
+    // }
+    // // L点二次检查，车库模式不检查, 依据L角点距离及角点后张开特性
+    // if (Lpt0_found && Lpt1_found) {
+    //     float dx = points_l[Lpt0_rpts0s_id][0] - points_r[Lpt1_rpts1s_id][0];
+    //     float dy = points_l[Lpt0_rpts0s_id][1] - points_r[Lpt1_rpts1s_id][1];
+    //     float dn = sqrtf(dx * dx + dy * dy);
+    //     if (fabs(dn - 0.45 * pixel_per_meter) < 0.15 * pixel_per_meter) {
+    //         float dwx = points_l[clip(Lpt0_rpts0s_id + 50, 0, data_stastics_l - 1)][0] -
+    //                     points_r[clip(Lpt1_rpts1s_id + 50, 0, data_stastics_r - 1)][0];
+    //         float dwy = points_l[clip(Lpt0_rpts0s_id + 50, 0, data_stastics_l - 1)][1] -
+    //                     points_r[clip(Lpt1_rpts1s_id + 50, 0, data_stastics_r - 1)][1];
+    //         float dwn = sqrtf(dwx * dwx + dwy * dwy);
+    //         if (!(dwn > 0.7 * pixel_per_meter &&
+    //                 points_l[clip(Lpt0_rpts0s_id + 50, 0, data_stastics_l - 1)][0] < points_l[Lpt0_rpts0s_id][0] &&
+    //                 points_r[clip(Lpt1_rpts1s_id + 50, 0, data_stastics_r - 1)][0] > points_r[Lpt1_rpts1s_id][0])) {
+    //             Lpt0_found = Lpt1_found = false;
+    //         }
+    //     } else {
+    //         Lpt0_found = Lpt1_found = false;
+    //     }
+    // }
+
+}
+

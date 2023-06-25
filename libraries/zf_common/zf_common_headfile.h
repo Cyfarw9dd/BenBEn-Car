@@ -113,6 +113,7 @@
 #include "fuse.h"
 #include "adc.h"
 #include "road.h"
+#include "cross.h"
 
 
 #endif

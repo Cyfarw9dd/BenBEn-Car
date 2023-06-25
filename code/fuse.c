@@ -1,6 +1,6 @@
 #include "zf_common_headfile.h"
 
-extern icm_param_t imu_data;
+// extern icm_param_t imu_data;
 // extern euler_param_t eulerAngle;
 extern S_FLOAT_XYZ GyroOffset;
 int16 aim_speed = 0;       // 目标速度
@@ -25,7 +25,7 @@ static TASK_COMPONENTS TaskComps[] =
 {
     {0, 2, 2, Motor_output_control}, // 角速度内环和D车速度环2ms
     {0, 10, 10, Trailing_control},   // 转向外环10ms
-    {0, 20, 20, Speed_control},        // C车速度环20ms
+    {0, 10, 10, Speed_control},        // C车速度环20ms
 };
 
 static TASK_COMPONENTS ADC_TaskComps[] =
@@ -181,6 +181,7 @@ void ADC_Motor_output_control()
 ***************************************************************************************/
 void Trailing_control()
 {
+    Get_deviation(); // 电磁采集并获取赛道偏差
     Centerline_Err = Cal_centerline();
     Prospect_err = LocP_DCalc(&TurnPID, (short)Centerline_Err, 0); // 位置式PD控制转向
 }
@@ -204,7 +205,7 @@ void Speed_control()
     get_motor_speed(); // 编码器测量
     real_speed = (speed1 + speed2) / 2;
     real_real_speed = speed1 * 0.0432f; // 0.0432f
-    aim_speed = 300; // 目标速度 450
+    aim_speed = 380; // 目标速度 450
     Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
     range_protect(Speed_pwm_all, -6000, 6000); 
 }
