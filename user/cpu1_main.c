@@ -114,13 +114,13 @@ void core1_main(void)
         //     outflag = 0;
         // }
         // #endif 
+        clip_imageprocess();
+        Deal_Road_Characteristics(&bin_image[0], &MyRoad_Charac); 
+        find_corners();
+        highlight_Lcorners();
         Traits_process();
         TaskProcess();
-        // ADC_TaskProcess();
-        // image_process();
-        clip_imageprocess();
-        // my_process_image();
-        Deal_Road_Characteristics(&bin_image[0], &MyRoad_Charac);      
+        // ADC_TaskProcess();  
         // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, 0, 25);     
         // sendimg_A(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);  
         // 此处编写需要循环执行的代码

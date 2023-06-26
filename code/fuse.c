@@ -181,8 +181,8 @@ void ADC_Motor_output_control()
 ***************************************************************************************/
 void Trailing_control()
 {
-    Get_deviation(); // 电磁采集并获取赛道偏差
-    Centerline_Err = Cal_centerline();
+    Get_deviation(); 
+    track_decision();
     Prospect_err = LocP_DCalc(&TurnPID, (short)Centerline_Err, 0); // 位置式PD控制转向
 }
 

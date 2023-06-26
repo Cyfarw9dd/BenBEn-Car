@@ -28,10 +28,20 @@ extern bool is_straight0, is_straight1;
 
 // 弯道
 extern bool is_bend0, is_bend1;
+// 循迹模式
+extern int track_mode;
 
 extern unsigned char lnum;
 extern unsigned char rnum;
 extern unsigned char bend_flag;
+
+enum track_mode{
+    NORMAL = 0,
+    FARLINE,
+    LEFT,
+    RIGHT,
+};
+
 typedef enum{
     Straight = 0,
     Bend,
@@ -73,17 +83,9 @@ void Track_line_l(Trackline *checkline);
 void Track_line_r(Trackline *checkline);
 // 元素处理总函数，协调元素
 void Traits_process(void);
-// 十字路口
-void Crossing_process(void);
-// 环岛
-void RoundAbout_process(void);
-// 障碍
-void Barrier_process(void);
 // 断路
 void BreakRoad_process(Trait_smachine *road_smachine);
-// 坡道
-void Slope_process(void);
-// 判断弯道和直道
+
 void Startline_process(Trait_smachine *road_smachine, unsigned char (*binary_array)[188]);
 // 点集三角滤波
 void blur_points(float pts_in[][2], int num, int kernel);
@@ -95,11 +97,17 @@ float fclip(float x, float low, float up);
 void sample_border(float *(points)[2], int num1, float *(points_s)[2], int *num2, int dist_point);
 // 边线等距采样
 void resample_points2(float pts_in[][2], int num1, float pts_out[][2], int *num2, float dist);
-// 角度变化率非极大抑制
-void local_angle_points(float pts_in[][2], int num, float angle_out[], int dist);
-// 角度变化率非极大抑制
-void nms_angle(float angle_in[], int num, float angle_out[], int kernel);
+// 左线角度变化率
+void left_local_angle_points(int num, int dist);
+// 右线角度变化率
+void right_local_angle_points(int num, int dist);
+// 左线非极大值抑制
+void lnms_angle(int num, int kernel);
+// 右线非极大值抑制
+void rnms_angle(int num, int kernel);
 // 寻找角点
 void find_corners(void);
+
+void track_decision(void);
 
 #endif /* CODE_ROAD_H_ */

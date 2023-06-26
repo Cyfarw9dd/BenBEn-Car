@@ -18,10 +18,10 @@ void Crossing_process(Trait_smachine *road_smachine)
     }
     else 
     {
-        road_smachine->cpt0_row = points_l[Lpt0_rpts0s_id][1];
-        road_smachine->cpt0_col = points_l[Lpt0_rpts0s_id][0];
-        road_smachine->cpt1_row = points_r[Lpt1_rpts1s_id][1];
-        road_smachine->cpt1_col = points_r[Lpt1_rpts1s_id][0];
+        road_smachine->cpt0_row = (unsigned char) points_l[Lpt0_rpts0s_id][1];
+        road_smachine->cpt0_col = (unsigned char) points_l[Lpt0_rpts0s_id][0];
+        road_smachine->cpt1_row = (unsigned char) points_r[Lpt1_rpts1s_id][1];
+        road_smachine->cpt1_col = (unsigned char) points_r[Lpt1_rpts1s_id][0];
         limit_row = (road_smachine->cpt0_row + road_smachine->cpt1_row) / 2;
     }
     // ???????????????1

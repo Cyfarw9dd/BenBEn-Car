@@ -10,15 +10,8 @@ extern int position1_y;
 extern int ipts0_num;
 extern int ipts1_num;
 
-#define USER_SIZE_H 120
-#define USER_SIZE_W 188
-
-//颜色定义  因为有先例，连颜色都改不来，我直接放这了
-#define uesr_RED     0XF800    //红色
-#define uesr_GREEN   0X07E0    //绿色
-#define uesr_BLUE    0X001F    //蓝色
 #define TopRow  0
-
+#define BORDER_CLIP_ROW 75
 
 //宏定义
 #define image_h	120//图像高度
@@ -139,8 +132,6 @@ void get_right(unsigned short total_R);
 
 void my_get_right(unsigned short total_R);
 
-void get_centerline_ver2(void);
-
 void image_filter(unsigned char(*bin_image)[image_w]); //形态学滤波，简单来说就是膨胀和腐蚀的思想;
 
 void image_draw_rectan(unsigned char(*image)[image_w]);
@@ -149,7 +140,7 @@ void image_draw_rectan(unsigned char(*image)[image_w]);
 
 void clip_imageprocess(void);
 
-int Cal_centerline(void);
+int Cal_centerline(int mode);
 
 void LocalThresholding(void);
 
@@ -162,5 +153,7 @@ void my_process_image(void);
 unsigned char Gray_Search_Line(unsigned char(*img)[188],unsigned char i1,unsigned char j1,unsigned char i2,unsigned char j2,unsigned char thres);
 
 void highlight_Lcorners(void);
+
+void cut_borderline(void);
 
 #endif /* CODE_IMAGE_H_ */

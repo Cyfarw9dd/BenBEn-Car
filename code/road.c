@@ -28,6 +28,8 @@ bool is_straight0, is_straight1;
 
 // 弯道
 bool is_bend0, is_bend1;
+// 循迹模式
+int track_mode;
 
 unsigned char bend_flag;
 // 左右线丢线数目
@@ -49,7 +51,9 @@ Trackline checkline_r;
 
 void Traits_process(void)
 {
-    Departure();
+    // 默认情况下正常循迹
+    track_mode = NORMAL;
+    // Departure();
     Lostline_count(lflinef, rtlinef, lnump, rnump);
     // Track_line_l(&checkline_l);
     // Track_line_r(&checkline_r);
@@ -258,13 +262,13 @@ float fclip(float x, float low, float up)
 void sample_border(float *(points)[2], int num1, float *(points_s)[2], int *num2, int dist_point)
 {
     int len = 0;
-    for (int i = 0; i < num1 && len < *num2; i++)
+    for (int i = 0; i < num1 - dist_point; i += dist_point)
     {
-        len++;
-        if (i % dist_point == 0)
-        {
-            points_s[len][0] = points[i][0];
-            points_s[len][1] = points[i][1];
+        if (len > *num2 - dist_point)
+            return;
+        else{
+            points_s[len++][0] = points[i][0];
+            points_s[len++][1] = points[i][1];
         }
     }
 }
@@ -307,37 +311,75 @@ void resample_points2(float pts_in[][2], int num1, float pts_out[][2], int *num2
     }
     *num2 = len;    
 }
-// 角度变化率
-void local_angle_points(float pts_in[][2], int num, float angle_out[], int dist)
+// 左线角度变化率
+void left_local_angle_points(int num, int dist)
 {
     for (int i = 0; i < num; i++) {
         if (i <= 0 || i >= num - 1) {
-            angle_out[i] = 0;
+            rpts0a[i] = 0;
             continue;
         }
-        float dx1 = pts_in[i][0] - pts_in[clip(i - dist, 0, num - 1)][0];
-        float dy1 = pts_in[i][1] - pts_in[clip(i - dist, 0, num - 1)][1];
+        float dx1 = (float)points_l[i][0] - (float)points_l[clip(i - dist, 0, num - 1)][0];
+        float dy1 = (float)points_l[i][1] - (float)points_l[clip(i - dist, 0, num - 1)][1];
         float dn1 = sqrtf(dx1 * dx1 + dy1 * dy1);
-        float dx2 = pts_in[clip(i + dist, 0, num - 1)][0] - pts_in[i][0];
-        float dy2 = pts_in[clip(i + dist, 0, num - 1)][1] - pts_in[i][1];
+        float dx2 = (float)points_l[clip(i + dist, 0, num - 1)][0] - (float)points_l[i][0];
+        float dy2 = (float)points_l[clip(i + dist, 0, num - 1)][1] - (float)points_l[i][1];
         float dn2 = sqrtf(dx2 * dx2 + dy2 * dy2);
         float c1 = dx1 / dn1;
         float s1 = dy1 / dn1;
         float c2 = dx2 / dn2;
         float s2 = dy2 / dn2;
-        angle_out[i] = atan2f(c1 * s2 - c2 * s1, c2 * c1 + s2 * s1);
+        rpts0a[i] = atan2f(c1 * s2 - c2 * s1, c2 * c1 + s2 * s1);
     }
 }
-// 非极大值抑制
-void nms_angle(float angle_in[], int num, float angle_out[], int kernel)
+
+// 右线角度变化率
+void right_local_angle_points(int num, int dist)
+{
+    for (int i = 0; i < num; i++) {
+        if (i <= 0 || i >= num - 1) {
+            rpts1a[i] = 0;
+            continue;
+        }
+        float dx1 = (float)points_r[i][0] - (float)points_r[clip(i - dist, 0, num - 1)][0];
+        float dy1 = (float)points_r[i][1] - (float)points_r[clip(i - dist, 0, num - 1)][1];
+        float dn1 = sqrtf(dx1 * dx1 + dy1 * dy1);
+        float dx2 = (float)points_r[clip(i + dist, 0, num - 1)][0] - (float)points_r[i][0];
+        float dy2 = (float)points_r[clip(i + dist, 0, num - 1)][1] - (float)points_r[i][1];
+        float dn2 = sqrtf(dx2 * dx2 + dy2 * dy2);
+        float c1 = dx1 / dn1;
+        float s1 = dy1 / dn1;
+        float c2 = dx2 / dn2;
+        float s2 = dy2 / dn2;
+        rpts1a[i] = atan2f(c1 * s2 - c2 * s1, c2 * c1 + s2 * s1);
+    }
+}
+
+// 左线非极大值抑制
+void lnms_angle(int num, int kernel)
 {
     // zf_assert(kernel % 2 == 1);
     int half = kernel / 2;
     for (int i = 0; i < num; i++) {
-        angle_out[i] = angle_in[i];
+        rpts0an[i] = rpts0a[i];
         for (int j = -half; j <= half; j++) {
-            if (fabs(angle_in[clip(i + j, 0, num - 1)]) > fabs(angle_out[i])) {
-                angle_out[i] = 0;
+            if (fabs(rpts0a[clip(i + j, 0, num - 1)]) > fabs(rpts0an[i])) {
+                rpts0an[i] = 0;
+                break;
+            }
+        }
+    }
+}
+// 右线非极大值抑制
+void rnms_angle(int num, int kernel)
+{
+    // zf_assert(kernel % 2 == 1);
+    int half = kernel / 2;
+    for (int i = 0; i < num; i++) {
+        rpts1an[i] = rpts1a[i];
+        for (int j = -half; j <= half; j++) {
+            if (fabs(rpts1a[clip(i + j, 0, num - 1)]) > fabs(rpts1an[i])) {
+                rpts1an[i] = 0;
                 break;
             }
         }
@@ -349,8 +391,8 @@ void find_corners(void)
 {
     // 识别Y,L拐点
     Ypt0_found = Ypt1_found = Lpt0_found = Lpt1_found = false;      // 初始化角点标志位
-    is_straight0 = data_stastics_l > 1. / 0.1;   // 左右边界直线判断？                  
-    is_straight1 = data_stastics_r > 1. / 0.1;
+    // is_straight0 = data_stastics_l > 1. / 0.1;   // 左右边界直线判断？                  
+    // is_straight1 = data_stastics_r > 1. / 0.1;
     for (int i = 0; i < data_stastics_l; i++) {
         if (rpts0an[i] == 0) continue;
         int im1 = clip(i - (int) round(10), 0, data_stastics_l - 1);   // round(angle_dist / sample_dist)
@@ -358,7 +400,7 @@ void find_corners(void)
         float conf = fabs(rpts0a[i]) - (fabs(rpts0a[im1]) + fabs(rpts0a[ip1])) / 2;
 
         //Y角点阈值
-        if (Ypt0_found == false && 30. / 180. * PI < conf && conf < 65. / 180. * PI && i < 0.8 / 0.1) {     // sample_dist
+        if (Ypt0_found == false && 20. / 180. * PI < conf && conf < 65. / 180. * PI && i < 0.8 / 0.1) {     // sample_dist
             Ypt0_rpts0s_id = i;
             Ypt0_found = true;
         }
@@ -376,7 +418,7 @@ void find_corners(void)
         int im1 = clip(i - (int) round(10), 0, data_stastics_r - 1);
         int ip1 = clip(i + (int) round(10), 0, data_stastics_r - 1);
         float conf = fabs(rpts1a[i]) - (fabs(rpts1a[im1]) + fabs(rpts1a[ip1])) / 2;
-        if (Ypt1_found == false && 30. / 180. * PI < conf && conf < 65. / 180. * PI && i < 0.8 / 0.1) {
+        if (Ypt1_found == false && 20. / 180. * PI < conf && conf < 65. / 180. * PI && i < 0.8 / 0.1) {
             Ypt1_rpts1s_id = i;
             Ypt1_found = true;
         }
@@ -432,3 +474,23 @@ void find_corners(void)
 
 }
 
+// 循迹决策，在中断中运行
+void track_decision(void)
+{
+    if (track_mode == NORMAL)
+    {
+        Centerline_Err = Cal_centerline(NORMAL);
+    }
+    if (track_mode == FARLINE)
+    {
+        Centerline_Err = Cal_centerline(FARLINE);
+    }
+    if (track_mode == LEFT)
+    {
+        Centerline_Err = Cal_centerline(LEFT);
+    }
+    if (track_mode == RIGHT)
+    {
+        Centerline_Err = Cal_centerline(RIGHT);
+    }
+}

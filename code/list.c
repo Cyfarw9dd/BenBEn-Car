@@ -340,8 +340,10 @@ void show_corners(void)
         // 显示二值化图像
         tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
         // 显示坐标
-        tft180_show_int(0, 80, Ypt0_rpts0s_id, 3);
-        tft180_show_int(0, 100, Ypt1_rpts1s_id, 3);
+        tft180_show_int(0, 80, Lpt0_rpts0s_id, 3);
+        tft180_show_int(0, 100, Lpt1_rpts1s_id, 3);
+        tft180_show_float(0, 110, rpts0an[1] / PI * 180, 3, 3);
+        tft180_show_float(0, 120, rpts1an[1] / PI * 180, 3, 3);
         // 显示左L角点
         highlight_Lcorners();
     }
@@ -355,14 +357,14 @@ void show_sample_boundaries(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        // for (int i = 0; i < 359; i++)
-        // {
-        //     tft180_draw_point(points_ls[i][0] / 1.5, points_ls[i][1] / 1.5, RGB565_YELLOW);
-        //     tft180_draw_point(points_rs[i][0] / 1.5, points_rs[i][1] / 1.5, RGB565_YELLOW);
-        // }
-        // tft180_show_float(0, 80, points_ls[30][30], 3, 2);
-        tft180_show_int(0, 90, data_stastics_l, 3);
-        tft180_show_int(0, 100, data_stastics_r, 3);
+        for (int i = 0; i < 359; i++)
+        {
+            tft180_draw_point(points_ls[i][0] / 1.5, points_ls[i][1] / 1.5, RGB565_YELLOW);
+            tft180_draw_point(points_rs[i][0] / 1.5, points_rs[i][1] / 1.5, RGB565_YELLOW);
+        }
+        tft180_show_float(0, 80, points_ls[30][30], 3, 2);
+        // tft180_show_int(0, 90, data_stastics_l, 3);
+        // tft180_show_int(0, 100, data_stastics_r, 3);
     }    
     tft180_clear();
 }

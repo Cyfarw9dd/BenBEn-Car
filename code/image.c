@@ -9,6 +9,8 @@
 
 unsigned short points_l[(unsigned short)USE_num][2] = { {  0 } };//左线
 unsigned short points_r[(unsigned short)USE_num][2] = { {  0 } };//右线
+unsigned short cutpoints_l[(unsigned short)USE_num][2] = {{0}};
+unsigned short cutpoints_r[(unsigned short)USE_num][2] = {{0}};
 unsigned short dir_r[(unsigned short)USE_num] = { 0 };//用来存储右边生长方向
 unsigned short dir_l[(unsigned short)USE_num] = { 0 };//用来存储左边生长方向
 unsigned short data_stastics_l = 0;//统计左边找到点的个数
@@ -105,30 +107,33 @@ void Deal_Road_Characteristics(unsigned char (*binary_array)[188], Road_Charac *
     // }
 }
 
-void Hightlight_Lines(unsigned char (*binary_array)[188]){
-    // for(int i = 0; i < 359; i++){
-
-    //     binary_array[points_l[i][1]][points_l[i][0] + 10] = 0;
-    //     binary_array[i][center_line[i]] = 0;
-    //     binary_array[points_r[i][1]][points_l[i][0] - 10] = 0;
-    //     // tft180_draw_point((r_border[i] - 5)  / 2, i / 2, RGB565_GREEN);
+void Hightlight_Lines(unsigned char (*binary_array)[188])
+{
+    // int height1 = 0;
+    // int height2 = 0;
+    // for (int i = 0; i < 359; i++)
+    // {
+    //     if (height1 != points_l[i][1])
+    //         height1++;
+    //     if (height1 > 75)
+    //         break;
+    //     tft180_draw_point(points_l[i][0] / 1.5, points_l[i][1] / 1.5, RGB565_WHITE);
+        
     // }
-	// for (int i = BottomRow; i > 0; i--)
-	// {
-    //     // binary_array[ipts0[i][0]][ipts0[i][1] + 3] == 0;
-    //     // binary_array[ipts1[i][0]][ipts1[i][1] - 3] == 0;
-		// tft180_draw_point(ipts0[i][0] / 1.5, ipts0[i][1] / 1.5, RGB565_WHITE);
-		// tft180_draw_point(ipts1[i][0] / 1.5, ipts1[i][1] / 1.5, RGB565_WHITE);
-	// }
+    // for (int i = 0; i < 359; i++)
+    // {;
+    //     if (height2 != points_r[i][1])
+    //         height2++;
+    //     if (height2 > 75)
+    //         break;
+    //     tft180_draw_point(points_r[i][0] / 1.5, points_r[i][1] / 1.5, RGB565_WHITE);
+        
+    // }
     for (int i = 0; i < 359; i++)
     {
-        tft180_draw_point(points_l[i][0] / 1.5, points_l[i][1] / 1.5, RGB565_WHITE);
-        tft180_draw_point(points_r[i][0] / 1.5, points_r[i][1] / 1.5, RGB565_WHITE);
+        tft180_draw_point(cutpoints_l[i][0] / 1.5, cutpoints_l[i][1] / 1.5, RGB565_WHITE);
+        tft180_draw_point(cutpoints_r[i][0] / 1.5, cutpoints_r[i][1] / 1.5, RGB565_WHITE);
     }
-    // for (int i = 0; i < 80; i++)
-    // {
-    //     tft180_draw_point(clip_ctline[i] / 1.5, i / 1.5, RGB565_WHITE);
-    // }
 }
 
 /*
@@ -828,32 +833,33 @@ void clip_imageprocess(void)
             my_get_right(data_stastics_r);
         }
     }
+    // 只取需要的边界
+    cut_borderline();
     
     // 边线等距采样
-    points_lnum = sizeof(points_ls) / sizeof(points_ls[0]);
-    resample_points2(points_l, data_stastics_l, points_ls, &points_lnum, 3);
-    points_rnum = sizeof(points_rs) / sizeof(points_rs[0]);
-    resample_points2(points_r, data_stastics_r, points_rs, &points_rnum, 3);
+    // points_lnum = sizeof(points_ls) / sizeof(points_ls[0]);
+    // resample_points2(points_l, data_stastics_l, points_ls, &points_lnum, 3);
+    // points_rnum = sizeof(points_rs) / sizeof(points_rs[0]);
+    // resample_points2(points_r, data_stastics_r, points_rs, &points_rnum, 3);
     // points_lnum = sizeof(points_ls) / sizeof(points_ls[0]);
     // sample_border(points_l, data_stastics_l, points_ls, &points_lnum, 3);
     // points_rnum = sizeof(points_rs) / sizeof(points_rs[0]);
     // sample_border(points_r, data_stastics_r, points_rs, &points_rnum, 3);
 
     // 边线局部角度变化率
-    local_angle_points(points_l, data_stastics_l, rpts0a, (int) round(10));  // angle_dist / sample_dist
+    left_local_angle_points(data_stastics_l, 5);  // angle_dist / sample_dist
     rpts0a_num = data_stastics_l;
-    local_angle_points(points_r, data_stastics_r, rpts1a, (int) round(10));
+    right_local_angle_points(data_stastics_r, 5);
     rpts1a_num = data_stastics_r;
 
     // 角度变化率非极大抑制
-    nms_angle(rpts0a, rpts0a_num, rpts0an, (int) round(10) * 2 + 1);
+    lnms_angle(rpts0a_num, (int) round(5) * 2 + 1);
     rpts0an_num = rpts0a_num;
-    nms_angle(rpts1a, rpts1a_num, rpts1an, (int) round(10) * 2 + 1);
+    rnms_angle(rpts1a_num, (int) round(5) * 2 + 1);
     rpts1an_num = rpts1a_num;
-    find_corners();
 }
 
-int Cal_centerline(void)
+int Cal_centerline(int mode)
 {
     int ratio_sum = 0;
     int centerline_err_sum;
@@ -865,12 +871,29 @@ int Cal_centerline(void)
         25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
         30, 30, 30, 30, 30, 30, 30, 50, 50, 50,
     };
-    for (int i = sizeof(centerline_ratio) / sizeof(unsigned char); i > 0; i--)
+    unsigned char farline_ratio[] = 
     {
-        ratio_sum += centerline_ratio[i];
-        centerline_err_sum += (clip_ctline[(CLIP_IMAGE_H - 1) - i] - 93) * centerline_ratio[i]; ;
+        10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
+        15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
+    };
+    if (mode == NORMAL)
+    {
+        for (int i = sizeof(centerline_ratio) / sizeof(centerline_ratio[0]); i > 0; i--)
+        {
+            ratio_sum += centerline_ratio[i];
+            centerline_err_sum += (clip_ctline[(CLIP_IMAGE_H - 1) - i] - 93) * centerline_ratio[i]; ;
+        }
+        return centerline_err_sum / ratio_sum;
     }
-    return centerline_err_sum / ratio_sum;
+    if (mode == FARLINE)
+    {
+        for (int i = sizeof(farline_ratio) / sizeof(farline_ratio[0]); i > 0; i--)
+        {
+            ratio_sum += centerline_ratio[i];
+            centerline_err_sum += (clip_ctline[(CLIP_IMAGE_H - 1 - 50) - i] - 93) * centerline_ratio[i]; ;
+        }
+        return centerline_err_sum / ratio_sum;
+    }
 }
 
 
@@ -1173,15 +1196,39 @@ void highlight_Lcorners(void)
     clip_bin_image[points_l[Lpt0_rpts0s_id][1] - 1][points_l[Lpt0_rpts0s_id][0] + 1] = 120;
     clip_bin_image[points_l[Lpt0_rpts0s_id][1] - 1][points_l[Lpt0_rpts0s_id][0] - 1] = 120;
     // 显示右L角点
-    clip_bin_image[points_l[Ypt1_rpts1s_id][1]][points_l[Ypt1_rpts1s_id][0]] = 120;
-    clip_bin_image[points_l[Ypt1_rpts1s_id][1]][points_l[Ypt1_rpts1s_id][0] + 1] = 120;
-    clip_bin_image[points_l[Ypt1_rpts1s_id][1]][points_l[Ypt1_rpts1s_id][0] - 1] = 120;
-    clip_bin_image[points_l[Ypt1_rpts1s_id][1] + 1][points_l[Ypt1_rpts1s_id][0]] = 120;
-    clip_bin_image[points_l[Ypt1_rpts1s_id][1] + 1][points_l[Ypt1_rpts1s_id][0] + 1] = 120;
-    clip_bin_image[points_l[Ypt1_rpts1s_id][1] + 1][points_l[Ypt1_rpts1s_id][0] - 1] = 120;
-    clip_bin_image[points_l[Ypt1_rpts1s_id][1] - 1][points_l[Ypt1_rpts1s_id][0]] = 120;
-    clip_bin_image[points_l[Ypt1_rpts1s_id][1] - 1][points_l[Ypt1_rpts1s_id][0] + 1] = 120;
-    clip_bin_image[points_l[Ypt1_rpts1s_id][1] - 1][points_l[Ypt1_rpts1s_id][0] - 1] = 120;
+    clip_bin_image[points_l[Lpt1_rpts1s_id][1]][points_l[Lpt1_rpts1s_id][0]] = 120;
+    clip_bin_image[points_l[Lpt1_rpts1s_id][1]][points_l[Lpt1_rpts1s_id][0] + 1] = 120;
+    clip_bin_image[points_l[Lpt1_rpts1s_id][1]][points_l[Lpt1_rpts1s_id][0] - 1] = 120;
+    clip_bin_image[points_l[Lpt1_rpts1s_id][1] + 1][points_l[Lpt1_rpts1s_id][0]] = 120;
+    clip_bin_image[points_l[Lpt1_rpts1s_id][1] + 1][points_l[Lpt1_rpts1s_id][0] + 1] = 120;
+    clip_bin_image[points_l[Lpt1_rpts1s_id][1] + 1][points_l[Lpt1_rpts1s_id][0] - 1] = 120;
+    clip_bin_image[points_l[Lpt1_rpts1s_id][1] - 1][points_l[Lpt1_rpts1s_id][0]] = 120;
+    clip_bin_image[points_l[Lpt1_rpts1s_id][1] - 1][points_l[Lpt1_rpts1s_id][0] + 1] = 120;
+    clip_bin_image[points_l[Lpt1_rpts1s_id][1] - 1][points_l[Lpt1_rpts1s_id][0] - 1] = 120;
 }
 
+
+void cut_borderline(void)
+{
+    int height_l = 0;
+    int height_r = 0;
+    for (int i = 0; i < 359; i++)
+    {
+        if (height_l != points_l[i][1])
+            height_l++;
+        if (height_l > BORDER_CLIP_ROW)
+            break;
+        cutpoints_l[i][0] = points_l[i][0];
+        cutpoints_l[i][1] = points_l[i][1];
+    }
+    for (int i = 0; i < 359; i++)
+    {
+        if (height_r != points_r[i][1])
+            height_r++;
+        if (height_r > BORDER_CLIP_ROW)
+            break;
+        cutpoints_r[i][0] = points_r[i][0];
+        cutpoints_r[i][1] = points_r[i][1];
+    }
+}
 // #pragma section all restore
