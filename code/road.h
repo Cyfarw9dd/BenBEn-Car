@@ -15,6 +15,8 @@ extern int rpts0a_num, rpts1a_num;
 extern float rpts0an[MT9V03X_H * 3];
 extern float rpts1an[MT9V03X_H * 3];
 extern int rpts0an_num, rpts1an_num;
+
+extern int Xpt0, Xpt1;
 // Y角点
 extern int Ypt0_rpts0s_id, Ypt1_rpts1s_id;
 extern bool Ypt0_found, Ypt1_found;

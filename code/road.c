@@ -15,6 +15,8 @@ float rpts0an[MT9V03X_H * 3];
 float rpts1an[MT9V03X_H * 3];
 int rpts0an_num, rpts1an_num;
 
+// 随便什么角点
+int Xpt0, Xpt1;
 // Y角点
 int Ypt0_rpts0s_id, Ypt1_rpts1s_id;
 bool Ypt0_found, Ypt1_found;
@@ -319,11 +321,11 @@ void left_local_angle_points(int num, int dist)
             rpts0a[i] = 0;
             continue;
         }
-        float dx1 = (float)points_l[i][0] - (float)points_l[clip(i - dist, 0, num - 1)][0];
-        float dy1 = (float)points_l[i][1] - (float)points_l[clip(i - dist, 0, num - 1)][1];
+        float dx1 = (float)cutpoints_l[i][0] - (float)cutpoints_l[clip(i - dist, 0, num - 1)][0];
+        float dy1 = (float)cutpoints_l[i][1] - (float)cutpoints_l[clip(i - dist, 0, num - 1)][1];
         float dn1 = sqrtf(dx1 * dx1 + dy1 * dy1);
-        float dx2 = (float)points_l[clip(i + dist, 0, num - 1)][0] - (float)points_l[i][0];
-        float dy2 = (float)points_l[clip(i + dist, 0, num - 1)][1] - (float)points_l[i][1];
+        float dx2 = (float)cutpoints_l[clip(i + dist, 0, num - 1)][0] - (float)cutpoints_l[i][0];
+        float dy2 = (float)cutpoints_l[clip(i + dist, 0, num - 1)][1] - (float)cutpoints_l[i][1];
         float dn2 = sqrtf(dx2 * dx2 + dy2 * dy2);
         float c1 = dx1 / dn1;
         float s1 = dy1 / dn1;
@@ -341,11 +343,11 @@ void right_local_angle_points(int num, int dist)
             rpts1a[i] = 0;
             continue;
         }
-        float dx1 = (float)points_r[i][0] - (float)points_r[clip(i - dist, 0, num - 1)][0];
-        float dy1 = (float)points_r[i][1] - (float)points_r[clip(i - dist, 0, num - 1)][1];
+        float dx1 = (float)cutpoints_r[i][0] - (float)cutpoints_r[clip(i - dist, 0, num - 1)][0];
+        float dy1 = (float)cutpoints_r[i][1] - (float)cutpoints_r[clip(i - dist, 0, num - 1)][1];
         float dn1 = sqrtf(dx1 * dx1 + dy1 * dy1);
-        float dx2 = (float)points_r[clip(i + dist, 0, num - 1)][0] - (float)points_r[i][0];
-        float dy2 = (float)points_r[clip(i + dist, 0, num - 1)][1] - (float)points_r[i][1];
+        float dx2 = (float)cutpoints_r[clip(i + dist, 0, num - 1)][0] - (float)cutpoints_r[i][0];
+        float dy2 = (float)cutpoints_r[clip(i + dist, 0, num - 1)][1] - (float)cutpoints_r[i][1];
         float dn2 = sqrtf(dx2 * dx2 + dy2 * dy2);
         float c1 = dx1 / dn1;
         float s1 = dy1 / dn1;
@@ -399,6 +401,8 @@ void find_corners(void)
         int ip1 = clip(i + (int) round(10), 0, data_stastics_l - 1);
         float conf = fabs(rpts0a[i]) - (fabs(rpts0a[im1]) + fabs(rpts0a[ip1])) / 2;
 
+        // 随便什么角点
+        Xpt0 = i;
         //Y角点阈值
         if (Ypt0_found == false && 20. / 180. * PI < conf && conf < 65. / 180. * PI && i < 0.8 / 0.1) {     // sample_dist
             Ypt0_rpts0s_id = i;
@@ -418,6 +422,7 @@ void find_corners(void)
         int im1 = clip(i - (int) round(10), 0, data_stastics_r - 1);
         int ip1 = clip(i + (int) round(10), 0, data_stastics_r - 1);
         float conf = fabs(rpts1a[i]) - (fabs(rpts1a[im1]) + fabs(rpts1a[ip1])) / 2;
+        Xpt1 = i;
         if (Ypt1_found == false && 20. / 180. * PI < conf && conf < 65. / 180. * PI && i < 0.8 / 0.1) {
             Ypt1_rpts1s_id = i;
             Ypt1_found = true;

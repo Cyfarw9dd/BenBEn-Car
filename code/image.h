@@ -58,6 +58,8 @@ extern float Block_size;
 
 extern unsigned short points_l[(unsigned short)USE_num][2];
 extern unsigned short points_r[(unsigned short)USE_num][2];
+extern unsigned short cutpoints_l[(unsigned short)USE_num][2];
+extern unsigned short cutpoints_r[(unsigned short)USE_num][2];
 extern unsigned char clip_image[CLIP_IMAGE_H][MT9V03X_W];
 extern unsigned char clip_bin_image[CLIP_IMAGE_H][MT9V03X_W];
 extern unsigned char clip_image_thereshold;

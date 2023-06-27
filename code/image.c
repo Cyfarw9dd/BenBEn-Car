@@ -1186,25 +1186,25 @@ unsigned char Gray_Search_Line(unsigned char(*img)[188],unsigned char i1,unsigne
 void highlight_Lcorners(void)
 {
     // 显示左L角点
-    clip_bin_image[points_l[Lpt0_rpts0s_id][1]][points_l[Lpt0_rpts0s_id][0]] = 120;
-    clip_bin_image[points_l[Lpt0_rpts0s_id][1]][points_l[Lpt0_rpts0s_id][0] + 1] = 120;
-    clip_bin_image[points_l[Lpt0_rpts0s_id][1]][points_l[Lpt0_rpts0s_id][0] - 1] = 120;
-    clip_bin_image[points_l[Lpt0_rpts0s_id][1] + 1][points_l[Lpt0_rpts0s_id][0]] = 120;
-    clip_bin_image[points_l[Lpt0_rpts0s_id][1] + 1][points_l[Lpt0_rpts0s_id][0] + 1] = 120;
-    clip_bin_image[points_l[Lpt0_rpts0s_id][1] + 1][points_l[Lpt0_rpts0s_id][0] - 1] = 120;
-    clip_bin_image[points_l[Lpt0_rpts0s_id][1] - 1][points_l[Lpt0_rpts0s_id][0]] = 120;
-    clip_bin_image[points_l[Lpt0_rpts0s_id][1] - 1][points_l[Lpt0_rpts0s_id][0] + 1] = 120;
-    clip_bin_image[points_l[Lpt0_rpts0s_id][1] - 1][points_l[Lpt0_rpts0s_id][0] - 1] = 120;
+    clip_bin_image[points_l[Xpt0][1]][points_l[Xpt0][0]] = 120;
+    clip_bin_image[points_l[Xpt0][1]][points_l[Xpt0][0] + 1] = 120;
+    clip_bin_image[points_l[Xpt0][1]][points_l[Xpt0][0] - 1] = 120;
+    clip_bin_image[points_l[Xpt0][1] + 1][points_l[Xpt0][0]] = 120;
+    clip_bin_image[points_l[Xpt0][1] + 1][points_l[Xpt0][0] + 1] = 120;
+    clip_bin_image[points_l[Xpt0][1] + 1][points_l[Xpt0][0] - 1] = 120;
+    clip_bin_image[points_l[Xpt0][1] - 1][points_l[Xpt0][0]] = 120;
+    clip_bin_image[points_l[Xpt0][1] - 1][points_l[Xpt0][0] + 1] = 120;
+    clip_bin_image[points_l[Xpt0][1] - 1][points_l[Xpt0][0] - 1] = 120;
     // 显示右L角点
-    clip_bin_image[points_l[Lpt1_rpts1s_id][1]][points_l[Lpt1_rpts1s_id][0]] = 120;
-    clip_bin_image[points_l[Lpt1_rpts1s_id][1]][points_l[Lpt1_rpts1s_id][0] + 1] = 120;
-    clip_bin_image[points_l[Lpt1_rpts1s_id][1]][points_l[Lpt1_rpts1s_id][0] - 1] = 120;
-    clip_bin_image[points_l[Lpt1_rpts1s_id][1] + 1][points_l[Lpt1_rpts1s_id][0]] = 120;
-    clip_bin_image[points_l[Lpt1_rpts1s_id][1] + 1][points_l[Lpt1_rpts1s_id][0] + 1] = 120;
-    clip_bin_image[points_l[Lpt1_rpts1s_id][1] + 1][points_l[Lpt1_rpts1s_id][0] - 1] = 120;
-    clip_bin_image[points_l[Lpt1_rpts1s_id][1] - 1][points_l[Lpt1_rpts1s_id][0]] = 120;
-    clip_bin_image[points_l[Lpt1_rpts1s_id][1] - 1][points_l[Lpt1_rpts1s_id][0] + 1] = 120;
-    clip_bin_image[points_l[Lpt1_rpts1s_id][1] - 1][points_l[Lpt1_rpts1s_id][0] - 1] = 120;
+    clip_bin_image[points_l[Xpt1][1]][points_l[Xpt1][0]] = 120;
+    clip_bin_image[points_l[Xpt1][1]][points_l[Xpt1][0] + 1] = 120;
+    clip_bin_image[points_l[Xpt1][1]][points_l[Xpt1][0] - 1] = 120;
+    clip_bin_image[points_l[Xpt1][1] + 1][points_l[Xpt1][0]] = 120;
+    clip_bin_image[points_l[Xpt1][1] + 1][points_l[Xpt1][0] + 1] = 120;
+    clip_bin_image[points_l[Xpt1][1] + 1][points_l[Xpt1][0] - 1] = 120;
+    clip_bin_image[points_l[Xpt1][1] - 1][points_l[Xpt1][0]] = 120;
+    clip_bin_image[points_l[Xpt1][1] - 1][points_l[Xpt1][0] + 1] = 120;
+    clip_bin_image[points_l[Xpt1][1] - 1][points_l[Xpt1][0] - 1] = 120;
 }
 
 
