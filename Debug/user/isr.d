@@ -332,6 +332,10 @@ user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/obstacle.h
 d:/BenBen/BEN_ben ver1.01/code/obstacle.h :
 user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/ramp.h
 d:/BenBen/BEN_ben ver1.01/code/ramp.h :
+user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/zebra.h
+d:/BenBen/BEN_ben ver1.01/code/zebra.h :
+user/isr.o :	d:/BenBen/BEN_ben ver1.01/code/breakroad.h
+d:/BenBen/BEN_ben ver1.01/code/breakroad.h :
 user/isr.o :	../user/isr_config.h
 ../user/isr_config.h :
 user/isr.o :	../user/isr.h

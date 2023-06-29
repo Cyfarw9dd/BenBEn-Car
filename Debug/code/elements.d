@@ -332,3 +332,7 @@ code/elements.o :	d:/BenBen/BEN_ben ver1.01/code/obstacle.h
 d:/BenBen/BEN_ben ver1.01/code/obstacle.h :
 code/elements.o :	d:/BenBen/BEN_ben ver1.01/code/ramp.h
 d:/BenBen/BEN_ben ver1.01/code/ramp.h :
+code/elements.o :	d:/BenBen/BEN_ben ver1.01/code/zebra.h
+d:/BenBen/BEN_ben ver1.01/code/zebra.h :
+code/elements.o :	d:/BenBen/BEN_ben ver1.01/code/breakroad.h
+d:/BenBen/BEN_ben ver1.01/code/breakroad.h :

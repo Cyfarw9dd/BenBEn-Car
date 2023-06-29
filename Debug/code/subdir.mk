@@ -6,6 +6,7 @@
 C_SRCS += \
 ../code/\ control.c \
 ../code/adc.c \
+../code/breakroad.c \
 ../code/cross.c \
 ../code/elements.c \
 ../code/fuse.c \
@@ -15,11 +16,13 @@ C_SRCS += \
 ../code/obstacle.c \
 ../code/pid.c \
 ../code/ramp.c \
-../code/road.c 
+../code/road.c \
+../code/zebra.c 
 
 OBJS += \
 ./code/\ control.o \
 ./code/adc.o \
+./code/breakroad.o \
 ./code/cross.o \
 ./code/elements.o \
 ./code/fuse.o \
@@ -29,11 +32,13 @@ OBJS += \
 ./code/obstacle.o \
 ./code/pid.o \
 ./code/ramp.o \
-./code/road.o 
+./code/road.o \
+./code/zebra.o 
 
 COMPILED_SRCS += \
 ./code/\ control.src \
 ./code/adc.src \
+./code/breakroad.src \
 ./code/cross.src \
 ./code/elements.src \
 ./code/fuse.src \
@@ -43,11 +48,13 @@ COMPILED_SRCS += \
 ./code/obstacle.src \
 ./code/pid.src \
 ./code/ramp.src \
-./code/road.src 
+./code/road.src \
+./code/zebra.src 
 
 C_DEPS += \
 ./code/\ control.d \
 ./code/adc.d \
+./code/breakroad.d \
 ./code/cross.d \
 ./code/elements.d \
 ./code/fuse.d \
@@ -57,7 +64,8 @@ C_DEPS += \
 ./code/obstacle.d \
 ./code/pid.d \
 ./code/ramp.d \
-./code/road.d 
+./code/road.d \
+./code/zebra.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

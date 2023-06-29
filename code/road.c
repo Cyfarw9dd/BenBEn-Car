@@ -88,18 +88,17 @@ void find_inflectionpoint(void)
 
 void Lostline_check(int clip_lfline[], int clip_rtline[], int lcptc[], int rcptc[])
 {
+    // 寻找下拐点
     // 遍历左线
     int m, n;
     for (int i = CLIP_IMAGE_H - 1; i > TopRow; i--)
     {
         m++;
         // 扫描拐点上下五行
-        if (clip_lfline[clip(i + 5, TopRow, CLIP_IMAGE_H - 1)] > 5 && clip_lfline[clip(i + 4, TopRow, CLIP_IMAGE_H - 1)] > 5
-         && clip_lfline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] > 5 && clip_lfline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] > 5
-         && clip_lfline[clip(i + 1, TopRow, CLIP_IMAGE_H - 1)] > 5 && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] > 5
-         && clip_lfline[clip(i - 1, TopRow, CLIP_IMAGE_H - 1)] < 3 && clip_lfline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] < 3
-         && clip_lfline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] < 3 && clip_lfline[clip(i - 4, TopRow, CLIP_IMAGE_H - 1)] < 3
-         && clip_lfline[clip(i - 4, TopRow, CLIP_IMAGE_H - 1)] < 3 && clip_lfline[clip(i - 5, TopRow, CLIP_IMAGE_H - 1)] < 3)
+        if (clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] > 5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 1, TopRow, CLIP_IMAGE_H - 1)] > 5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 1, TopRow, CLIP_IMAGE_H - 1)] > 5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] > 5)
         {
             lcptc[m] = i;
         }
@@ -109,12 +108,10 @@ void Lostline_check(int clip_lfline[], int clip_rtline[], int lcptc[], int rcptc
     {
         n++;
         // 扫描拐点上下五行
-        if (clip_rtline[clip(i + 5, TopRow, CLIP_IMAGE_H - 1)] > 180 && clip_rtline[clip(i + 4, TopRow, CLIP_IMAGE_H - 1)] > 180
-         && clip_rtline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] > 180 && clip_rtline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] > 180
-         && clip_rtline[clip(i + 1, TopRow, CLIP_IMAGE_H - 1)] > 180 && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] > 180
-         && clip_rtline[clip(i - 1, TopRow, CLIP_IMAGE_H - 1)] < 183 && clip_rtline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] < 183
-         && clip_rtline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] < 183 && clip_rtline[clip(i - 4, TopRow, CLIP_IMAGE_H - 1)] < 183
-         && clip_rtline[clip(i - 4, TopRow, CLIP_IMAGE_H - 1)] < 183 && clip_rtline[clip(i - 5, TopRow, CLIP_IMAGE_H - 1)] < 183)
+        if (clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] < -5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 1, TopRow, CLIP_IMAGE_H - 1)] < -5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 1, TopRow, CLIP_IMAGE_H - 1)] < -5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] < -5)
         {
             rcptc[n] = i;
         }
@@ -478,7 +475,7 @@ void lmaximum(int num, int kernel, int input[])
     for (int i = 0; i < num; i++) {
         rpts0an[i] = rpts0a[i];
         for (int j = -half; j <= half; j++) {
-            if (fabs(rpts0a[clip(i + j, 0, num - 1)]) > fabs(rpts0an[i])) {
+            if (abs(rpts0a[clip(i + j, 0, num - 1)]) > abs(rpts0an[i])) {
                 rpts0an[i] = 0;
                 break;
             }
@@ -493,7 +490,7 @@ void rminimum(int num, int kernel, int input[])
     for (int i = 0; i < num; i++) {
         rpts0an[i] = rpts0a[i];
         for (int j = -half; j <= half; j++) {
-            if (fabs(rpts0a[clip(i + j, 0, num - 1)]) < fabs(rpts0an[i])) {
+            if (abs(rpts0a[clip(i + j, 0, num - 1)]) < abs(rpts0an[i])) {
                 rpts0an[i] = 0;
                 break;
             }

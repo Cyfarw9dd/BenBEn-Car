@@ -332,3 +332,7 @@ d:/BenBen/BEN_ben ver1.01/code/cross.h :
 d:/BenBen/BEN_ben ver1.01/code/obstacle.h :
  control.o :	d:/BenBen/BEN_ben ver1.01/code/ramp.h
 d:/BenBen/BEN_ben ver1.01/code/ramp.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/zebra.h
+d:/BenBen/BEN_ben ver1.01/code/zebra.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/breakroad.h
+d:/BenBen/BEN_ben ver1.01/code/breakroad.h :
