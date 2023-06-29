@@ -1,7 +1,6 @@
 #include "zf_common_headfile.h"
-#include "adc.h"
-#include "math.h"
 
+// 1 4 6 8 电感采集路道
 unsigned char adc_value[4];                 //储存电感采集值原始值    4个电感 
 
 int16 AD_V[4];                      //储存电感采集值归一化值中间变量 （无需关心，请勿删除）
@@ -115,7 +114,7 @@ float Cha_bi_he(int16 data1, int16 data2,int16 x)
 /*****************************************出界保护函数************************************/
 void Out_protect(void)
 {
-	if(Left_Adc<OUTSIDE&&Right_Adc<OUTSIDE)
+	if(Left_Adc<2&&Right_Adc<2)
 	{
 		pit_disable(CCU60_CH1);//关闭总中断
 		motor_ctrl(0, 0);

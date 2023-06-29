@@ -68,7 +68,10 @@ void motor_ctrl(short Lmotor, short Rmotor){
 void get_motor_speed(void){
     speed1 = -encoder_get_count(ENCODER_DIR_L);
     speed2 = encoder_get_count(ENCODER_DIR_R);
-
+    barrier_turning_distance += (speed1 + speed2) / 2;
+    left_distance += speed1;
+    right_distance +=speed2;
+    
     encoder_clear_count(ENCODER_DIR_L);
     encoder_clear_count(ENCODER_DIR_R);
 }

@@ -328,3 +328,7 @@ code/adc.o :	d:/BenBen/BEN_ben ver1.01/code/road.h
 d:/BenBen/BEN_ben ver1.01/code/road.h :
 code/adc.o :	d:/BenBen/BEN_ben ver1.01/code/cross.h
 d:/BenBen/BEN_ben ver1.01/code/cross.h :
+code/adc.o :	d:/BenBen/BEN_ben ver1.01/code/obstacle.h
+d:/BenBen/BEN_ben ver1.01/code/obstacle.h :
+code/adc.o :	d:/BenBen/BEN_ben ver1.01/code/ramp.h
+d:/BenBen/BEN_ben ver1.01/code/ramp.h :

@@ -114,7 +114,8 @@
 #include "adc.h"
 #include "road.h"
 #include "cross.h"
-
+#include "obstacle.h"
+#include "ramp.h"
 
 #endif
 

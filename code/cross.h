@@ -13,7 +13,7 @@ enum cross_status{
     CROSS_IN,
 };
 
-void Crossing_process(Trait_smachine *road_smachine);
+void Crossing_process(Trait_smachine *road_smh);
 
 
 

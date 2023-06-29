@@ -1,7 +1,7 @@
 #include "zf_common_headfile.h"
 // 八邻域左右边线 points_l, points_r
 // 0代表左，1为右
-
+#pragma section all "cpu1_dsram"
 // 边线等距采样
 unsigned short points_ls[MT9V03X_H * 3][2];
 unsigned short points_rs[MT9V03X_H * 3][2];
@@ -51,14 +51,18 @@ Trait_smachine Startline;
 Trackline checkline_l;
 Trackline checkline_r;
 
+unsigned char outflag = 0;      // 出库标志位
+
+#pragma section all restore
 void Traits_process(void)
 {
+    aim_speed = 280;
     // 默认情况下正常循迹
     track_mode = NORMAL;
-    // Departure();
-    Lostline_count(lflinef, rtlinef, lnump, rnump);
-    // Track_line_l(&checkline_l);
-    // Track_line_r(&checkline_r);
+    // roll_out();
+    if (!Departure_PointFlag)
+        Departure();
+    Barrier_process(&Barrier);
     BreakRoad_process(&BreakRoad);
     Startline_process(&Startline, &bin_image[0]);
 }
@@ -70,14 +74,14 @@ void Lostline_count(unsigned char LlineF[120], unsigned char RlineF[120], unsign
     rnum = 0;
     for (int i = BottomRow; i > BottomRow - 80; i--)
     {
-        if (l_border[i] == 2)
+        if (clip_lfline[i] == 2)
         {
             *lcnt++;
             lnum = *lcnt;
             LlineF[i] = 0;   
         }
         else LlineF[i] = 1;
-        if (r_border[i] == 185)
+        if (clip_rtline[i] == 185)
         {
             *rcnt++;
             rnum = *rcnt;
@@ -112,14 +116,14 @@ void Track_line_l(Trackline *checkline)
             {   
                 // 记录坐标
                 checkline->row[0] = i + 2;
-                checkline->col[0] = l_border[i + 2];
+                checkline->col[0] = clip_lfline[i + 2];
             }
             // 找上拐点
             if (lflinef[i] == 0 && lflinef[i + 1] == 0 && lflinef[i + 2] == 0 && lflinef[i + 3] == 1 && lflinef[i + 4] == 1 && lflinef[i + 5] == 1)
             {
                 // 记录坐标
                 checkline->row[1] = i + 2;
-                checkline->col[1] = l_border[i + 2];
+                checkline->col[1] = clip_lfline[i + 2];
             }
         }
     }
@@ -150,20 +154,20 @@ void Track_line_r(Trackline *checkline)
             {   
                 // 记录坐标
                 checkline->row[0] = i + 2;
-                checkline->col[0] = r_border[i + 2];
+                checkline->col[0] = clip_rtline[i + 2];
             }
             // 找上拐点
             if (rtlinef[i] == 0 && rtlinef[i + 1] == 0 && rtlinef[i + 2] == 0 && rtlinef[i + 3] == 1 && rtlinef[i + 4] == 1 && rtlinef[i + 5] == 1)
             {
                 // 记录坐标
                 checkline->row[1] = i + 2;
-                checkline->col[1] = r_border[i + 2];
+                checkline->col[1] = clip_rtline[i + 2];
             }
         }
     }
 }
 
-void BreakRoad_process(Trait_smachine *road_smachine)
+void BreakRoad_process(Trait_smachine *road_smh)
 {
     blackpoints = 0;
     for (int row = 119; row > 117; row --)
@@ -183,11 +187,11 @@ void BreakRoad_process(Trait_smachine *road_smachine)
             }
         }
     }
-    if (blackpoints > 70)   road_smachine->pointflag = 1;
-    else                    road_smachine->pointflag = 0;
+    if (blackpoints > 70)   road_smh->pointflag = 1;
+    else                    road_smh->pointflag = 0;
 }
 
-void Startline_process(Trait_smachine *road_smachine, unsigned char (*binary_array)[188])
+void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[188])
 {
     unsigned char times = 0;
     for (unsigned char i = BottomRow - 18; i >= BottomRow - 23; i--)
@@ -224,12 +228,18 @@ void Startline_process(Trait_smachine *road_smachine, unsigned char (*binary_arr
     }
     if(times >= 3 /*&& times <= 5*/)
     {
-        road_smachine->pointflag = 1;
+        road_smh->pointflag = 1;
     }
     else
     {
-        road_smachine->pointflag = 0;
+        road_smh->pointflag = 0;
     }
+}
+
+// 障碍处理
+void Obstacle_process(Trait_smachine *road_smh)
+{
+
 }
 
 // 点集三角滤波
@@ -313,6 +323,8 @@ void resample_points2(float pts_in[][2], int num1, float pts_out[][2], int *num2
     }
     *num2 = len;    
 }
+
+#pragma section all "cpu1_psram"
 // 左线角度变化率
 void left_local_angle_points(int num, int dist)
 {
@@ -478,24 +490,24 @@ void find_corners(void)
     // }
 
 }
+#pragma section all restore
 
-// 循迹决策，在中断中运行
-void track_decision(void)
+void roll_out(void)
 {
-    if (track_mode == NORMAL)
-    {
-        Centerline_Err = Cal_centerline(NORMAL);
-    }
-    if (track_mode == FARLINE)
-    {
-        Centerline_Err = Cal_centerline(FARLINE);
-    }
-    if (track_mode == LEFT)
-    {
-        Centerline_Err = Cal_centerline(LEFT);
-    }
-    if (track_mode == RIGHT)
-    {
-        Centerline_Err = Cal_centerline(RIGHT);
-    }
+        #if 0
+        while (outflag)
+        {
+            motor_ctrl(3000, 2000);
+            system_delay_ms(500);
+            outflag = 0;
+        }
+        #endif
+        #if 1
+        while (outflag)
+        {
+            motor_ctrl(1800, 3500);
+            system_delay_ms(500);
+            outflag = 0;
+        }
+        #endif 
 }

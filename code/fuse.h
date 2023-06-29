@@ -14,6 +14,7 @@ extern short All_PWM_left, All_PWM_right;
 extern int16 real_speed;
 extern float real_real_speed;
 extern int Centerline_Err;
+extern int16 aim_speed;
 
 
 
@@ -28,23 +29,17 @@ typedef struct
 
 void TaskRemarks(void);
 
-void ADC_TaskRemarks(void);
-
 void TaskProcess(void);
-
-void ADC_TaskProcess(void);
 
 void Motor_output_control(void);
 
-void ADC_Motor_output_control(void);
-
 void Trailing_control(void);
-
-void ADC_Trailing_control(void);
 
 void Speed_control(void);
 
-void ADC_Speed_control(void);
+void TaskCollectedRemarks(void);
+
+void TaskCollectedProcess(void);
 
 
 #endif /* CODE_FUSE_H_ */

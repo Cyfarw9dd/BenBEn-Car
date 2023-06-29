@@ -36,12 +36,17 @@ extern int track_mode;
 extern unsigned char lnum;
 extern unsigned char rnum;
 extern unsigned char bend_flag;
+extern int track_mode;
 
 enum track_mode{
-    NORMAL = 0,
+    NORMAL = 20,
     FARLINE,
     LEFT,
     RIGHT,
+    OBSTACLE,
+    ADC,
+    GO_STRAIGHT,
+    TURN,
 };
 
 typedef enum{
@@ -86,9 +91,12 @@ void Track_line_r(Trackline *checkline);
 // 元素处理总函数，协调元素
 void Traits_process(void);
 // 断路
-void BreakRoad_process(Trait_smachine *road_smachine);
+void BreakRoad_process(Trait_smachine *road_smh);
 
-void Startline_process(Trait_smachine *road_smachine, unsigned char (*binary_array)[188]);
+void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[188]);
+
+void Obstacle_process(Trait_smachine *road_smh);
+
 // 点集三角滤波
 void blur_points(float pts_in[][2], int num, int kernel);
 
@@ -110,6 +118,6 @@ void rnms_angle(int num, int kernel);
 // 寻找角点
 void find_corners(void);
 
-void track_decision(void);
+void roll_out(void);
 
 #endif /* CODE_ROAD_H_ */

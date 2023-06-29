@@ -12,7 +12,9 @@ C_SRCS += \
 ../code/gyro.c \
 ../code/image.c \
 ../code/list.c \
+../code/obstacle.c \
 ../code/pid.c \
+../code/ramp.c \
 ../code/road.c 
 
 OBJS += \
@@ -24,7 +26,9 @@ OBJS += \
 ./code/gyro.o \
 ./code/image.o \
 ./code/list.o \
+./code/obstacle.o \
 ./code/pid.o \
+./code/ramp.o \
 ./code/road.o 
 
 COMPILED_SRCS += \
@@ -36,7 +40,9 @@ COMPILED_SRCS += \
 ./code/gyro.src \
 ./code/image.src \
 ./code/list.src \
+./code/obstacle.src \
 ./code/pid.src \
+./code/ramp.src \
 ./code/road.src 
 
 C_DEPS += \
@@ -48,7 +54,9 @@ C_DEPS += \
 ./code/gyro.d \
 ./code/image.d \
 ./code/list.d \
+./code/obstacle.d \
 ./code/pid.d \
+./code/ramp.d \
 ./code/road.d 
 
 

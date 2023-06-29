@@ -2,7 +2,6 @@
 #define CODE_IMAGE_H_
 
 #include "zf_common_headfile.h"
-
 extern int position_x;
 extern int position_y;
 extern int position1_x;
@@ -67,7 +66,7 @@ extern unsigned char clip_lfline[CLIP_IMAGE_H];
 extern unsigned char clip_rtline[CLIP_IMAGE_H];
 extern unsigned char clip_ctline[CLIP_IMAGE_H];
 
-extern void image_process(void);   //直接在中断或循环里调用此程序就可以循环执行了
+
 
 
 typedef struct
@@ -142,7 +141,7 @@ void image_draw_rectan(unsigned char(*image)[image_w]);
 
 void clip_imageprocess(void);
 
-int Cal_centerline(int mode);
+int Cal_centerline(void);
 
 void LocalThresholding(void);
 
@@ -157,5 +156,9 @@ unsigned char Gray_Search_Line(unsigned char(*img)[188],unsigned char i1,unsigne
 void highlight_Lcorners(void);
 
 void cut_borderline(void);
+
+void cut_get_left(unsigned short total_L);
+
+void cut_get_right(unsigned short total_R);
 
 #endif /* CODE_IMAGE_H_ */

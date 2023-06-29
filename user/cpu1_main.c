@@ -41,7 +41,6 @@
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU1的RAM中
 
 // **************************** 代码区域 ****************************
-unsigned char outflag = 0;      // 出库标志位
 
 
 void core1_main(void)
@@ -52,9 +51,10 @@ void core1_main(void)
     // outflag = 1;
     mt9v03x_init();
     tft180_init();
-    // ips200_init(IPS200_TYPE_PARALLEL8);
+    ips200_init(IPS200_TYPE_PARALLEL8);
     imu660ra_init();
     wireless_uart_init();
+    dl1a_init();
     PID_int();
     gyroOffsetInit();
     // 初始化pwm
@@ -94,35 +94,24 @@ void core1_main(void)
     pit_ms_init(CCU60_CH1, 1);
     pit_ms_init(CCU61_CH0, 20);
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
+
+    // track_mode = OBSTACLE;    
+    // left_distance = 0;
+    // right_distance = 0;
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        // pit_enable(CCU60_CH1);
-        // #if 0
-        // while (outflag)
-        // {
-        //     motor_ctrl(3000, 2000);
-        //     system_delay_ms(500);
-        //     outflag = 0;
-        // }
-        // #endif
-        // #if 1
-        // while (outflag)
-        // {
-        //     motor_ctrl(1800, 3500);
-        //     system_delay_ms(500);
-        //     outflag = 0;
-        // }
-        // #endif 
-        clip_imageprocess();
-        Deal_Road_Characteristics(&bin_image[0], &MyRoad_Charac); 
-        find_corners();
-        highlight_Lcorners();
-        Traits_process();
+        Get_deviation();
         TaskProcess();
-        // ADC_TaskProcess();  
-        // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, 0, 25);     
+        clip_imageprocess();
+        find_corners();
+        Traits_process();
+        // motor_ctrl(3000, 3000);
+
+        // 向上位机发送图像
+        // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, image_thereshold, 25);     
         // sendimg_A(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);  
+        // wireless_uart_send_image(clip_image[0], MT9V03X_IMAGE_SIZE);
         // 此处编写需要循环执行的代码
     }
 }

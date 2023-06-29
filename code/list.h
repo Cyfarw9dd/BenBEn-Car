@@ -54,4 +54,8 @@ void show_corners(void);
 
 void show_sample_boundaries(void);
 
+void show_barrier_params(void);
+
+void debug_mode(void);
+
 #endif /* CODE_LIST_H_ */

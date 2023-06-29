@@ -3,7 +3,7 @@
 // extern icm_param_t imu_data;
 // extern euler_param_t eulerAngle;
 extern S_FLOAT_XYZ GyroOffset;
-int16 aim_speed = 0;       // 目标速度
+int16 aim_speed;       // 目标速度
 int16 real_speed = 0;      // 左右轮平均速度
 float real_real_speed = 0; // 左右轮平均速度换算成实际速度
 int16 left_speed = 0;      // 左轮速度
@@ -28,11 +28,10 @@ static TASK_COMPONENTS TaskComps[] =
     {0, 10, 10, Speed_control},        // C车速度环20ms
 };
 
-static TASK_COMPONENTS ADC_TaskComps[] =
+static TASK_COMPONENTS TaskCollect[] =
 {
-    {0, 2, 2, ADC_Motor_output_control}, // 角速度内环和D车速度环2ms
-    {0, 10, 10, ADC_Trailing_control},   // 转向外环10ms
-    {0, 2, 2, ADC_Speed_control},        // C车速度环20ms
+    {0, 2, 2, gyroOffsetInit},          // 陀螺仪数据采集
+    {0, 2, 2, get_motor_speed},         // 编码器数据采集
 };
 
 void PID_int(void)
@@ -62,13 +61,6 @@ void PID_int(void)
     Turn_NeiPID.Kd = 0;
 }
 
-/**************************************************************************************
- * FunctionName   : TaskRemarks()
- * Description    : 任务标志处理
- * EntryParameter : None
- * ReturnValue    : None
- * attention      : ***在定时器中断中调用此函数即可***
- **************************************************************************************/
 void TaskRemarks(void)
 {
     unsigned char i;
@@ -86,30 +78,7 @@ void TaskRemarks(void)
     }
 }
 
-void ADC_TaskRemarks(void)
-{
-    unsigned char i;
-    for (i = 0; i < sizeof(ADC_TaskComps) / sizeof(TASK_COMPONENTS); i++) // 逐个任务时间处理
-    {
-        if (ADC_TaskComps[i].Timer) // 时间不为0
-        {
-            ADC_TaskComps[i].Timer--;        // 减去一个节拍
-            if (ADC_TaskComps[i].Timer == 0) // 时间减完了
-            {
-                ADC_TaskComps[i].Timer = ADC_TaskComps[i].ItvTime; // 恢复计时器值，从新下一次
-                ADC_TaskComps[i].Run = 1;                          // 任务可以运行
-            }
-        }
-    }
-}
 
-/**************************************************************************************
- * FunctionName   : TaskProcess()
- * Description    : 任务处理|判断什么时候该执行那一个任务
- * EntryParameter : None
- * ReturnValue    : None
- * * attention      : ***放在mian的while(1)即可***
- **************************************************************************************/
 void TaskProcess(void)
 {
     unsigned char i;
@@ -123,99 +92,126 @@ void TaskProcess(void)
     }
 }
 
-void ADC_TaskProcess(void)
+void Motor_output_control()
+{
+    if (track_mode == NORMAL)
+    {
+        gyroOffsetInit();
+        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, 0); // 转向内环PWM	 Prospect_err
+        Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
+
+        All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+        All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
+
+        motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
+    }
+    if (track_mode == ADC)
+    {
+        gyroOffsetInit();
+        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, ADC_PWM); // 转向内环PWM	 icm20602_gyro_z
+        Steer_pwm = range_protect(Steer_pwm, -6000, 6000);          // 转向内环PWM限幅
+
+        All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出
+        All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
+
+        motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
+    }
+    if (track_mode == GO_STRAIGHT)
+    {
+        gyroOffsetInit();
+        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
+        Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
+
+        All_PWM_left = Speed_pwm_all - 0;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+        All_PWM_right = Speed_pwm_all + 0; // 右电机所有PWM输出
+
+        motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
+    }
+    if (track_mode == TURN)
+    {
+        gyroOffsetInit();
+        Prospect_err = 300;
+        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
+        Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
+
+        All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+        All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
+
+        motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
+        track_mode = NORMAL;
+    }
+    if (track_mode == OBSTACLE)
+        return;
+}
+
+
+void Trailing_control()
+{
+    if (track_mode == NORMAL)
+    {
+        // Get_deviation();
+        Centerline_Err = Cal_centerline(); 
+        // track_decision();
+        Prospect_err = LocP_DCalc(&TurnPID, (short)Centerline_Err, 0); // 位置式PD控制转向
+    }
+    if (track_mode == ADC)
+    {
+        Get_deviation(); // 电磁采集并获取赛道偏差
+        ADC_PWM = LocP_DCalc(&ADC_TurnPID, Current_Dir, 0); // 位置式PD控制转向
+        ADC_PWM = -ADC_PWM;
+    }
+    if (track_mode == OBSTACLE)
+        return;
+}
+
+
+void Speed_control()
+{
+    if (track_mode == NORMAL || track_mode == GO_STRAIGHT || track_mode == OBSTACLE)
+    {
+        get_motor_speed(); // 编码器测量
+        real_speed = (speed1 + speed2) / 2;
+        real_real_speed = speed1 * 0.0432f; // 0.0432f
+        Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
+        range_protect(Speed_pwm_all, -6000, 6000); 
+    }
+    if (track_mode == ADC)
+    {
+        get_motor_speed();      //编码器测量
+        real_speed = (speed1 + speed2) / 2;
+        real_real_speed = speed1 * 0.0432f; // 0.0432f
+        Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式） 
+        range_protect(Speed_pwm_all, -6000, 6000); 
+    }
+}
+
+
+void TaskCollectedRemarks(void)
 {
     unsigned char i;
-    for (i = 0; i < sizeof(ADC_TaskComps) / sizeof(TASK_COMPONENTS); i++) // 逐个任务时间处理
+    for (i = 0; i < sizeof(TaskCollect) / sizeof(TASK_COMPONENTS); i++) // 逐个任务时间处理
     {
-        if (ADC_TaskComps[i].Run) // 时间不为0
+        if (TaskCollect[i].Timer) // 时间不为0
         {
-            ADC_TaskComps[i].TaskHook(); // 运行任务
-            ADC_TaskComps[i].Run = 0;    // 标志清0
+            TaskCollect[i].Timer--;        // 减去一个节拍
+            if (TaskCollect[i].Timer == 0) // 时间减完了
+            {
+                TaskCollect[i].Timer = TaskCollect[i].ItvTime; // 恢复计时器值，从新下一次
+                TaskCollect[i].Run = 1;                      // 任务可以运行
+            }
         }
     }
 }
 
-/****************************角速度内环和D车速度环**************************************
-函数：  void Motor_output_control()
-参数：  void
-说明：  角速度内环和D车速度环(D车/三轮车才会用)
-返回值：void
-作者：  heqiu
-***************************************************************************************/
-void Motor_output_control()
+void TaskCollectedProcess(void)
 {
-    // ICM_getEulerianAngles();
-    gyroOffsetInit();
-    // imu660ra_get_gyro();
-    // ICM_getValues();
-    Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
-    Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
-
-    All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
-    All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
-
-    motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
-}
-
-void ADC_Motor_output_control()
-{
-    // imu660ra_get_gyro();
-    gyroOffsetInit();
-    // ICM_getEulerianAngles();
-    // ICM_getValues();
-    Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, ADC_PWM); // 转向内环PWM	 icm20602_gyro_z
-    Steer_pwm = range_protect(Steer_pwm, -3000, 3000);          // 转向内环PWM限幅
-
-    All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出
-    All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
-
-    motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
-}
-/****************************转向环（D车转向外环）**************************************
-函数：  void Trailing_control()
-参数：  void
-说明：  转向环（D车转向外环）（C车转向环）
-返回值：void
-作者：  heqiu
-***************************************************************************************/
-void Trailing_control()
-{
-    Get_deviation(); 
-    track_decision();
-    Prospect_err = LocP_DCalc(&TurnPID, (short)Centerline_Err, 0); // 位置式PD控制转向
-}
-
-void ADC_Trailing_control()
-{
-    Get_deviation(); // 电磁采集并获取赛道偏差
-    ADC_PWM = LocP_DCalc(&ADC_TurnPID, Current_Dir, 0); // 位置式PD控制转向
-    ADC_PWM = -ADC_PWM;
-}
-/****************************速度环（C车用）**************************************
-函数：  void Speed_control()
-参数：  void
-说明：  速度环（C车用）
-返回值：void
-作者：  heqiu
-***************************************************************************************/
-void Speed_control()
-{
-    // timed_task();           //出库定时打开干簧管等
-    get_motor_speed(); // 编码器测量
-    real_speed = (speed1 + speed2) / 2;
-    real_real_speed = speed1 * 0.0432f; // 0.0432f
-    aim_speed = 380; // 目标速度 450
-    Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
-    range_protect(Speed_pwm_all, -6000, 6000); 
-}
-
-void ADC_Speed_control()
-{
-    // timed_task();           //出库定时打开干簧管等
-    get_motor_speed();      //编码器测量
-    real_speed = (speed1 + speed2) / 2;
-    real_real_speed = speed1 * 0.0432f; // 0.0432f
-    aim_speed = 200; // 目标速度
-    Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
+    unsigned char i;
+    for (i = 0; i < sizeof(TaskCollect) / sizeof(TASK_COMPONENTS); i++) // 逐个任务时间处理
+    {
+        if (TaskCollect[i].Run) // 时间不为0
+        {
+            TaskCollect[i].TaskHook(); // 运行任务
+            TaskCollect[i].Run = 0;    // 标志清0
+        }
+    }
 }

@@ -333,29 +333,6 @@ void Findchangepoint_R(changepoint *prt, unsigned char Start, unsigned char End,
 
 
 
-// 坐边线丢线数目
-unsigned char Leftline_Lost_Sum(unsigned char Start_Row, unsigned char End_row){
-    unsigned char leftline_lost_sum = 0;
-    for(int i = Start_Row; i > End_row; i--){
-        if(l_border[i] < 5){
-            leftline_lost_sum++;
-        }
-    }
-    return leftline_lost_sum;
-}
-
-// 右边线丢线数目
-unsigned char Rightline_Lost_Sum(unsigned char Start_Row, unsigned char End_row){
-    unsigned char rightline_lost_sum = 0;
-    for(int i = Start_Row; i > End_row; i--){
-        if(r_border[i] > 182){
-            rightline_lost_sum++;
-        }
-    }
-    return rightline_lost_sum;
-}
-
-
 
 // 判断起跑线
 void Judging_StartLine(unsigned char (*binary_array)[188]){
