@@ -208,11 +208,11 @@ void show_gray_image(void)
     {
         MyKeyScan();
         ips200_show_gray_image(0, 0, clip_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
-        ips200_show_string(0, 65, "StartLine_PFlag");       ips200_show_int(100, 65, clip_image_thereshold, 3);
-        ips200_show_string(0, 80, "LRoundAbout_PFlag");     ips200_show_int(110, 80, rnum, 2);
-        ips200_show_string(0, 95, "RRoundAbout_PFlag");     ips200_show_int(110, 95, RoundAbout_PointFlag_R, 2);
-        ips200_show_string(0, 110, "BreakRoad_PFlag");      ips200_show_int(110, 110, BreakRoad_PointFlag, 2);
-        ips200_show_string(0, 125, "Obstacle_PFlag");      ips200_show_int(110, 125, Obstacle_PointFlag, 2);
+        ips200_show_string(0, 80, "StartLine_PFlag");       ips200_show_int(150, 80, clip_image_thereshold, 3);
+        ips200_show_string(0, 110, "LRoundAbout_PFlag");     ips200_show_int(150, 110, rnum, 2);
+        ips200_show_string(0, 140, "RRoundAbout_PFlag");     ips200_show_int(150, 140, RoundAbout_PointFlag_R, 2);
+        ips200_show_string(0, 170, "BreakRoad_PFlag");      ips200_show_int(150, 170, BreakRoad_PointFlag, 2);
+        ips200_show_string(0, 200, "Obstacle_PFlag");      ips200_show_int(150, 200, Obstacle_PointFlag, 2);
     }
     ips200_clear();
 }
@@ -280,10 +280,7 @@ void show_params(void)
         // ips200_show_string(0, 65, "imu_data_x");        
         // ips200_show_string(0, 80, "imu_data_x");        
         // ips200_show_string(0, 100, "imu_data_x");     
-        ips200_show_float(0, 70, adc_value[0], 5, 5);
-        ips200_show_float(0, 80, adc_value[1], 5, 5);
-        ips200_show_float(0, 100, adc_value[2], 5, 5); 
-        ips200_show_float(0, 120, adc_value[3], 5, 5); 
+        ips200_show_float(0, 80, Left_Adc, 5, 5);   ips200_show_float(30, 80, Left_Shu_Adc, 5, 5);  ips200_show_float(60, 80, Right_Shu_Adc, 5, 5);     ips200_show_float(90, 80, Right_Adc, 5, 5); 
     }
     ips200_clear();
 }
@@ -370,7 +367,7 @@ void show_barrier_params(void)
         barrier_turning_distance += (speed1 + speed2) / 2;
         ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
         ips200_show_string(0, 80, "barrier ptflag");    ips200_show_int(100, 80, Barrier.pointflag, 3);
-        ips200_show_int(0, 90, dl1a_distance_mm, 5);
+        ips200_show_int(0, 100, dl1a_distance_mm, 5);
         ips200_show_string(0, 120, "encoder");          ips200_show_int(70, 120, barrier_turning_distance, 5);
         if (Barrier.status == BARRIER_NONE)
         {
