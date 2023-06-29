@@ -58,4 +58,6 @@ void show_barrier_params(void);
 
 void debug_mode(void);
 
+void show_inflectionpoint(void);
+
 #endif /* CODE_LIST_H_ */

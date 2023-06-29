@@ -685,18 +685,20 @@ void clip_imageprocess(void)
         // 计算中线
         for (int i = CLIP_IMAGE_H - 1; i > 0; i--)
             clip_ctline[i] = (clip_lfline[i] + clip_rtline[i]) / 2;
+        // 断线特征找拐点
+        find_inflectionpoint();
         // 不对边线进行采样，原边界直接求取角度
         // 边线局部角度变化率
-        left_local_angle_points(data_stastics_l, 5);  // angle_dist / sample_dist
-        rpts0a_num = data_stastics_l;
-        right_local_angle_points(data_stastics_r, 5);
-        rpts1a_num = data_stastics_r;
+        // left_local_angle_points(data_stastics_l, 5);  // angle_dist / sample_dist
+        // rpts0a_num = data_stastics_l;
+        // right_local_angle_points(data_stastics_r, 5);
+        // rpts1a_num = data_stastics_r;
 
-        // 角度变化率非极大抑制
-        lnms_angle(rpts0a_num, (int) round(5) * 2 + 1);
-        rpts0an_num = rpts0a_num;
-        rnms_angle(rpts1a_num, (int) round(5) * 2 + 1);
-        rpts1an_num = rpts1a_num;
+        // // 角度变化率非极大抑制
+        // lnms_angle(rpts0a_num, (int) round(5) * 2 + 1);
+        // rpts0an_num = rpts0a_num;
+        // rnms_angle(rpts1a_num, (int) round(5) * 2 + 1);
+        // rpts1an_num = rpts1a_num;
     }
 }
 

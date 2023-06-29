@@ -101,15 +101,15 @@ void core1_main(void)
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        Get_deviation();
-        TaskProcess();
-        clip_imageprocess();
-        find_corners();
-        Traits_process();
-        // motor_ctrl(3000, 3000);
-
+        // Get_deviation();
+        // TaskProcess();
+        // clip_imageprocess();
+        // find_corners();
+        // Traits_process();
+        motor_ctrl(3000, 3000);
+        
         // 向上位机发送图像
-        // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, image_thereshold, 25);     
+        // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, image_thereshold, 35);     
         // sendimg_A(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);  
         // wireless_uart_send_image(clip_image[0], MT9V03X_IMAGE_SIZE);
         // 此处编写需要循环执行的代码

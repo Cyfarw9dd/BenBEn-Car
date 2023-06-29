@@ -114,6 +114,5 @@ libraries/infineon_libraries/iLLD/TC26B/Tricore/_PinMap \
 libraries/zf_common \
 libraries/zf_device \
 libraries/zf_driver \
-. \
 user \
 

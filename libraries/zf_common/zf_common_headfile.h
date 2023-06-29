@@ -116,6 +116,8 @@
 #include "cross.h"
 #include "obstacle.h"
 #include "ramp.h"
+#include "zebra.h"
+#include "breakroad.h"
 
 #endif
 

@@ -71,9 +71,9 @@ List MyList[] =
     {2324, "go back", NULL, NULL},
     {233, "go back", NULL, NULL},
     {24, "show params", show_params, NULL},
-    {25, "debug mode", debug_mode, NULL},
-    {26, "go back", NULL, NULL},
+    {25, "go back", NULL, NULL},
     {3, "Departure", NULL, NULL},
+    {4, "debug mode", debug_mode, NULL},
 };
 
 List *current_list_item;
@@ -188,6 +188,12 @@ void List_Switch(void)
             highlight_col = 0;
             buzzer_flag = 1;
         }
+        else if (strcmp(current_list_item->ListName, "debug mode" == 0))
+        {
+            highlight_col = 0;
+            aim_speed = 0;
+            Departure_PointFlag = 1;
+        }
     }
     else if (Key4_flag)
     {
@@ -207,7 +213,7 @@ void show_gray_image(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        ips200_show_gray_image(0, 0, clip_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
         ips200_show_string(0, 80, "StartLine_PFlag");       ips200_show_int(150, 80, clip_image_thereshold, 3);
         ips200_show_string(0, 110, "LRoundAbout_PFlag");     ips200_show_int(150, 110, rnum, 2);
         ips200_show_string(0, 140, "RRoundAbout_PFlag");     ips200_show_int(150, 140, RoundAbout_PointFlag_R, 2);
@@ -397,6 +403,21 @@ void debug_mode(void)
         }
         ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
         aim_speed = 0;
+    }
+    ips200_clear();
+}
+
+void show_inflectionpoint(void)
+{
+    ips200_clear();
+    Key_flag_clear();
+    while (!Key3_flag)
+    {
+        ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+
+        // row, column
+        ips200_show_int(90, 0, lmax[0], 3);     ips200_show_int(90, 50, clip_lfline[lmax[0]], 3);
+        ips200_show_int(120, 0, rmin[0], 3);    ips200_show_int(120, 50, clip_rtline[rmin[0]], 3);
     }
     ips200_clear();
 }

@@ -16,6 +16,15 @@ extern float rpts0an[MT9V03X_H * 3];
 extern float rpts1an[MT9V03X_H * 3];
 extern int rpts0an_num, rpts1an_num;
 
+// 左右边线跳变列
+extern int lcptc[CLIP_IMAGE_H];
+extern int rcptc[CLIP_IMAGE_H];
+
+// 跳变列非极大极小值抑制
+// 左线非极大值抑制，右线非极小值抑制
+extern int lmax[CLIP_IMAGE_H];
+extern int rmin[CLIP_IMAGE_H];
+
 extern int Xpt0, Xpt1;
 // Y角点
 extern int Ypt0_rpts0s_id, Ypt1_rpts1s_id;
@@ -80,10 +89,9 @@ extern Trait_smachine Startline;
 extern Trackline checkline_l;
 extern Trackline checkline_r;
 
-// 寻找角点
-void Find_corners(void);
+void find_inflectionpoint(void);
 
-void Lostline_count(unsigned char LlineF[120], unsigned char RlineF[120], unsigned char *lcnt, unsigned char *rcnt);
+void Lostline_check(int clip_lfline[], int clip_rtline[], int lcptc[], int rcptc[]);
 // 寻找断点
 void Track_line_l(Trackline *checkline);
 
@@ -119,5 +127,9 @@ void rnms_angle(int num, int kernel);
 void find_corners(void);
 
 void roll_out(void);
+// 左线非极大值抑制
+void lmaximum(int num, int kernel, int input[]);
+// 右线非极小值抑制
+void rminimum(int num, int kernel, int input[]);
 
 #endif /* CODE_ROAD_H_ */

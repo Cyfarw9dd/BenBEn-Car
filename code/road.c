@@ -15,6 +15,15 @@ float rpts0an[MT9V03X_H * 3];
 float rpts1an[MT9V03X_H * 3];
 int rpts0an_num, rpts1an_num;
 
+// 左右边线跳变列
+int lcptc[CLIP_IMAGE_H];
+int rcptc[CLIP_IMAGE_H];
+
+// 跳变列非极大极小值抑制
+// 左线非极大值抑制，右线非极小值抑制
+int lmax[CLIP_IMAGE_H];
+int rmin[CLIP_IMAGE_H];
+
 // 随便什么角点
 int Xpt0, Xpt1;
 // Y角点
@@ -37,10 +46,8 @@ unsigned char bend_flag;
 // 左右线丢线数目
 unsigned char lnum = 0;
 unsigned char rnum = 0;
-unsigned char *lnump = &lnum;
-unsigned char *rnump = &rnum;
-unsigned char lflinef[120];
-unsigned char rtlinef[120];
+unsigned char lflinef[CLIP_IMAGE_H];
+unsigned char rtlinef[CLIP_IMAGE_H];
 
 Trait_smachine Crossing;
 Trait_smachine RoundAbout;
@@ -52,14 +59,16 @@ Trackline checkline_l;
 Trackline checkline_r;
 
 unsigned char outflag = 0;      // 出库标志位
-
 #pragma section all restore
+
+
+#pragma section all "cpu1_psram"
 void Traits_process(void)
 {
     aim_speed = 280;
     // 默认情况下正常循迹
     track_mode = NORMAL;
-    // roll_out();
+    // roll_out();  // 出库打死
     if (!Departure_PointFlag)
         Departure();
     Barrier_process(&Barrier);
@@ -67,30 +76,52 @@ void Traits_process(void)
     Startline_process(&Startline, &bin_image[0]);
 }
 
-
-void Lostline_count(unsigned char LlineF[120], unsigned char RlineF[120], unsigned char *lcnt, unsigned char *rcnt)
+void find_inflectionpoint(void)
 {
-    lnum = 0;
-    rnum = 0;
-    for (int i = BottomRow; i > BottomRow - 80; i--)
+    // 遍历左右线
+    Lostline_check(clip_lfline, clip_rtline, lcptc, rcptc);
+    // 非极大值&非极小值抑制
+    lmaximum(sizeof(lcptc) / sizeof(lcptc[0]), 5, lcptc);
+    rminimum(sizeof(rcptc) / sizeof(rcptc[0]), 5, rcptc);
+    // 最终坐标应该为[0]位元素
+}
+
+void Lostline_check(int clip_lfline[], int clip_rtline[], int lcptc[], int rcptc[])
+{
+    // 遍历左线
+    int m, n;
+    for (int i = CLIP_IMAGE_H - 1; i > TopRow; i--)
     {
-        if (clip_lfline[i] == 2)
+        m++;
+        // 扫描拐点上下五行
+        if (clip_lfline[clip(i + 5, TopRow, CLIP_IMAGE_H - 1)] > 5 && clip_lfline[clip(i + 4, TopRow, CLIP_IMAGE_H - 1)] > 5
+         && clip_lfline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] > 5 && clip_lfline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] > 5
+         && clip_lfline[clip(i + 1, TopRow, CLIP_IMAGE_H - 1)] > 5 && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] > 5
+         && clip_lfline[clip(i - 1, TopRow, CLIP_IMAGE_H - 1)] < 3 && clip_lfline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] < 3
+         && clip_lfline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] < 3 && clip_lfline[clip(i - 4, TopRow, CLIP_IMAGE_H - 1)] < 3
+         && clip_lfline[clip(i - 4, TopRow, CLIP_IMAGE_H - 1)] < 3 && clip_lfline[clip(i - 5, TopRow, CLIP_IMAGE_H - 1)] < 3)
         {
-            *lcnt++;
-            lnum = *lcnt;
-            LlineF[i] = 0;   
+            lcptc[m] = i;
         }
-        else LlineF[i] = 1;
-        if (clip_rtline[i] == 185)
+    }
+    // 遍历右线
+    for (int i = CLIP_IMAGE_H - 1; i > TopRow; i--)
+    {
+        n++;
+        // 扫描拐点上下五行
+        if (clip_rtline[clip(i + 5, TopRow, CLIP_IMAGE_H - 1)] > 180 && clip_rtline[clip(i + 4, TopRow, CLIP_IMAGE_H - 1)] > 180
+         && clip_rtline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] > 180 && clip_rtline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] > 180
+         && clip_rtline[clip(i + 1, TopRow, CLIP_IMAGE_H - 1)] > 180 && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] > 180
+         && clip_rtline[clip(i - 1, TopRow, CLIP_IMAGE_H - 1)] < 183 && clip_rtline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] < 183
+         && clip_rtline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] < 183 && clip_rtline[clip(i - 4, TopRow, CLIP_IMAGE_H - 1)] < 183
+         && clip_rtline[clip(i - 4, TopRow, CLIP_IMAGE_H - 1)] < 183 && clip_rtline[clip(i - 5, TopRow, CLIP_IMAGE_H - 1)] < 183)
         {
-            *rcnt++;
-            rnum = *rcnt;
-            RlineF[i] = 0;
+            rcptc[n] = i;
         }
-        else RlineF[i] = 1;
     }
 }
-/*遍历左右线，将找到所有满足的点都在屏幕上高亮出来*/
+
+#pragma section all restore
 // 遍历左线数组，找到断开行
 void Track_line_l(Trackline *checkline)
 {
@@ -167,80 +198,7 @@ void Track_line_r(Trackline *checkline)
     }
 }
 
-void BreakRoad_process(Trait_smachine *road_smh)
-{
-    blackpoints = 0;
-    for (int row = 119; row > 117; row --)
-    {
-        for (int left_col = 93; left_col > 0; left_col -= 3)
-        {
-            if (mt9v03x_image[row][left_col + 3] < image_thereshold)
-            {
-                blackpoints++;
-            }
-        }
-        for (int right_col = 0; right_col < 187; right_col += 3)
-        {
-            if (mt9v03x_image[row][right_col - 3] < image_thereshold)
-            {
-                blackpoints++;
-            }
-        }
-    }
-    if (blackpoints > 70)   road_smh->pointflag = 1;
-    else                    road_smh->pointflag = 0;
-}
 
-void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[188])
-{
-    unsigned char times = 0;
-    for (unsigned char i = BottomRow - 18; i >= BottomRow - 23; i--)
-    {
-        unsigned char black_blocks = 0;
-        unsigned char cursor = 0;
-        for(unsigned char j = 0; j <= 186; j++)
-        {
-            if(binary_array[i][j] == 0)
-            {
-                if(cursor >= 20)
-                {
-
-                }
-                else
-                {
-                    cursor++;
-                }
-            }
-            else
-            {
-                if(cursor >= 4 && cursor <= 8)
-                {
-                    black_blocks++;
-                    cursor = 0;
-                }
-                else
-                {
-                    cursor = 0;
-                }
-            }
-        }
-        if(black_blocks >= 6 && black_blocks <= 12) times++;
-    }
-    if(times >= 3 /*&& times <= 5*/)
-    {
-        road_smh->pointflag = 1;
-    }
-    else
-    {
-        road_smh->pointflag = 0;
-    }
-}
-
-// 障碍处理
-void Obstacle_process(Trait_smachine *road_smh)
-{
-
-}
 
 // 点集三角滤波
 void blur_points(float pts_in[][2], int num, int kernel)
@@ -490,7 +448,7 @@ void find_corners(void)
     // }
 
 }
-#pragma section all restore
+
 
 void roll_out(void)
 {
@@ -511,3 +469,36 @@ void roll_out(void)
         }
         #endif 
 }
+
+// 左线非极大值抑制
+void lmaximum(int num, int kernel, int input[])
+{
+    // zf_assert(kernel % 2 == 1);
+    int half = kernel / 2;
+    for (int i = 0; i < num; i++) {
+        rpts0an[i] = rpts0a[i];
+        for (int j = -half; j <= half; j++) {
+            if (fabs(rpts0a[clip(i + j, 0, num - 1)]) > fabs(rpts0an[i])) {
+                rpts0an[i] = 0;
+                break;
+            }
+        }
+    }
+}
+// 右线非极小值抑制
+void rminimum(int num, int kernel, int input[])
+{
+    // zf_assert(kernel % 2 == 1);
+    int half = kernel / 2;
+    for (int i = 0; i < num; i++) {
+        rpts0an[i] = rpts0a[i];
+        for (int j = -half; j <= half; j++) {
+            if (fabs(rpts0a[clip(i + j, 0, num - 1)]) < fabs(rpts0an[i])) {
+                rpts0an[i] = 0;
+                break;
+            }
+        }
+    }
+}
+
+#pragma section all restore
