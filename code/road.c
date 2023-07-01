@@ -16,13 +16,20 @@ float rpts1an[MT9V03X_H * 3];
 int rpts0an_num, rpts1an_num;
 
 // 左右边线跳变列
-int lcptc[CLIP_IMAGE_H];
-int rcptc[CLIP_IMAGE_H];
+int ldcptc[CLIP_IMAGE_H];
+int rdcptc[CLIP_IMAGE_H];
+// up
+int lucptc[CLIP_IMAGE_H];
+int rucptc[CLIP_IMAGE_H];
 
+// 对左上拐点做非极小值抑制，对右上拐点做非极大值抑制
 // 跳变列非极大极小值抑制
-// 左线非极大值抑制，右线非极小值抑制
-int lmax[CLIP_IMAGE_H];
-int rmin[CLIP_IMAGE_H];
+// 对左下拐点做非极大值抑制，对右下拐点做非极小值抑制
+int ldown[CLIP_IMAGE_H];
+int rdown[CLIP_IMAGE_H];
+
+int lupon[CLIP_IMAGE_H];
+int rupon[CLIP_IMAGE_H];
 
 // 随便什么角点
 int Xpt0, Xpt1;
@@ -41,6 +48,12 @@ bool is_straight0, is_straight1;
 bool is_bend0, is_bend1;
 // 循迹模式
 int track_mode;
+
+int Lupon_id, Rupon_id;
+bool Lupon_found, Rupon_found;
+
+int Ldown_id, Rdown_id;
+bool Ldown_found, Rdown_found;
 
 unsigned char bend_flag;
 // 左右线丢线数目
@@ -65,42 +78,50 @@ unsigned char outflag = 0;      // 出库标志位
 #pragma section all "cpu1_psram"
 void Traits_process(void)
 {
-    aim_speed = 280;
+    aim_speed = 150;
     // 默认情况下正常循迹
     track_mode = NORMAL;
     // roll_out();  // 出库打死
     if (!Departure_PointFlag)
         Departure();
-    Barrier_process(&Barrier);
+    // Barrier_process(&Barrier);
     BreakRoad_process(&BreakRoad);
     Startline_process(&Startline, &bin_image[0]);
 }
 
+// 寻找拐点
 void find_inflectionpoint(void)
 {
-    // 遍历左右线
-    Lostline_check(clip_lfline, clip_rtline, lcptc, rcptc);
-    // 非极大值&非极小值抑制
-    lmaximum(sizeof(lcptc) / sizeof(lcptc[0]), 5, lcptc);
-    rminimum(sizeof(rcptc) / sizeof(rcptc[0]), 5, rcptc);
-    // 最终坐标应该为[0]位元素
+    // 下拐点左线做非极大值抑制，右线做非极小值抑制
+    Downpoint_check(clip_lfline, clip_rtline, ldcptc, rdcptc);
+    maximum(sizeof(ldcptc) / sizeof(ldcptc[0]), 5, ldcptc, ldown);
+    minimum(sizeof(rdcptc) / sizeof(rdcptc[0]), 5, rdcptc, rdown);
+
+    // 上拐点左线做非极小值抑制，右线做非极大值抑制
+    Uponpoint_check(clip_lfline, clip_rtline, lucptc, rucptc);
+    minimum(sizeof(lucptc) / sizeof(lucptc[0]), 5, lucptc, lupon);
+    maximum(sizeof(rucptc) / sizeof(rucptc[0]), 5, rucptc, rupon);
+
+    find_changepoint();
+
 }
 
-void Lostline_check(int clip_lfline[], int clip_rtline[], int lcptc[], int rcptc[])
+void Downpoint_check(int clip_lfline[], int clip_rtline[], int ldcptc[], int rdcptc[])
 {
     // 寻找下拐点
     // 遍历左线
-    int m, n;
+    int m = 0;
+    int n = 0;
     for (int i = CLIP_IMAGE_H - 1; i > TopRow; i--)
     {
         m++;
         // 扫描拐点上下五行
         if (clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] > 5
-         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 1, TopRow, CLIP_IMAGE_H - 1)] > 5
-         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 1, TopRow, CLIP_IMAGE_H - 1)] > 5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] > 5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] > 5
          && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] > 5)
         {
-            lcptc[m] = i;
+            ldcptc[m] = i;
         }
     }
     // 遍历右线
@@ -109,13 +130,118 @@ void Lostline_check(int clip_lfline[], int clip_rtline[], int lcptc[], int rcptc
         n++;
         // 扫描拐点上下五行
         if (clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] < -5
-         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 1, TopRow, CLIP_IMAGE_H - 1)] < -5
-         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 1, TopRow, CLIP_IMAGE_H - 1)] < -5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] < -5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] < -5
          && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] < -5)
         {
-            rcptc[n] = i;
+            rdcptc[n] = i;
         }
     }
+}
+
+void Uponpoint_check(int clip_lfline[], int clip_rtline[], int lucptc[], int rucptc[])
+{
+    int m = 0;
+    int n = 0;
+    for (int i = CLIP_IMAGE_H - 1; i > TopRow; i--)
+    {
+        if (clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] > 5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] > 5
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] < -2
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] < -2)
+        {
+            lucptc[m] = i;
+        }
+        if (clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] < -5
+         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] < -5
+         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] > 2
+         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] > 2)
+        {
+            rucptc[n] = i;
+        }
+    }
+}
+
+void find_changepoint(void)
+{
+    Ldown_found = Rdown_found = Lupon_found = Rupon_found = false;
+    // 先针对下拐点所出现的行数进行判断
+    // lmax
+    for (int i = 0; i < CLIP_IMAGE_H; i++)
+    {
+        if (ldown[i] == 0)  continue;
+        if (Ldown_found == false && 0 < ldown[i] && ldown[i] < 93 && 40 < clip_lfline[ldown[i]] && clip_lfline[ldown[i]] < 75)
+        {
+            Ldown_id = ldown[i];    // 这里取出来的坐标是拐点的所在的列数
+            Ldown_found = true;
+        }
+    }
+    // 对下拐点做二次检查，对上边界为空的特性做检查
+    if (Ldown_found)
+    {
+        if (clip_lfline[clip(Ldown_id + 5, TopRow, CLIP_IMAGE_H - 1)] < 3 && clip_lfline[clip(Ldown_id + 6, TopRow, CLIP_IMAGE_H - 1)] < 3)
+        {
+            ;
+        }
+        else    Ldown_found = false;
+    } 
+
+    for (int i = 0; i < CLIP_IMAGE_H; i++)
+    {
+        if (rdown[i] == 0)  continue;
+        if (Rdown_found == false && 93 < rdown[i] && rdown[i] < 187 && 40 < clip_rtline[rdown[i]] && clip_rtline[rdown[i]] < 70)
+        {
+            Rdown_id = rdown[i];
+            Rdown_found = true;
+        }
+    }
+    if (Rdown_found)
+    {
+        if (clip_rtline[clip(Rdown_id + 5, TopRow, CLIP_IMAGE_H - 1)] > 184 && clip_rtline[clip(Rdown_id + 6, TopRow, CLIP_IMAGE_H)] > 184)
+        {
+            ;
+        }
+        else    Rdown_found = false;
+    } 
+
+    for (int i = 0; i < CLIP_IMAGE_H; i++)
+    {
+        if (lupon[i] == 0)  continue;
+        if (Lupon_found == false && 0 < lupon[i] && lupon[i] < 93 && 30 < clip_lfline[lupon[i]] && clip_lfline[lupon[i]] < 70)
+        {
+            Lupon_id = lupon[i];
+            Lupon_found = true;
+        }
+    }
+
+    if (Lupon_found)
+    {
+        if (clip_lfline[clip(Lupon_id - 5, TopRow, CLIP_IMAGE_H)] < 3 && clip_lfline[clip(Lupon_id - 6, TopRow, CLIP_IMAGE_H) < 3])
+        {
+            ;
+        }
+        else    Lupon_found = false;
+    }
+
+    for (int i = 0; i < CLIP_IMAGE_H; i++)
+    {
+        if (rupon[i] == 0)  continue;
+        if (Rupon_found == false && 93 < rupon[i] && rupon[i] < 187 && 30 < clip_rtline[rupon[i]] && clip_rtline[rupon[i]] < 70)
+        {
+            Rupon_id = rupon[i];
+            Rupon_found = true;
+        }
+    }
+
+    if (Rupon_found)
+    {
+        if (clip_rtline[clip(Rupon_id - 5, TopRow, CLIP_IMAGE_H)] > 184 && clip_rtline[clip(Rupon_id - 6, TopRow, CLIP_IMAGE_H) > 184])
+        {
+            ;
+        }
+        else    Rupon_found = false;
+    }
+
 }
 
 #pragma section all restore
@@ -467,8 +593,8 @@ void roll_out(void)
         #endif 
 }
 
-// 左线非极大值抑制
-void lmaximum(int num, int kernel, int input[])
+// 非极大值抑制
+void maximum(int num, int kernel, int input[], int output[])
 {
     // zf_assert(kernel % 2 == 1);
     int half = kernel / 2;
@@ -482,8 +608,8 @@ void lmaximum(int num, int kernel, int input[])
         }
     }
 }
-// 右线非极小值抑制
-void rminimum(int num, int kernel, int input[])
+// 非极小值抑制
+void minimum(int num, int kernel, int input[], int output[])
 {
     // zf_assert(kernel % 2 == 1);
     int half = kernel / 2;

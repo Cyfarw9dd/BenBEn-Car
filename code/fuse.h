@@ -11,6 +11,7 @@ extern  MyPID SpeedPID,
         Turn_NeiPID;
         
 extern short All_PWM_left, All_PWM_right;
+extern short Speed_pwm_all;
 extern int16 real_speed;
 extern float real_real_speed;
 extern int Centerline_Err;

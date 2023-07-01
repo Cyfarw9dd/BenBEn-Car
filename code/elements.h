@@ -61,8 +61,6 @@ extern changepoint RoundAbout_LeftDown, RoundAbout_LeftAbove, RoundAbout_RightDo
 
 int absolute(int var);
 
-int minimum(int var1, int var2);
-
 void Findchangepoint_L(changepoint *prt, unsigned char Start, unsigned char End, unsigned char (*binary_array)[188], unsigned char mode);
 
 void Findchangepoint_R(changepoint *prt, unsigned char Start, unsigned char End, unsigned char (*binary_array)[188], unsigned char mode);

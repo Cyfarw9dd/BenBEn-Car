@@ -32,9 +32,10 @@ unsigned char Right_RoadWidth[120];             //定义右半边赛道宽度
 unsigned char clip_image[CLIP_IMAGE_H][MT9V03X_W];
 unsigned char clip_bin_image[CLIP_IMAGE_H][MT9V03X_W];
 // 裁剪后图像边线
-unsigned char clip_lfline[CLIP_IMAGE_H];
-unsigned char clip_rtline[CLIP_IMAGE_H];
-unsigned char clip_ctline[CLIP_IMAGE_H];
+// unsigned char -> char
+char clip_lfline[CLIP_IMAGE_H];
+char clip_rtline[CLIP_IMAGE_H];
+char clip_ctline[CLIP_IMAGE_H];
 // 裁剪后图像分割阈值
 unsigned char clip_image_thereshold; 
 
@@ -685,8 +686,6 @@ void clip_imageprocess(void)
         // 计算中线
         for (int i = CLIP_IMAGE_H - 1; i > 0; i--)
             clip_ctline[i] = (clip_lfline[i] + clip_rtline[i]) / 2;
-        // 断线特征找拐点
-        find_inflectionpoint();
         // 不对边线进行采样，原边界直接求取角度
         // 边线局部角度变化率
         // left_local_angle_points(data_stastics_l, 5);  // angle_dist / sample_dist

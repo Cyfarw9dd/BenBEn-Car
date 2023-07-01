@@ -34,6 +34,9 @@ int core0_main(void)
 	while (TRUE)
 	{
 		// 此处编写需要循环执行的代码
+		TaskProcess();	
+		List_Switch();
+		// TaskCollectedProcess();
 		
 		// 此处编写需要循环执行的代码
 	}

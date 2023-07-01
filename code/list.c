@@ -2,6 +2,7 @@
 
 extern icm_param_t imu_data;
 extern euler_param_t eulerAngle;
+extern S_FLOAT_XYZ GyroOffset;
 
 char Key1_last_status;
 char Key2_last_status;
@@ -73,7 +74,6 @@ List MyList[] =
     {24, "show params", show_params, NULL},
     {25, "go back", NULL, NULL},
     {3, "Departure", NULL, NULL},
-    {4, "debug mode", debug_mode, NULL},
 };
 
 List *current_list_item;
@@ -201,6 +201,10 @@ void List_Switch(void)
         highlight_col = 0;
         parent_list_index = 0;
     }
+    else if (!gpio_get_level(TOGGLE1))
+    {
+        Speed_pwm_all = 0;
+    }
     list_item_count = show_sub_list(parent_list_index, highlight_col);
     Key_flag_clear();
 }
@@ -279,14 +283,14 @@ void show_params(void)
     while(!Key3_flag)
     {
         MyKeyScan();  
-        ips200_show_string(0, 0, "l_encoder");      ips200_show_int(80, 0, speed1, 5);
-        ips200_show_string(0, 20, "r_encoder");     ips200_show_int(80, 20, speed2, 5);
-        ips200_show_string(0, 40, "l_distance");    ips200_show_int(80, 40, left_distance, 5);
-        ips200_show_string(0, 60, "r_distance");    ips200_show_int(80, 60, right_distance, 5);
-        // ips200_show_string(0, 65, "imu_data_x");        
-        // ips200_show_string(0, 80, "imu_data_x");        
-        // ips200_show_string(0, 100, "imu_data_x");     
-        ips200_show_float(0, 80, Left_Adc, 5, 5);   ips200_show_float(30, 80, Left_Shu_Adc, 5, 5);  ips200_show_float(60, 80, Right_Shu_Adc, 5, 5);     ips200_show_float(90, 80, Right_Adc, 5, 5); 
+        // ips200_show_string(0, 0, "l_encoder");      ips200_show_int(80, 0, speed1, 5);
+        // ips200_show_string(0, 20, "r_encoder");     ips200_show_int(80, 20, speed2, 5);
+        // ips200_show_string(0, 40, "l_distance");    ips200_show_int(80, 40, left_distance, 5);
+        // ips200_show_string(0, 60, "r_distance");    ips200_show_int(80, 60, right_distance, 5);
+        ips200_show_float(0, 0, GyroOffset.X, 5, 3);
+        ips200_show_float(0, 30, GyroOffset.Y, 5, 3);
+        ips200_show_float(0, 60, GyroOffset.Z, 5, 3);
+        ips200_show_float(0, 80, adc_value[0], 5, 5);   ips200_show_float(30, 80, adc_value[1], 5, 5);  ips200_show_float(60, 80, adc_value[2], 5, 5);     ips200_show_float(90, 80, adc_value[3], 5, 5); 
     }
     ips200_clear();
 }
@@ -416,8 +420,8 @@ void show_inflectionpoint(void)
         ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
 
         // row, column
-        ips200_show_int(90, 0, lmax[0], 3);     ips200_show_int(90, 50, clip_lfline[lmax[0]], 3);
-        ips200_show_int(120, 0, rmin[0], 3);    ips200_show_int(120, 50, clip_rtline[rmin[0]], 3);
+        ips200_show_int(90, 0, ldown[0], 3);     ips200_show_int(90, 50, clip_lfline[ldown[0]], 3);
+        ips200_show_int(120, 0, rdown[0], 3);    ips200_show_int(120, 50, clip_rtline[rdown[0]], 3);
     }
     ips200_clear();
 }

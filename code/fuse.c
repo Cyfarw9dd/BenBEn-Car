@@ -31,7 +31,7 @@ static TASK_COMPONENTS TaskComps[] =
 static TASK_COMPONENTS TaskCollect[] =
 {
     {0, 2, 2, gyroOffsetInit},          // 陀螺仪数据采集
-    {0, 2, 2, get_motor_speed},         // 编码器数据采集
+    {0, 10, 10, get_motor_speed},         // 编码器数据采集
 };
 
 void PID_int(void)
@@ -107,7 +107,7 @@ void Motor_output_control()
     }
     if (track_mode == ADC)
     {
-        gyroOffsetInit();
+        // gyroOffsetInit();
         Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, ADC_PWM); // 转向内环PWM	 icm20602_gyro_z
         Steer_pwm = range_protect(Steer_pwm, -6000, 6000);          // 转向内环PWM限幅
 
@@ -118,7 +118,7 @@ void Motor_output_control()
     }
     if (track_mode == GO_STRAIGHT)
     {
-        gyroOffsetInit();
+        // gyroOffsetInit();
         Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
         Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
 
@@ -129,7 +129,7 @@ void Motor_output_control()
     }
     if (track_mode == TURN)
     {
-        gyroOffsetInit();
+        // gyroOffsetInit();
         Prospect_err = 300;
         Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
         Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
@@ -149,14 +149,14 @@ void Trailing_control()
 {
     if (track_mode == NORMAL)
     {
-        // Get_deviation();
+        Get_deviation();
         Centerline_Err = Cal_centerline(); 
         // track_decision();
         Prospect_err = LocP_DCalc(&TurnPID, (short)Centerline_Err, 0); // 位置式PD控制转向
     }
     if (track_mode == ADC)
     {
-        Get_deviation(); // 电磁采集并获取赛道偏差
+        // Get_deviation(); // 电磁采集并获取赛道偏差
         ADC_PWM = LocP_DCalc(&ADC_TurnPID, Current_Dir, 0); // 位置式PD控制转向
         ADC_PWM = -ADC_PWM;
     }

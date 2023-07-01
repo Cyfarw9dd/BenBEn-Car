@@ -34,26 +34,26 @@ void motor_ctrl(short Lmotor, short Rmotor){
     if(Lmotor >= 0){
         Lmotor = Lmotor <= MOTOR_MAX ? Lmotor : MOTOR_MAX;
         // Lmotor = range_protect(Lmotor, MOTOR_MIN, MOTOR_MAX);
-        pwm_set_duty(PWM_CH1, Lmotor); 
-        pwm_set_duty(PWM_CH2, 0);
+        pwm_set_duty(PWM_CH1, 0); 
+        pwm_set_duty(PWM_CH2, Lmotor);
     }
     else{
         Lmotor = Lmotor >= -MOTOR_MAX ? (-Lmotor) : MOTOR_MAX;
         // Lmotor = range_protect(-Lmotor, MOTOR_MIN, MOTOR_MAX);
-        pwm_set_duty(PWM_CH1, 0);      
-        pwm_set_duty(PWM_CH2, Lmotor);
+        pwm_set_duty(PWM_CH1, Lmotor);      
+        pwm_set_duty(PWM_CH2, 0);
     }
     if(Rmotor >= 0){
         Rmotor = Rmotor <= MOTOR_MAX ? Rmotor : MOTOR_MAX;
         // Rmotor = range_protect(Rmotor, MOTOR_MIN, MOTOR_MAX);
-        pwm_set_duty(PWM_CH3, Rmotor); 
-        pwm_set_duty(PWM_CH4, 0);
+        pwm_set_duty(PWM_CH3, 0); 
+        pwm_set_duty(PWM_CH4, Rmotor);
     }
     else{
         Rmotor = Rmotor >= -MOTOR_MAX ? (-Rmotor) : MOTOR_MAX;
         // Rmotor = range_protect(-Rmotor, MOTOR_MIN, MOTOR_MAX);
-        pwm_set_duty(PWM_CH3, 0);      
-        pwm_set_duty(PWM_CH4, Rmotor);
+        pwm_set_duty(PWM_CH3, Rmotor);      
+        pwm_set_duty(PWM_CH4, 0);
     }
     // tft180_show_float(0, 90, speed1, 5, 2);         tft180_show_float(60, 90, speed2, 5, 2);
 }

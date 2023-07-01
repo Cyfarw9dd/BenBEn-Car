@@ -64,16 +64,6 @@ int absolute(int var){
 }
 
 /*
-    最小值计算函数
-*/
-int minimum(int var1, int var2){
-    if(var1 > var2)
-        return var1;
-    else
-        return var2;
-}
-
-/*
     函数名称：寻找左拐点
     函数参数：一个changepoint类型的结构体，拐点寻找的起始行，结束行，二值化后的原始数组，不同拐点的模式参数
     为了方便寻找不同类型的拐点，预先设置了不同的模式（mode），一一对应不同类型的拐点。大体上，将拐点分为上下拐点两类，在下拐点又细分

@@ -92,7 +92,6 @@ void core1_main(void)
     tft180_set_font(TFT180_6X8_FONT);
     pit_ms_init(CCU60_CH0, 1);
     pit_ms_init(CCU60_CH1, 1);
-    pit_ms_init(CCU61_CH0, 20);
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
 
     // track_mode = OBSTACLE;    
@@ -102,11 +101,10 @@ void core1_main(void)
     {
         // 此处编写需要循环执行的代码
         // Get_deviation();
-        // TaskProcess();
-        // clip_imageprocess();
-        // find_corners();
-        // Traits_process();
-        motor_ctrl(3000, 3000);
+        clip_imageprocess();
+        find_inflectionpoint();
+        Traits_process();
+        // motor_ctrl(3000, 3000);
         
         // 向上位机发送图像
         // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, image_thereshold, 35);     

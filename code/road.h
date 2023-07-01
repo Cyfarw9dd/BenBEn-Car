@@ -17,13 +17,20 @@ extern float rpts1an[MT9V03X_H * 3];
 extern int rpts0an_num, rpts1an_num;
 
 // 左右边线跳变列
-extern int lcptc[CLIP_IMAGE_H];
-extern int rcptc[CLIP_IMAGE_H];
+extern int ldcptc[CLIP_IMAGE_H];
+extern int rdcptc[CLIP_IMAGE_H];
+// up
+extern int lucptc[CLIP_IMAGE_H];
+extern int rucptc[CLIP_IMAGE_H];
 
+// 上拐点开始扫描列
+#define Upcpt_Row 45
 // 跳变列非极大极小值抑制
 // 左线非极大值抑制，右线非极小值抑制
-extern int lmax[CLIP_IMAGE_H];
-extern int rmin[CLIP_IMAGE_H];
+extern int ldown[CLIP_IMAGE_H];
+extern int rdown[CLIP_IMAGE_H];
+extern int lupon[CLIP_IMAGE_H];
+extern int rupon[CLIP_IMAGE_H];
 
 extern int Xpt0, Xpt1;
 // Y角点
@@ -41,6 +48,13 @@ extern bool is_straight0, is_straight1;
 extern bool is_bend0, is_bend1;
 // 循迹模式
 extern int track_mode;
+
+extern int Lupon_id, Rupon_id;
+extern bool Lupon_found, Rupon_found;
+
+extern int Ldown_id, Rdown_id;
+extern bool Ldown_found, Rdown_found;
+
 
 extern unsigned char lnum;
 extern unsigned char rnum;
@@ -90,9 +104,13 @@ extern Trackline checkline_l;
 extern Trackline checkline_r;
 
 void find_inflectionpoint(void);
+// 寻找下拐点
+void Downpoint_check(int clip_lfline[], int clip_rtline[], int ldcptc[], int rdcptc[]);
+// 寻找上拐点
+void Uponpoint_check(int clip_lfline[], int clip_rtline[], int lucptc[], int rucptc[]);
 
-void Lostline_check(int clip_lfline[], int clip_rtline[], int lcptc[], int rcptc[]);
-// 寻找断点
+void find_changepoint(void);
+
 void Track_line_l(Trackline *checkline);
 
 void Track_line_r(Trackline *checkline);
@@ -100,10 +118,6 @@ void Track_line_r(Trackline *checkline);
 void Traits_process(void);
 // 断路
 void BreakRoad_process(Trait_smachine *road_smh);
-
-void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[188]);
-
-void Obstacle_process(Trait_smachine *road_smh);
 
 // 点集三角滤波
 void blur_points(float pts_in[][2], int num, int kernel);
@@ -128,8 +142,8 @@ void find_corners(void);
 
 void roll_out(void);
 // 左线非极大值抑制
-void lmaximum(int num, int kernel, int input[]);
+void maximum(int num, int kernel, int input[], int output[]);
 // 右线非极小值抑制
-void rminimum(int num, int kernel, int input[]);
+void minimum(int num, int kernel, int input[], int output[]);
 
 #endif /* CODE_ROAD_H_ */
