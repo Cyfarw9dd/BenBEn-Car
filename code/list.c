@@ -39,6 +39,8 @@ List MyList[] =
     {13, "show boudaries", NULL, NULL},         // 显示图像边界
     {131, "show ori bound", show_boundaries, NULL},
     {132, "show sample", show_sample_boundaries, NULL},
+    {133, "show chanpoint", show_inflectionpoint, NULL},
+    {134, "go back", NULL, NULL},
     {14, "show road traits", show_roadtraits, NULL},
     {15, "show corners", show_corners, NULL},
     {16, "show barrier", show_barrier_params, NULL},
@@ -201,10 +203,10 @@ void List_Switch(void)
         highlight_col = 0;
         parent_list_index = 0;
     }
-    else if (!gpio_get_level(TOGGLE1))
-    {
-        Speed_pwm_all = 0;
-    }
+    // else if (!gpio_get_level(TOGGLE1))
+    // {
+    //     Speed_pwm_all = 0;
+    // }
     list_item_count = show_sub_list(parent_list_index, highlight_col);
     Key_flag_clear();
 }
@@ -217,7 +219,7 @@ void show_gray_image(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        ips200_show_gray_image(0, 0, clip_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
         ips200_show_string(0, 80, "StartLine_PFlag");       ips200_show_int(150, 80, clip_image_thereshold, 3);
         ips200_show_string(0, 110, "LRoundAbout_PFlag");     ips200_show_int(150, 110, rnum, 2);
         ips200_show_string(0, 140, "RRoundAbout_PFlag");     ips200_show_int(150, 140, RoundAbout_PointFlag_R, 2);
@@ -240,11 +242,11 @@ void show_binary_image(void)
             clip_bin_image[i][clip_ctline[i]] = 70;
         }
         ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
-        ips200_show_string(0, 65, "StartLine_PFlag");       ips200_show_int(110, 65, StartLine_PointFlag, 2);
-        ips200_show_string(0, 80, "LRoundAbout_PFlag");     ips200_show_int(110, 80, RoundAbout_PointFlag_L, 2);
-        ips200_show_string(0, 95, "RRoundAbout_PFlag");     ips200_show_int(110, 95, RoundAbout_PointFlag_R, 2);
-        ips200_show_string(0, 110, "BreakRoad_PFlag");      ips200_show_int(110, 110, BreakRoad_PointFlag, 2);
-        ips200_show_string(0, 125, "Obstacle_PFlag");      ips200_show_int(110, 125, Obstacle_PointFlag, 2);
+        // ips200_show_string(0, 65, "StartLine_PFlag");       ips200_show_int(110, 65, StartLine_PointFlag, 2);
+        // ips200_show_string(0, 80, "LRoundAbout_PFlag");     ips200_show_int(110, 80, RoundAbout_PointFlag_L, 2);
+        // ips200_show_string(0, 95, "RRoundAbout_PFlag");     ips200_show_int(110, 95, RoundAbout_PointFlag_R, 2);
+        // ips200_show_string(0, 110, "BreakRoad_PFlag");      ips200_show_int(110, 110, BreakRoad_PointFlag, 2);
+        // ips200_show_string(0, 125, "Obstacle_PFlag");      ips200_show_int(110, 125, Obstacle_PointFlag, 2);
         // ips200_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] / 2, RGB565_BLUE);
         // ips200_draw_point(checkline_l.col[1] / 2, checkline_l.row[1] / 2, RGB565_RED);
         // ips200_draw_point(checkline_r.col[0] / 2, checkline_r.row[0] / 2, RGB565_BLUE);
@@ -290,7 +292,7 @@ void show_params(void)
         ips200_show_float(0, 0, GyroOffset.X, 5, 3);
         ips200_show_float(0, 30, GyroOffset.Y, 5, 3);
         ips200_show_float(0, 60, GyroOffset.Z, 5, 3);
-        ips200_show_float(0, 80, adc_value[0], 5, 5);   ips200_show_float(30, 80, adc_value[1], 5, 5);  ips200_show_float(60, 80, adc_value[2], 5, 5);     ips200_show_float(90, 80, adc_value[3], 5, 5); 
+        ips200_show_float(0, 80, Left_Adc, 5, 5);   ips200_show_float(40, 80, Left_Shu_Adc, 5, 5);  ips200_show_float(80, 80, Right_Shu_Adc, 5, 5);     ips200_show_float(120, 80, Right_Adc, 5, 5); 
     }
     ips200_clear();
 }
@@ -302,12 +304,11 @@ void show_roadtraits(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        // ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
-        for (int i = 0; i < CLIP_IMAGE_H; i ++)
+        for (int i = 0; i < CLIP_IMAGE_H; i++)
         {
             ips200_draw_point(clip_lfline[i], i, RGB565_WHITE);
-            ips200_draw_point(clip_rtline[i] , i, RGB565_WHITE);
-            ips200_draw_point(clip_ctline[i] , i, RGB565_WHITE);
+            ips200_draw_point(clip_rtline[i], i, RGB565_WHITE);
+            ips200_draw_point(clip_ctline[i], i, RGB565_WHITE);
         }
         
         // for (int i = 0; i < CLIP_IMAGE_H; i ++)
@@ -417,11 +418,11 @@ void show_inflectionpoint(void)
     Key_flag_clear();
     while (!Key3_flag)
     {
+        MyKeyScan();
         ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
 
-        // row, column
-        ips200_show_int(90, 0, ldown[0], 3);     ips200_show_int(90, 50, clip_lfline[ldown[0]], 3);
-        ips200_show_int(120, 0, rdown[0], 3);    ips200_show_int(120, 50, clip_rtline[rdown[0]], 3);
+        ips200_show_int(0, 100, ldcptc[0], 3);    ips200_show_int(70, 100, clip_lfline[ldcptc[0]], 3);
+        ips200_show_int(0, 130, Rdown_id, 3);    ips200_show_int(70, 130, clip_lfline[Rdown_id], 3);
     }
     ips200_clear();
 }

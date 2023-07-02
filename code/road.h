@@ -105,9 +105,9 @@ extern Trackline checkline_r;
 
 void find_inflectionpoint(void);
 // 寻找下拐点
-void Downpoint_check(int clip_lfline[], int clip_rtline[], int ldcptc[], int rdcptc[]);
+void Downpoint_check(void);
 // 寻找上拐点
-void Uponpoint_check(int clip_lfline[], int clip_rtline[], int lucptc[], int rucptc[]);
+void Uponpoint_check(int *clip_lfline, int *clip_rtline, int *lucptc, int *rucptc);
 
 void find_changepoint(void);
 
@@ -142,8 +142,8 @@ void find_corners(void);
 
 void roll_out(void);
 // 左线非极大值抑制
-void maximum(int num, int kernel, int input[], int output[]);
+void maximum(int num, int kernel, int *input, int *output);
 // 右线非极小值抑制
-void minimum(int num, int kernel, int input[], int output[]);
+void minimum(int num, int kernel, int *input, int *output);
 
 #endif /* CODE_ROAD_H_ */

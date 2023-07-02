@@ -62,9 +62,9 @@ extern unsigned short cutpoints_r[(unsigned short)USE_num][2];
 extern unsigned char clip_image[CLIP_IMAGE_H][MT9V03X_W];
 extern unsigned char clip_bin_image[CLIP_IMAGE_H][MT9V03X_W];
 extern unsigned char clip_image_thereshold;
-extern char clip_lfline[CLIP_IMAGE_H];
-extern char clip_rtline[CLIP_IMAGE_H];
-extern char clip_ctline[CLIP_IMAGE_H];
+extern short clip_lfline[CLIP_IMAGE_H];
+extern short clip_rtline[CLIP_IMAGE_H];
+extern short clip_ctline[CLIP_IMAGE_H];
 
 
 

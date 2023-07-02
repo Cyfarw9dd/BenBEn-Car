@@ -21,6 +21,17 @@ void BreakRoad_process(Trait_smachine *road_smh)
             }
         }
     }
-    if (blackpoints > 70)   road_smh->pointflag = 1;
-    else                    road_smh->pointflag = 0;
+
+    if (blackpoints > 70 && road_smh->status == BREAKROAD_NONE)
+    {
+        road_smh->pointflag = 1;
+        road_smh->status = BREAKROAD_IN;
+        track_mode = ADC;
+    }
+    if (blackpoints < 70 && road_smh->status == BREAKROAD_IN)
+    {
+        road_smh->pointflag = 0;
+        road_smh->status = BREAKROAD_NONE;
+        track_mode = NORMAL;
+    }
 }

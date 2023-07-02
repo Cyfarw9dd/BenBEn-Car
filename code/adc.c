@@ -72,9 +72,9 @@ unsigned short adc_ave(adc_channel_enum adcn, adc_resolution_enum ch,unsigned ch
 void ADC_Collect()
 {
 	adc_value[0] = (unsigned char)adc_ave(ADC0_CH7_A7, ADC_8BIT, 5);     
-	adc_value[1] = (unsigned char)adc_ave(ADC0_CH5_A5, ADC_8BIT, 5);  
+	adc_value[1] = (unsigned char)adc_ave(ADC0_CH3_A3, ADC_8BIT, 5);  
 	adc_value[2] = (unsigned char)adc_ave(ADC0_CH2_A2, ADC_8BIT, 5); 
-    adc_value[3] = (unsigned char)adc_ave(ADC0_CH0_A0, ADC_8BIT, 5);    
+    adc_value[3] = (unsigned char)adc_ave(ADC0_CH1_A1, ADC_8BIT, 5);    
 }
 /*********************************电感采值********************************/
 void Data_current_analyze()

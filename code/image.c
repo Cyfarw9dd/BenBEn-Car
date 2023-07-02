@@ -33,9 +33,9 @@ unsigned char clip_image[CLIP_IMAGE_H][MT9V03X_W];
 unsigned char clip_bin_image[CLIP_IMAGE_H][MT9V03X_W];
 // 裁剪后图像边线
 // unsigned char -> char
-char clip_lfline[CLIP_IMAGE_H];
-char clip_rtline[CLIP_IMAGE_H];
-char clip_ctline[CLIP_IMAGE_H];
+short clip_lfline[CLIP_IMAGE_H];
+short clip_rtline[CLIP_IMAGE_H];
+short clip_ctline[CLIP_IMAGE_H];
 // 裁剪后图像分割阈值
 unsigned char clip_image_thereshold; 
 
@@ -118,7 +118,7 @@ void Hightlight_Lines(unsigned char (*binary_array)[188])
     //         height1++;
     //     if (height1 > 75)
     //         break;
-    //     tft180_draw_point(points_l[i][0] / 1.5, points_l[i][1] / 1.5, RGB565_WHITE);
+    //     ips200_draw_point(points_l[i][0] / 1.5, points_l[i][1] / 1.5, RGB565_WHITE);
         
     // }
     // for (int i = 0; i < 359; i++)
@@ -127,7 +127,7 @@ void Hightlight_Lines(unsigned char (*binary_array)[188])
     //         height2++;
     //     if (height2 > 75)
     //         break;
-    //     tft180_draw_point(points_r[i][0] / 1.5, points_r[i][1] / 1.5, RGB565_WHITE);
+    //     ips200_draw_point(points_r[i][0] / 1.5, points_r[i][1] / 1.5, RGB565_WHITE);
         
     // }
     for (int i = 0; i < 359; i++)
@@ -686,6 +686,7 @@ void clip_imageprocess(void)
         // 计算中线
         for (int i = CLIP_IMAGE_H - 1; i > 0; i--)
             clip_ctline[i] = (clip_lfline[i] + clip_rtline[i]) / 2;
+        find_inflectionpoint();
         // 不对边线进行采样，原边界直接求取角度
         // 边线局部角度变化率
         // left_local_angle_points(data_stastics_l, 5);  // angle_dist / sample_dist

@@ -92,17 +92,15 @@ void core1_main(void)
     tft180_set_font(TFT180_6X8_FONT);
     pit_ms_init(CCU60_CH0, 1);
     pit_ms_init(CCU60_CH1, 1);
+    pit_ms_init(CCU61_CH0, 20);
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
 
-    // track_mode = OBSTACLE;    
-    // left_distance = 0;
-    // right_distance = 0;
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
         // Get_deviation();
+        TaskProcess();	
         clip_imageprocess();
-        find_inflectionpoint();
         Traits_process();
         // motor_ctrl(3000, 3000);
         

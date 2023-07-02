@@ -48,7 +48,7 @@ void PID_int(void)
     R_SpeedPID.Ki = 0.9;
     R_SpeedPID.Kd = 0;
 
-    TurnPID.Kp = 130; // 转向环PID参数 （C车只用调这个，不用串级转向）
+    TurnPID.Kp = 135; 
     TurnPID.Ki = 0;
     TurnPID.Kd = 0;
 
@@ -56,7 +56,7 @@ void PID_int(void)
     ADC_TurnPID.Ki = 0;
     ADC_TurnPID.Kd = 0;
 
-    Turn_NeiPID.Kp = 2.8; // 转向内环PID参数（D车用） 4.89
+    Turn_NeiPID.Kp = 2.8; //  4.89
     Turn_NeiPID.Ki = 0;
     Turn_NeiPID.Kd = 0;
 }
@@ -97,11 +97,11 @@ void Motor_output_control()
     if (track_mode == NORMAL)
     {
         gyroOffsetInit();
-        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, 0); // 转向内环PWM	 Prospect_err
+        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
         Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
 
-        All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
-        All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
+        All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+        All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
 
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
     }
@@ -149,7 +149,7 @@ void Trailing_control()
 {
     if (track_mode == NORMAL)
     {
-        Get_deviation();
+        // Get_deviation();
         Centerline_Err = Cal_centerline(); 
         // track_decision();
         Prospect_err = LocP_DCalc(&TurnPID, (short)Centerline_Err, 0); // 位置式PD控制转向
