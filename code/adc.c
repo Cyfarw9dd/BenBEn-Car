@@ -72,7 +72,7 @@ unsigned short adc_ave(adc_channel_enum adcn, adc_resolution_enum ch,unsigned ch
 void ADC_Collect()
 {
 	adc_value[0] = (unsigned char)adc_ave(ADC0_CH7_A7, ADC_8BIT, 5);     
-	adc_value[1] = (unsigned char)adc_ave(ADC0_CH3_A3, ADC_8BIT, 5);  
+	adc_value[1] = (unsigned char)adc_ave(ADC0_CH5_A5, ADC_8BIT, 5);  
 	adc_value[2] = (unsigned char)adc_ave(ADC0_CH2_A2, ADC_8BIT, 5); 
     adc_value[3] = (unsigned char)adc_ave(ADC0_CH1_A1, ADC_8BIT, 5);    
 }
@@ -345,8 +345,8 @@ void Get_deviation(void)
 	// Road_type_judge();       //赛道类型判断---直道---弯道---环岛
 	// Annulus_handle();        //环岛处理
 	//obstacle_avoidance();    //障碍物检测
-	Current_Dir = Cha_bi_he(Left_Adc+Left_Shu_Adc,Right_Adc+Right_Shu_Adc,40); //获得赛道偏差
-	Out_protect();         //出界保护
+	Current_Dir = Cha_bi_he(Left_Adc+Left_Shu_Adc,Right_Adc+Right_Shu_Adc,30); //获得赛道偏差
+	// Out_protect();         //出界保护
 }
 
 

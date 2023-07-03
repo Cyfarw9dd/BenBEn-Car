@@ -60,4 +60,6 @@ void debug_mode(void);
 
 void show_inflectionpoint(void);
 
+void show_breakroad(void);
+
 #endif /* CODE_LIST_H_ */

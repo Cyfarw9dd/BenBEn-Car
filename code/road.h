@@ -105,9 +105,9 @@ extern Trackline checkline_r;
 
 void find_inflectionpoint(void);
 // 寻找下拐点
-void Downpoint_check(void);
+void Downpoint_check(short clip_lfline[], short clip_rtline[], int ldcptc[], int rdcptc[]);
 // 寻找上拐点
-void Uponpoint_check(int *clip_lfline, int *clip_rtline, int *lucptc, int *rucptc);
+void Uponpoint_check(short clip_lfline[], short clip_rtline[], int lucptc[], int rucptc[]);
 
 void find_changepoint(void);
 
@@ -116,8 +116,6 @@ void Track_line_l(Trackline *checkline);
 void Track_line_r(Trackline *checkline);
 // 元素处理总函数，协调元素
 void Traits_process(void);
-// 断路
-void BreakRoad_process(Trait_smachine *road_smh);
 
 // 点集三角滤波
 void blur_points(float pts_in[][2], int num, int kernel);

@@ -8,7 +8,8 @@ enum Breakroad_status{
     BREAKROAD_NONE,
 };
 
+extern int break_blackpoints;
 
-void BreakRoad_process(Trait_smachine *road_smh);
+void BreakRoad_process(Trait_smachine *road_smh, unsigned char (*image)[188]);
 
 #endif /* CODE_BREAKROAD_H_ */

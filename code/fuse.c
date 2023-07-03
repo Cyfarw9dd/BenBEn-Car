@@ -52,7 +52,7 @@ void PID_int(void)
     TurnPID.Ki = 0;
     TurnPID.Kd = 0;
 
-    ADC_TurnPID.Kp = 150; // 电磁转向环PID参数
+    ADC_TurnPID.Kp = 100; // 电磁转向环PID参数
     ADC_TurnPID.Ki = 0;
     ADC_TurnPID.Kd = 0;
 
@@ -107,7 +107,7 @@ void Motor_output_control()
     }
     if (track_mode == ADC)
     {
-        // gyroOffsetInit();
+        gyroOffsetInit();
         Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, ADC_PWM); // 转向内环PWM	 icm20602_gyro_z
         Steer_pwm = range_protect(Steer_pwm, -6000, 6000);          // 转向内环PWM限幅
 
@@ -149,16 +149,16 @@ void Trailing_control()
 {
     if (track_mode == NORMAL)
     {
-        // Get_deviation();
+        Get_deviation();
         Centerline_Err = Cal_centerline(); 
         // track_decision();
         Prospect_err = LocP_DCalc(&TurnPID, (short)Centerline_Err, 0); // 位置式PD控制转向
     }
     if (track_mode == ADC)
     {
-        // Get_deviation(); // 电磁采集并获取赛道偏差
+        Get_deviation(); // 电磁采集并获取赛道偏差
         ADC_PWM = LocP_DCalc(&ADC_TurnPID, Current_Dir, 0); // 位置式PD控制转向
-        ADC_PWM = -ADC_PWM;
+        // ADC_PWM = -ADC_PWM;
     }
     if (track_mode == OBSTACLE)
         return;

@@ -78,22 +78,29 @@ unsigned char outflag = 0;      // 出库标志位
 #pragma section all "cpu1_psram"
 void Traits_process(void)
 {
-    aim_speed = 380;
-    // 默认情况下正常循迹
-    track_mode = NORMAL;
+    if (track_mode == NORMAL)
+        aim_speed = 380;
+    if (track_mode == ADC)
+        aim_speed = 150;
     // roll_out();  // 出库打死
     if (!Departure_PointFlag)
         Departure();
     // Barrier_process(&Barrier);
-    BreakRoad_process(&BreakRoad);
+    BreakRoad_process(&BreakRoad, &clip_bin_image[0]);
     Startline_process(&Startline, &bin_image[0]);
+}
+
+void Traits_status_init(void)
+{
+    BreakRoad.status = BREAKROAD_NONE;
+    Crossing.status = CROSS_NONE;
 }
 
 // 寻找拐点
 void find_inflectionpoint(void)
 {
     // 下拐点左线做非极大值抑制，右线做非极小值抑制
-    Downpoint_check();
+    Downpoint_check(&clip_lfline[0], &clip_rtline[0], &ldcptc[0], &rdcptc[0]);
     maximum(sizeof(ldcptc) / sizeof(ldcptc[0]), 5, ldcptc, ldown);
     minimum(sizeof(rdcptc) / sizeof(rdcptc[0]), 5, rdcptc, rdown);
 
@@ -106,7 +113,7 @@ void find_inflectionpoint(void)
     // 取到的点的id即为对应拐点的行数，结合边线数组可得列坐标
 }
 
-void Downpoint_check(void)
+void Downpoint_check(short clip_lfline[], short clip_rtline[], int ldcptc[], int rdcptc[])
 {
     // 寻找下拐点
     // 遍历左线
@@ -138,7 +145,7 @@ void Downpoint_check(void)
 
 }
 
-void Uponpoint_check(int *clip_lfline, int *clip_rtline, int *lucptc, int *rucptc)
+void Uponpoint_check(short clip_lfline[], short clip_rtline[], int lucptc[], int rucptc[])
 {
     int m = 0;
     int n = 0;

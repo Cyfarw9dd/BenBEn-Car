@@ -1,34 +1,41 @@
 #include "zf_common_headfile.h"
 
-
-void BreakRoad_process(Trait_smachine *road_smh)
+#define BLACK_NUM 170
+int break_blackpoints;
+void BreakRoad_process(Trait_smachine *road_smh, unsigned char (*image)[188])
 {
-    int blackpoints = 0;
-    for (int row = 119; row > 117; row --)
+    break_blackpoints = 0;
+    // 对底边两行扫描黑点
+    for (int row = CLIP_IMAGE_H - 1; row > CLIP_IMAGE_H - 3; row--)
     {
         for (int left_col = 93; left_col > 0; left_col -= 3)
         {
-            if (mt9v03x_image[row][left_col + 3] < image_thereshold)
+            if (image[row][left_col + 3] < clip_image_thereshold)
             {
-                blackpoints++;
+                break_blackpoints++;
             }
         }
         for (int right_col = 0; right_col < 187; right_col += 3)
         {
-            if (mt9v03x_image[row][right_col - 3] < image_thereshold)
+            if (image[row][right_col - 3] < clip_image_thereshold)
             {
-                blackpoints++;
+                break_blackpoints++;
             }
         }
     }
 
-    if (blackpoints > 70 && road_smh->status == BREAKROAD_NONE)
+    if (break_blackpoints > BLACK_NUM && road_smh->status == BREAKROAD_NONE)
     {
         road_smh->pointflag = 1;
         road_smh->status = BREAKROAD_IN;
         track_mode = ADC;
     }
-    if (blackpoints < 70 && road_smh->status == BREAKROAD_IN)
+    if (break_blackpoints > BLACK_NUM && road_smh->status == BREAKROAD_IN && road_smh->pointflag == 1)
+    {
+        road_smh->pointflag = 2;
+        track_mode = ADC;
+    }
+    if (break_blackpoints < BLACK_NUM && road_smh->status == BREAKROAD_IN && road_smh->pointflag == 2)
     {
         road_smh->pointflag = 0;
         road_smh->status = BREAKROAD_NONE;

@@ -51,12 +51,13 @@ void core1_main(void)
     // outflag = 1;
     mt9v03x_init();
     tft180_init();
-    ips200_init(IPS200_TYPE_PARALLEL8);
+    // ips200_init(IPS200_TYPE_PARALLEL8);
     imu660ra_init();
     wireless_uart_init();
     dl1a_init();
     PID_int();
     gyroOffsetInit();
+    Traits_status_init();
     // 初始化pwm
     pwm_init(ATOM0_CH0_P21_2, 17 * 1000, 0);
     pwm_init(ATOM0_CH1_P21_3, 17 * 1000, 0);
@@ -93,6 +94,9 @@ void core1_main(void)
     pit_ms_init(CCU60_CH0, 1);
     pit_ms_init(CCU60_CH1, 1);
     pit_ms_init(CCU61_CH0, 20);
+
+    // 默认情况下正常循迹
+    track_mode = NORMAL;
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
 
     while (TRUE)
@@ -102,6 +106,7 @@ void core1_main(void)
         TaskProcess();	
         clip_imageprocess();
         Traits_process();
+        // ips200_show_string(0, 0, "hello");
         // motor_ctrl(3000, 3000);
         
         // 向上位机发送图像

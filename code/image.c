@@ -728,7 +728,7 @@ int Cal_centerline(void)
         }
         return centerline_err_sum / ratio_sum;
     }
-    if (track_mode == FARLINE)
+    else if (track_mode == FARLINE)
     {
         for (int i = sizeof(farline_ratio) / sizeof(farline_ratio[0]); i > 0; i--)
         {
@@ -737,6 +737,8 @@ int Cal_centerline(void)
         }
         return centerline_err_sum / ratio_sum;
     }
+    else 
+        return 0;
 }
 
 

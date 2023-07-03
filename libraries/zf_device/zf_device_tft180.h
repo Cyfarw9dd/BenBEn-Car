@@ -75,10 +75,10 @@
 #define TFT180_CS_PIN                   (P15_2)                                 // CS Ƭѡ����
 #define TFT180_BL_PIN                   (P15_4)                                 // Һ���������Ŷ���
 
-#define TFT180_DEFAULT_DISPLAY_DIR      (TFT180_PORTAIT)                        // Ĭ�ϵ���ʾ����
+#define TFT180_DEFAULT_DISPLAY_DIR      (TFT180_PORTAIT_180)                        // Ĭ�ϵ���ʾ����
 #define TFT180_DEFAULT_PENCOLOR         (RGB565_RED)                            // Ĭ�ϵĻ�����ɫ
 #define TFT180_DEFAULT_BGCOLOR          (RGB565_BLACK)                          // Ĭ�ϵı�����ɫ
-#define TFT180_DEFAULT_DISPLAY_FONT     (TFT180_8X16_FONT)                      // Ĭ�ϵ�����ģʽ
+#define TFT180_DEFAULT_DISPLAY_FONT     (TFT180_6X8_FONT)                      // Ĭ�ϵ�����ģʽ
 
 #define TFT180_DC(x)                    ((x) ? (gpio_high(TFT180_DC_PIN))  : (gpio_low(TFT180_DC_PIN)))
 #define TFT180_RST(x)                   ((x) ? (gpio_high(TFT180_RES_PIN)) : (gpio_low(TFT180_RES_PIN)))

@@ -40,7 +40,8 @@ List MyList[] =
     {131, "show ori bound", show_boundaries, NULL},
     {132, "show sample", show_sample_boundaries, NULL},
     {133, "show chanpoint", show_inflectionpoint, NULL},
-    {134, "go back", NULL, NULL},
+    {134, "show breakroad", show_breakroad, NULL},
+    {135, "go back", NULL, NULL},
     {14, "show road traits", show_roadtraits, NULL},
     {15, "show corners", show_corners, NULL},
     {16, "show barrier", show_barrier_params, NULL},
@@ -128,13 +129,13 @@ int show_sub_list(int parent_index, int highlight_col)      // 显示子菜单�
             if (item_index == highlight_col)
             {
                 current_list_item = &MyList[i];
-                ips200_set_color(RGB565_RED, RGB565_BLACK);
+                tft180_set_color(RGB565_RED, RGB565_BLACK);
             }
             else
             {
-                ips200_set_color(RGB565_GREEN, RGB565_BLACK);
+                tft180_set_color(RGB565_GREEN, RGB565_BLACK);
             }
-            ips200_show_string(1, 20 * item_index, MyList[i].ListName);
+            tft180_show_string(1, 15 * item_index, MyList[i].ListName);
             item_index++;
         }
     }
@@ -147,8 +148,8 @@ void List_Switch(void)
     int list_item_count = show_sub_list(parent_list_index, highlight_col);
     // parent_list_index = current_list_item->ListIndex / 10;
     int i = have_sub_list(current_list_item->ListIndex);
-    ips200_show_int(0, 120, current_list_item->ListIndex, 5);
-    ips200_show_int(0, 135, i, 5);
+    tft180_show_int(0, 120, current_list_item->ListIndex, 5);
+    tft180_show_int(0, 135, i, 5);
     MyKeyScan();
     if (Key1_flag && highlight_col > 0)    // 按下按键1减少当前行数
     {
@@ -160,7 +161,7 @@ void List_Switch(void)
     }
     else if (Key3_flag)
     {
-        ips200_clear();     // 清屏
+        tft180_clear();     // 清屏
         if (have_sub_list(current_list_item->ListIndex))
         {
             highlight_col = 0;
@@ -190,7 +191,7 @@ void List_Switch(void)
             highlight_col = 0;
             buzzer_flag = 1;
         }
-        else if (strcmp(current_list_item->ListName, "debug mode" == 0))
+        else if (strcmp(current_list_item->ListName, "debug mode") == 0)
         {
             highlight_col = 0;
             aim_speed = 0;
@@ -199,7 +200,7 @@ void List_Switch(void)
     }
     else if (Key4_flag)
     {
-        ips200_clear();     // 清屏
+        tft180_clear();     // 清屏
         highlight_col = 0;
         parent_list_index = 0;
     }
@@ -214,24 +215,24 @@ void List_Switch(void)
 
 void show_gray_image(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
     while (!Key3_flag)
     {
         MyKeyScan();
-        ips200_show_gray_image(0, 0, clip_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
-        ips200_show_string(0, 80, "StartLine_PFlag");       ips200_show_int(150, 80, clip_image_thereshold, 3);
-        ips200_show_string(0, 110, "LRoundAbout_PFlag");     ips200_show_int(150, 110, rnum, 2);
-        ips200_show_string(0, 140, "RRoundAbout_PFlag");     ips200_show_int(150, 140, RoundAbout_PointFlag_R, 2);
-        ips200_show_string(0, 170, "BreakRoad_PFlag");      ips200_show_int(150, 170, BreakRoad_PointFlag, 2);
-        ips200_show_string(0, 200, "Obstacle_PFlag");      ips200_show_int(150, 200, Obstacle_PointFlag, 2);
+        tft180_show_gray_image(0, 0, clip_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        tft180_show_string(0, 80, "StartLine_PFlag");       tft180_show_int(150, 80, clip_image_thereshold, 3);
+        tft180_show_string(0, 110, "LRoundAbout_PFlag");     tft180_show_int(150, 110, rnum, 2);
+        tft180_show_string(0, 140, "RRoundAbout_PFlag");     tft180_show_int(150, 140, RoundAbout_PointFlag_R, 2);
+        tft180_show_string(0, 170, "BreakRoad_PFlag");      tft180_show_int(150, 170, BreakRoad_PointFlag, 2);
+        tft180_show_string(0, 200, "Obstacle_PFlag");      tft180_show_int(150, 200, Obstacle_PointFlag, 2);
     }
-    ips200_clear();
+    tft180_clear();
 }
 
 void show_binary_image(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
     while (!Key3_flag)
     {
@@ -241,162 +242,165 @@ void show_binary_image(void)
             clip_bin_image[i][clip_rtline[i] - 3] = 70;
             clip_bin_image[i][clip_ctline[i]] = 70;
         }
-        ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
-        // ips200_show_string(0, 65, "StartLine_PFlag");       ips200_show_int(110, 65, StartLine_PointFlag, 2);
-        // ips200_show_string(0, 80, "LRoundAbout_PFlag");     ips200_show_int(110, 80, RoundAbout_PointFlag_L, 2);
-        // ips200_show_string(0, 95, "RRoundAbout_PFlag");     ips200_show_int(110, 95, RoundAbout_PointFlag_R, 2);
-        // ips200_show_string(0, 110, "BreakRoad_PFlag");      ips200_show_int(110, 110, BreakRoad_PointFlag, 2);
-        // ips200_show_string(0, 125, "Obstacle_PFlag");      ips200_show_int(110, 125, Obstacle_PointFlag, 2);
-        // ips200_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] / 2, RGB565_BLUE);
-        // ips200_draw_point(checkline_l.col[1] / 2, checkline_l.row[1] / 2, RGB565_RED);
-        // ips200_draw_point(checkline_r.col[0] / 2, checkline_r.row[0] / 2, RGB565_BLUE);
-        // ips200_draw_point(checkline_r.col[1] / 2, checkline_r.row[1] / 2, RGB565_RED);
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        // tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(110, 65, StartLine_PointFlag, 2);
+        // tft180_show_string(0, 80, "LRoundAbout_PFlag");     tft180_show_int(110, 80, RoundAbout_PointFlag_L, 2);
+        // tft180_show_string(0, 95, "RRoundAbout_PFlag");     tft180_show_int(110, 95, RoundAbout_PointFlag_R, 2);
+        // tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad_PointFlag, 2);
+        // tft180_show_string(0, 125, "Obstacle_PFlag");      tft180_show_int(110, 125, Obstacle_PointFlag, 2);
+        // tft180_draw_point(checkline_l.col[0] / 2, checkline_l.row[0] / 2, RGB565_BLUE);
+        // tft180_draw_point(checkline_l.col[1] / 2, checkline_l.row[1] / 2, RGB565_RED);
+        // tft180_draw_point(checkline_r.col[0] / 2, checkline_r.row[0] / 2, RGB565_BLUE);
+        // tft180_draw_point(checkline_r.col[1] / 2, checkline_r.row[1] / 2, RGB565_RED);
     }
-    ips200_clear();
+    tft180_clear();
         
 }
 void show_boundaries(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
     while (!Key3_flag)
     {
         MyKeyScan();
-        // ips200_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W, MT9V03X_H, 0);
-        Hightlight_Lines(bin_image[0]);
-        ips200_show_int(0, 80, data_stastics_l, 3);
-        ips200_show_int(0, 90, data_stastics_r, 3);
-        ips200_clear();
+        // tft180_show_gray_image(0, 0, bin_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W, MT9V03X_H, 0);
+        Hightlight_Lines(&bin_image[0]);
+        tft180_show_int(0, 80, data_stastics_l, 3);
+        tft180_show_int(0, 90, data_stastics_r, 3);
+        tft180_clear();
     }
-    ips200_clear();
+    tft180_clear();
 }
 
 void tuning(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
-    ips200_show_string(0, 0, "start tuning");
+    tft180_show_string(0, 0, "start tuning");
 }
 
 void show_params(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
     while(!Key3_flag)
     {
         MyKeyScan();  
-        // ips200_show_string(0, 0, "l_encoder");      ips200_show_int(80, 0, speed1, 5);
-        // ips200_show_string(0, 20, "r_encoder");     ips200_show_int(80, 20, speed2, 5);
-        // ips200_show_string(0, 40, "l_distance");    ips200_show_int(80, 40, left_distance, 5);
-        // ips200_show_string(0, 60, "r_distance");    ips200_show_int(80, 60, right_distance, 5);
-        ips200_show_float(0, 0, GyroOffset.X, 5, 3);
-        ips200_show_float(0, 30, GyroOffset.Y, 5, 3);
-        ips200_show_float(0, 60, GyroOffset.Z, 5, 3);
-        ips200_show_float(0, 80, Left_Adc, 5, 5);   ips200_show_float(40, 80, Left_Shu_Adc, 5, 5);  ips200_show_float(80, 80, Right_Shu_Adc, 5, 5);     ips200_show_float(120, 80, Right_Adc, 5, 5); 
+        // tft180_show_string(0, 0, "l_encoder");      tft180_show_int(80, 0, speed1, 5);
+        // tft180_show_string(0, 20, "r_encoder");     tft180_show_int(80, 20, speed2, 5);
+        // tft180_show_string(0, 40, "l_distance");    tft180_show_int(80, 40, left_distance, 5);
+        // tft180_show_string(0, 60, "r_distance");    tft180_show_int(80, 60, right_distance, 5);
+        tft180_show_float(0, 0, GyroOffset.X, 5, 3);
+        tft180_show_float(0, 30, GyroOffset.Y, 5, 3);
+        tft180_show_float(0, 60, GyroOffset.Z, 5, 3);
+        tft180_show_float(0, 80, Left_Adc, 5, 5);   
+        tft180_show_float(0, 90, Left_Shu_Adc, 5, 5);  
+        tft180_show_float(0, 100, Right_Shu_Adc, 5, 5);     
+        tft180_show_float(0, 110, Right_Adc, 5, 5); 
     }
-    ips200_clear();
+    tft180_clear();
 }
 
 void show_roadtraits(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
     while (!Key3_flag)
     {
         MyKeyScan();
         for (int i = 0; i < CLIP_IMAGE_H; i++)
         {
-            ips200_draw_point(clip_lfline[i], i, RGB565_WHITE);
-            ips200_draw_point(clip_rtline[i], i, RGB565_WHITE);
-            ips200_draw_point(clip_ctline[i], i, RGB565_WHITE);
+            tft180_draw_point((unsigned short)clip_lfline[i], i, RGB565_WHITE);
+            tft180_draw_point((unsigned short)clip_rtline[i], i, RGB565_WHITE);
+            tft180_draw_point((unsigned short)clip_ctline[i], i, RGB565_WHITE);
         }
         
         // for (int i = 0; i < CLIP_IMAGE_H; i ++)
         // {
-        //     ips200_draw_point(l_border[i], i, RGB565_BLUE);
-        //     ips200_draw_point(r_border[i] , i, RGB565_GREEN);
-        //     ips200_draw_point(center_line[i] , i, RGB565_YELLOW);
+        //     tft180_draw_point(l_border[i], i, RGB565_BLUE);
+        //     tft180_draw_point(r_border[i] , i, RGB565_GREEN);
+        //     tft180_draw_point(center_line[i] , i, RGB565_YELLOW);
         // }
         // for(unsigned char i = BottomRow; i > 0; i--){
-        //     ips200_draw_point((l_border[i] + 5) / 2, i / 2, RGB565_BLUE);
-        //     ips200_draw_point(center_line[i] / 2, i / 2, RGB565_RED);
-        //     ips200_draw_point((r_border[i] - 5)  / 2, i / 2, RGB565_GREEN);
+        //     tft180_draw_point((l_border[i] + 5) / 2, i / 2, RGB565_BLUE);
+        //     tft180_draw_point(center_line[i] / 2, i / 2, RGB565_RED);
+        //     tft180_draw_point((r_border[i] - 5)  / 2, i / 2, RGB565_GREEN);
         // }
-        ips200_clear();
+        tft180_clear();
     }
-    ips200_clear();
+    tft180_clear();
 }
 
 void show_corners(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
     while (!Key3_flag)
     {
         MyKeyScan();
         // 将角点周围的五个点都高亮
         // 显示二值化图像
-        ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
         // 显示坐标
-        ips200_show_int(0, 80, Lpt0_rpts0s_id, 3);
-        ips200_show_int(0, 100, Lpt1_rpts1s_id, 3);
-        ips200_show_float(0, 120, rpts0an[1] / PI * 180, 3, 3);
-        ips200_show_float(0, 140, rpts1an[1] / PI * 180, 3, 3);
+        tft180_show_int(0, 80, Lpt0_rpts0s_id, 3);
+        tft180_show_int(0, 100, Lpt1_rpts1s_id, 3);
+        tft180_show_float(0, 120, rpts0an[1] / PI * 180, 3, 3);
+        tft180_show_float(0, 140, rpts1an[1] / PI * 180, 3, 3);
         // 显示左L角点
         highlight_Lcorners();
     }
-    ips200_clear();
+    tft180_clear();
 }
 
 void show_sample_boundaries(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
     while (!Key3_flag)
     {
         MyKeyScan();
         for (int i = 0; i < 359; i++)
         {
-            ips200_draw_point(points_ls[i][0], points_ls[i][1], RGB565_YELLOW);
-            ips200_draw_point(points_rs[i][0], points_rs[i][1], RGB565_YELLOW);
+            tft180_draw_point(points_ls[i][0], points_ls[i][1], RGB565_YELLOW);
+            tft180_draw_point(points_rs[i][0], points_rs[i][1], RGB565_YELLOW);
         }
-        // ips200_show_float(0, 80, points_ls[30][30], 3, 2);
-        // ips200_show_int(0, 90, data_stastics_l, 3);
-        // ips200_show_int(0, 100, data_stastics_r, 3);
+        // tft180_show_float(0, 80, points_ls[30][30], 3, 2);
+        // tft180_show_int(0, 90, data_stastics_l, 3);
+        // tft180_show_int(0, 100, data_stastics_r, 3);
     }    
-    ips200_clear();
+    tft180_clear();
 }
 
 void show_barrier_params(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
     barrier_turning_distance = 0;   
     while (!Key3_flag)
     {
         MyKeyScan();
         barrier_turning_distance += (speed1 + speed2) / 2;
-        ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
-        ips200_show_string(0, 80, "barrier ptflag");    ips200_show_int(100, 80, Barrier.pointflag, 3);
-        ips200_show_int(0, 100, dl1a_distance_mm, 5);
-        ips200_show_string(0, 120, "encoder");          ips200_show_int(70, 120, barrier_turning_distance, 5);
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        tft180_show_string(0, 80, "barrier ptflag");    tft180_show_int(100, 80, Barrier.pointflag, 3);
+        tft180_show_int(0, 100, dl1a_distance_mm, 5);
+        tft180_show_string(0, 120, "encoder");          tft180_show_int(70, 120, barrier_turning_distance, 5);
         if (Barrier.status == BARRIER_NONE)
         {
-            ips200_show_string(0, 140, "didn't find barrier");
-            // ips200_clear();
+            tft180_show_string(0, 140, "didn't find barrier");
+            // tft180_clear();
         }
         if (Barrier.status == BARRIER_IN)
         {
-            ips200_show_string(0, 140, "barrier_found      ");
-            // ips200_clear();
+            tft180_show_string(0, 140, "barrier_found      ");
+            // tft180_clear();
         }
     }
-    ips200_clear();
+    tft180_clear();
 }
 
 void debug_mode(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
     while (!Key3_flag) 
     {
@@ -406,23 +410,42 @@ void debug_mode(void)
             clip_bin_image[i][clip_rtline[i] - 3] = 70;
             clip_bin_image[i][clip_ctline[i]] = 70;
         }
-        ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
         aim_speed = 0;
     }
-    ips200_clear();
+    tft180_clear();
 }
 
 void show_inflectionpoint(void)
 {
-    ips200_clear();
+    tft180_clear();
     Key_flag_clear();
     while (!Key3_flag)
     {
         MyKeyScan();
-        ips200_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
 
-        ips200_show_int(0, 100, ldcptc[0], 3);    ips200_show_int(70, 100, clip_lfline[ldcptc[0]], 3);
-        ips200_show_int(0, 130, Rdown_id, 3);    ips200_show_int(70, 130, clip_lfline[Rdown_id], 3);
+        tft180_show_int(0, 100, ldcptc[0], 3);    tft180_show_int(70, 100, clip_lfline[ldcptc[0]], 3);
+        tft180_show_int(0, 130, Rdown_id, 3);    tft180_show_int(70, 130, clip_lfline[Rdown_id], 3);
     }
-    ips200_clear();
+    tft180_clear();
+}
+
+void show_breakroad(void)
+{
+    tft180_clear();
+    Key_flag_clear();
+    while (!Key3_flag)
+    {
+        MyKeyScan();
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
+        // tft180_show_string(0, 70, "status");        
+        if (BreakRoad.status == BREAKROAD_IN)
+            tft180_show_string(0, 70, "BREAK_IN ");
+        if (BreakRoad.status == BREAKROAD_NONE)
+            tft180_show_string(0, 70, "BREAKNONE");
+        tft180_show_string(0, 80, "pointflag");     tft180_show_int(80, 80, BreakRoad.pointflag, 3);
+        tft180_show_int(0, 90, break_blackpoints, 3);
+    }
+    tft180_clear();
 }
