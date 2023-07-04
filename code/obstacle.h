@@ -6,15 +6,16 @@
 extern int barrier_turning_distance;
 extern int left_distance; 
 extern int right_distance;
-
+extern int turn_err;
 
 enum obstacle_status{
     BARRIER_NONE = 10,
     BARRIER_IN,
+    BARRIER_TURN,
 };
 
 void Barrier_process(Trait_smachine *road_smh);
 
-void run_off(void);
+void run_off(Trait_smachine *road_smh);
 
 #endif /* CODE_OBSTACLE_H_ */

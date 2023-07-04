@@ -16,8 +16,8 @@ extern int16 real_speed;
 extern float real_real_speed;
 extern int Centerline_Err;
 extern int16 aim_speed;
-
-
+extern short Steer_pwm;
+extern short Prospect_err;
 
 // 时间片轮询任务结构体定义
 typedef struct

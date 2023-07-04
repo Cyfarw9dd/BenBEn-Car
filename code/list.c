@@ -220,12 +220,12 @@ void show_gray_image(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        tft180_show_gray_image(0, 0, clip_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
-        tft180_show_string(0, 80, "StartLine_PFlag");       tft180_show_int(150, 80, clip_image_thereshold, 3);
+        tft180_show_gray_image(0, 0, clip_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
+        tft180_show_string(0, 80, "StartLine_PFlag");       tft180_show_int(150, 80, Startline.pointflag, 3);
         tft180_show_string(0, 110, "LRoundAbout_PFlag");     tft180_show_int(150, 110, rnum, 2);
         tft180_show_string(0, 140, "RRoundAbout_PFlag");     tft180_show_int(150, 140, RoundAbout_PointFlag_R, 2);
-        tft180_show_string(0, 170, "BreakRoad_PFlag");      tft180_show_int(150, 170, BreakRoad_PointFlag, 2);
-        tft180_show_string(0, 200, "Obstacle_PFlag");      tft180_show_int(150, 200, Obstacle_PointFlag, 2);
+        tft180_show_string(0, 170, "BreakRoad_PFlag");      tft180_show_int(150, 170, BreakRoad.pointflag, 2);
+        tft180_show_string(0, 200, "Obstacle_PFlag");      tft180_show_int(150, 200, Barrier.pointflag, 2);
     }
     tft180_clear();
 }
@@ -242,7 +242,10 @@ void show_binary_image(void)
             clip_bin_image[i][clip_rtline[i] - 3] = 70;
             clip_bin_image[i][clip_ctline[i]] = 70;
         }
-        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
+        tft180_show_string(0, 70, "centerline_k");      
+        tft180_show_float(0, 80, clip_ctline_k1, 5, 3);
+        tft180_show_float(0, 90, clip_ctline_k2, 5, 3);
         // tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(110, 65, StartLine_PointFlag, 2);
         // tft180_show_string(0, 80, "LRoundAbout_PFlag");     tft180_show_int(110, 80, RoundAbout_PointFlag_L, 2);
         // tft180_show_string(0, 95, "RRoundAbout_PFlag");     tft180_show_int(110, 95, RoundAbout_PointFlag_R, 2);
@@ -310,9 +313,9 @@ void show_roadtraits(void)
         MyKeyScan();
         for (int i = 0; i < CLIP_IMAGE_H; i++)
         {
-            tft180_draw_point((unsigned short)clip_lfline[i], i, RGB565_WHITE);
-            tft180_draw_point((unsigned short)clip_rtline[i], i, RGB565_WHITE);
-            tft180_draw_point((unsigned short)clip_ctline[i], i, RGB565_WHITE);
+            tft180_draw_point((unsigned short)clip_lfline[i] / 1.5, i / 1.5, RGB565_WHITE);
+            tft180_draw_point((unsigned short)clip_rtline[i] / 1.5, i / 1.5, RGB565_WHITE);
+            tft180_draw_point((unsigned short)clip_ctline[i] / 1.5, i / 1.5, RGB565_WHITE);
         }
         
         // for (int i = 0; i < CLIP_IMAGE_H; i ++)
@@ -376,24 +379,18 @@ void show_barrier_params(void)
     tft180_clear();
     Key_flag_clear();
     barrier_turning_distance = 0;   
+    left_distance = 0;
+    right_distance = 0;
     while (!Key3_flag)
     {
         MyKeyScan();
         barrier_turning_distance += (speed1 + speed2) / 2;
-        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
         tft180_show_string(0, 80, "barrier ptflag");    tft180_show_int(100, 80, Barrier.pointflag, 3);
         tft180_show_int(0, 100, dl1a_distance_mm, 5);
-        tft180_show_string(0, 120, "encoder");          tft180_show_int(70, 120, barrier_turning_distance, 5);
-        if (Barrier.status == BARRIER_NONE)
-        {
-            tft180_show_string(0, 140, "didn't find barrier");
-            // tft180_clear();
-        }
-        if (Barrier.status == BARRIER_IN)
-        {
-            tft180_show_string(0, 140, "barrier_found      ");
-            // tft180_clear();
-        }
+        tft180_show_string(0, 110, "encoder");          tft180_show_int(70, 110, barrier_turning_distance, 5);
+        tft180_show_string(0, 120, "ldistance");        tft180_show_int(90, 120, left_distance, 5);
+        tft180_show_string(0, 130, "rdistance");        tft180_show_int(90, 130, right_distance, 5);
     }
     tft180_clear();
 }

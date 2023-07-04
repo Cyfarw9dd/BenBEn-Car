@@ -3,6 +3,9 @@
 
 #include "zf_common_headfile.h"
 
+enum Zebra_status{
+    ZEBRA_IN = 30,
+};
 void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[188]);
 
 

@@ -55,7 +55,8 @@ extern bool Lupon_found, Rupon_found;
 extern int Ldown_id, Rdown_id;
 extern bool Ldown_found, Rdown_found;
 
-
+extern float clip_ctline_k1;
+extern float clip_ctline_k2;
 extern unsigned char lnum;
 extern unsigned char rnum;
 extern unsigned char bend_flag;
@@ -70,6 +71,7 @@ enum track_mode{
     ADC,
     GO_STRAIGHT,
     TURN,
+    STOP,
 };
 
 typedef enum{
@@ -143,5 +145,9 @@ void roll_out(void);
 void maximum(int num, int kernel, int *input, int *output);
 // 右线非极小值抑制
 void minimum(int num, int kernel, int *input, int *output);
+
+float regression( int startline1, int endline1, int startline2, int endline2);
+
+void Straightroad_process(void);
 
 #endif /* CODE_ROAD_H_ */

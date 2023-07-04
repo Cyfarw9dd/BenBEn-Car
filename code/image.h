@@ -101,8 +101,6 @@ void Hightlight_Lines(unsigned char (*binary_array)[188]);
 
 void sobel(unsigned char (*imageIn)[188], unsigned char (*imageOut)[188], unsigned char Threshold);
 
-int regression(int startline,int endline);
-
 short Cal_BlackPoints(unsigned char (*binary_array)[188], unsigned char Start_Row, unsigned char End_Row);
 
 int my_abs(int value);

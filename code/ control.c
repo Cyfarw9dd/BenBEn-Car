@@ -71,6 +71,7 @@ void get_motor_speed(void){
     barrier_turning_distance += (speed1 + speed2) / 2;
     left_distance += speed1;
     right_distance +=speed2;
+    // put_int32(0, right_distance);
     
     encoder_clear_count(ENCODER_DIR_L);
     encoder_clear_count(ENCODER_DIR_R);

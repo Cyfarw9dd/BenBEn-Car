@@ -36,12 +36,14 @@ void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[1
         }
         if(black_blocks >= 6 && black_blocks <= 12) times++;
     }
-    if(times >= 3 /*&& times <= 5*/)
+    if(times >= 3)     /*&& times <= 5*/
     {
         road_smh->pointflag = 1;
+        road_smh->status = ZEBRA_IN;
     }
-    else
+    if (road_smh->status == ZEBRA_IN)
     {
-        road_smh->pointflag = 0;
+        track_mode = STOP;
+        // pit_disable(CCU60_CH0);
     }
 }

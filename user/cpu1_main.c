@@ -97,19 +97,18 @@ void core1_main(void)
 
     // 默认情况下正常循迹
     track_mode = NORMAL;
+
+    int test_flag = 0;
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
 
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        // Get_deviation();
         TaskProcess();	
         clip_imageprocess();
         Traits_process();
-        // ips200_show_string(0, 0, "hello");
-        // motor_ctrl(3000, 3000);
-        
-        // 向上位机发送图像
+
+        // 向上位机发送数据
         // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, image_thereshold, 35);     
         // sendimg_A(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);  
         // wireless_uart_send_image(clip_image[0], MT9V03X_IMAGE_SIZE);

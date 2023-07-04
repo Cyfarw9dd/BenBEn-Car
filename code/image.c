@@ -118,7 +118,7 @@ void Hightlight_Lines(unsigned char (*binary_array)[188])
     //         height1++;
     //     if (height1 > 75)
     //         break;
-    //     ips200_draw_point(points_l[i][0] / 1.5, points_l[i][1] / 1.5, RGB565_WHITE);
+    //     tft180_draw_point(points_l[i][0] / 1.5, points_l[i][1] / 1.5, RGB565_WHITE);
         
     // }
     // for (int i = 0; i < 359; i++)
@@ -127,13 +127,13 @@ void Hightlight_Lines(unsigned char (*binary_array)[188])
     //         height2++;
     //     if (height2 > 75)
     //         break;
-    //     ips200_draw_point(points_r[i][0] / 1.5, points_r[i][1] / 1.5, RGB565_WHITE);
+    //     tft180_draw_point(points_r[i][0] / 1.5, points_r[i][1] / 1.5, RGB565_WHITE);
         
     // }
     for (int i = 0; i < 359; i++)
     {
-        ips200_draw_point(points_l[i][0], points_l[i][1], RGB565_WHITE);
-        ips200_draw_point(points_r[i][0], points_r[i][1], RGB565_WHITE);
+        tft180_draw_point(points_l[i][0] / 1.5, points_l[i][1] / 1.5, RGB565_WHITE);
+        tft180_draw_point(points_r[i][0] / 1.5, points_r[i][1] / 1.5, RGB565_WHITE);
     }
 }
 
@@ -196,37 +196,6 @@ void sobel(unsigned char (*imageIn)[188], unsigned char (*imageOut)[188], unsign
         }
     }
 }
-
-/************************************线性回归计算中线斜率************************************/
-// y = Ax+B
-// int regression(int startline,int endline)
-// {
-//     int i = 0, SumX = 0, SumY = 0, SumLines = 0; 
-//     float SumUp = 0, SumDown = 0, avrX = 0, avrY=0;
-//     int A, B;
-//     SumLines = endline - startline;   // startline 为开始行， //endline 结束行 //SumLines
-
-//     for(i=startline;i<endline;i++)     
-//     { 
-//     SumX+=i;       
-//     SumY+=center_line[i];    //这里Middle_black为存放中线的数组
-//     }         
-//     avrX=(float)SumX/SumLines;     //X的平均值
-//     avrY=(float)SumY/SumLines;     //Y的平均值
-//     SumUp=0;      
-//     SumDown=0;  
-//     for(i=startline;i<endline;i++)   
-//     {       
-//     SumUp+=(center_line[i]-avrY)*(i-avrX);    
-//     SumDown+=(i-avrX)*(i-avrX);    
-//     }    
-//     if(SumDown==0) 
-//     B=0;  
-//     else 
-//     B=(int)(SumUp/SumDown);       
-//     A=(SumY-B*SumX)/SumLines;  //截距
-//     return B;  //返回斜率
-// }
 
 
 short Cal_BlackPoints(unsigned char (*binary_array)[188], unsigned char Start_Row, unsigned char End_Row){

@@ -55,6 +55,10 @@ bool Lupon_found, Rupon_found;
 int Ldown_id, Rdown_id;
 bool Ldown_found, Rdown_found;
 
+float clip_ctline_k1;
+float clip_ctline_k2;
+int frame_flag;
+bool straight_flag;
 unsigned char bend_flag;
 // 左右线丢线数目
 unsigned char lnum = 0;
@@ -72,6 +76,8 @@ Trackline checkline_l;
 Trackline checkline_r;
 
 unsigned char outflag = 0;      // 出库标志位
+
+#define STRAIGHTTHRESHOLD   0.3
 #pragma section all restore
 
 
@@ -82,18 +88,21 @@ void Traits_process(void)
         aim_speed = 380;
     if (track_mode == ADC)
         aim_speed = 150;
+    if (track_mode == STOP)
+        aim_speed = 0;
     // roll_out();  // 出库打死
     if (!Departure_PointFlag)
         Departure();
     // Barrier_process(&Barrier);
     BreakRoad_process(&BreakRoad, &clip_bin_image[0]);
-    Startline_process(&Startline, &bin_image[0]);
+    Startline_process(&Startline, &clip_bin_image[0]);
 }
 
 void Traits_status_init(void)
 {
     BreakRoad.status = BREAKROAD_NONE;
     Crossing.status = CROSS_NONE;
+    Barrier.status = BARRIER_NONE;
 }
 
 // 寻找拐点
@@ -630,6 +639,64 @@ void minimum(int num, int kernel, int *input, int *output)
             }
         }
     }
+}
+
+/************************************线性回归计算中线斜率************************************/
+// y = Ax+B
+float regression( int startline1, int endline1, int startline2, int endline2)
+{
+    int i = 0;
+    int sumlines1 = endline1 - startline1;
+    int sumlines2 = endline2 - startline2;
+    int sumX = 0;
+    int sumY = 0;
+    float averageX = 0;
+    float averageY = 0;
+    float sumUp = 0;
+    float sumDown = 0;
+    float parameterA, parameterB;
+        /**计算sumX sumY**/
+    for (i = startline1; i < endline1; i++)
+    {
+        sumX += i;
+        sumY += clip_ctline[i];
+    }
+    for (i = startline2; i < endline2; i++)
+    {
+        sumX += i;
+        sumY += clip_ctline[i];
+    }
+    averageX = (float)(sumX / (sumlines1 + sumlines2));     //x的平均值
+    averageY = (float)(sumY / (sumlines1 + sumlines2));     //y的平均值
+    for (i = startline1; i < endline1; i++)
+    {
+        sumUp += (clip_ctline[i] - averageY) * (i - averageX);
+        sumDown += (i - averageX) * (i - averageX);
+    }
+    for (i = startline2; i < endline2; i++)
+    {
+        sumUp += (clip_ctline[i] - averageY) * (i - averageX);
+        sumDown += (i - averageX) * (i - averageX);
+    }
+    if (sumDown == 0)   parameterB = 0;
+    else                parameterB = sumUp / sumDown;
+    parameterA = averageY - parameterB * averageX;
+    return parameterB;
+}
+
+
+// 直道判断
+// 需要运行在帧图像处理中
+void Straightroad_process(void)
+{
+    clip_ctline_k1 = regression(CLIP_IMAGE_H - 20, CLIP_IMAGE_H - 10, CLIP_IMAGE_H - 10, CLIP_IMAGE_H - 3);     // 近处斜率
+    clip_ctline_k2 = regression(CLIP_IMAGE_H - 51, CLIP_IMAGE_H - 39, CLIP_IMAGE_H - 38, CLIP_IMAGE_H - 25);    // 远处斜率
+
+    int kerr = fabs((clip_ctline_k1 - clip_ctline_k2));
+    if (kerr <= STRAIGHTTHRESHOLD)    frame_flag++;
+    if (kerr > STRAIGHTTHRESHOLD)     frame_flag = 0;
+
+
 }
 
 #pragma section all restore

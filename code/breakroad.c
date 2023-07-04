@@ -1,6 +1,7 @@
 #include "zf_common_headfile.h"
 
-#define BLACK_NUM 170
+#define BLACK_NUM   80
+#define ROADFOUND   10
 int break_blackpoints;
 void BreakRoad_process(Trait_smachine *road_smh, unsigned char (*image)[188])
 {
@@ -28,14 +29,13 @@ void BreakRoad_process(Trait_smachine *road_smh, unsigned char (*image)[188])
     {
         road_smh->pointflag = 1;
         road_smh->status = BREAKROAD_IN;
-        track_mode = ADC;
     }
     if (break_blackpoints > BLACK_NUM && road_smh->status == BREAKROAD_IN && road_smh->pointflag == 1)
     {
         road_smh->pointflag = 2;
         track_mode = ADC;
     }
-    if (break_blackpoints < BLACK_NUM && road_smh->status == BREAKROAD_IN && road_smh->pointflag == 2)
+    if (break_blackpoints < ROADFOUND && road_smh->status == BREAKROAD_IN && road_smh->pointflag == 2)
     {
         road_smh->pointflag = 0;
         road_smh->status = BREAKROAD_NONE;
