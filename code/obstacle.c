@@ -30,6 +30,7 @@ void Barrier_process(Trait_smachine *road_smh)
             &&  clip_bin_image[clip(i + 2, TopRow, BottomRow)][93] == black_pixel && clip_bin_image[clip(i + 1, TopRow, BottomRow)][93] == black_pixel && clip_bin_image[clip(i, TopRow, BottomRow)][93] == black_pixel)
             {
                 road_smh->status = BARRIER_FOUND;
+                track_mode = SLOW_DOWN;
                 road_smh->pointflag = 1;
             }
         }
@@ -39,10 +40,7 @@ void Barrier_process(Trait_smachine *road_smh)
         road_smh->status = BARRIER_IN;
         road_smh->pointflag = 2;
         track_mode == TURN;
-    }
-    if (road_smh->status == BARRIER_IN && road_smh->pointflag == 2)
-    {
-        road_smh->status = BARRIER_TURN;
+        run_off(&Startline);
     }
     // if (road_smh->status == BARRIER_IN && road_smh->pointflag == 2)
     // {
@@ -53,60 +51,14 @@ void Barrier_process(Trait_smachine *road_smh)
 }
 
 
-// -> 原地转角
-// -> 直行
-// -> 原地转角
-// -> 直行（屏蔽断路）
 void run_off(Trait_smachine *road_smh)
 {
-    if (road_smh->status == BARRIER_TURN)
-    {
-        track_mode = TURN;
-        if (turn_flag == 0)
-        {
-            right_distance = 0;
-            turn_flag = 1;
-        }     
-        if (turn_flag == 1 && right_distance < TURN0)
-        {
-            turn_err = 100;
-            turn_flag == 1;
-            if (right_distance > TURN0)
-            {
-                turn_flag = 2;
-            }
-        }
-        if (turn_flag == 2)     barrier_turning_distance = 0;
-        if (turn_flag == 2 && barrier_turning_distance < DISTANCE0)
-        {
-            turn_err = 0;
-            turn_flag = 3;
-            if (barrier_turning_distance > DISTANCE0)
-            {
-                turn_flag = 4;
-            }
-        }
-        if (turn_flag == 4)     left_distance = 0;
-        if (turn_flag == 4 && left_distance < TURN1)
-        {
-            turn_err = -100;
-            turn_flag = 5;
-            if (left_distance > TURN1)
-            {
-                turn_flag = 6;
-            }
-        }
-        if (turn_flag == 6)     barrier_turning_distance = 0;
-        if (turn_flag == 6 && barrier_turning_distance < DISTANCE1)
-        {
-            turn_err = 0;
-            turn_flag = 7;
-            if (barrier_turning_distance > DISTANCE1)
-            {
-                turn_flag =  8;
-            }
-        }
-        if (turn_flag == 8)     turn_flag = 0;
 
+    aim_theta = 110;
+    if (theta > aim_theta)
+    {
+        // aim_theta = 0;
+        // test
+        track_mode = OBSTACLE;
     }
 }

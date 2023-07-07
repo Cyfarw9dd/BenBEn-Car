@@ -98,7 +98,7 @@ void core1_main(void)
     int test_flag = 1;
     left_distance = 0;
     right_distance = 0;
-    aim_theta = 90;
+    // aim_theta = 70;
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
 
     while (TRUE)
@@ -107,15 +107,8 @@ void core1_main(void)
         TaskProcess();	
         clip_imageprocess();
         Traits_process();
-        #if TEST
-        track_mode = TURN;
-        if (theta < aim_theta)
-        {
-            motor_ctrl(2000, -2000);
-            Buzzer();
-            if (theta > aim_theta)
-                ;  
-        }
+        #if BLOCK
+            track_mode = TURN;
         #endif
 
 

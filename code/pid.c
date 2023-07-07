@@ -241,5 +241,5 @@ void anglepid_params(void)
 
     Angle_PID.Kp = 2.8; 
     Angle_PID.Ki = 0;
-    Angle_PID.Kd = 0; 
+    Angle_PID.Kd = 1; 
 }

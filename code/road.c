@@ -116,6 +116,11 @@ void Traits_process(void)
                 aim_speed = ADC_NORMAL_SPEED;
                 adcpid_params();
             }  
+            if (track_mode == TURN)
+            {
+                aim_speed = ZERO;
+                anglepid_params();
+            }
             if (track_mode == BARRIER_FOUND)
             {
                 // 识别到障碍 减速
@@ -136,7 +141,7 @@ void Traits_process(void)
     // roll_out();  // 出库打死
     if (!Departure_PointFlag)
         Departure();
-    // Barrier_process(&Barrier);
+    Barrier_process(&Barrier);
     BreakRoad_process(&BreakRoad, &clip_bin_image[0]);
     Startline_process(&Startline, &clip_bin_image[0]);
 }

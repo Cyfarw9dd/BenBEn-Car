@@ -20,6 +20,7 @@ extern float real_real_speed;
 extern int Centerline_Err;
 extern int16 aim_speed;
 extern short Steer_pwm;
+extern short ADC_Speed_pwm;
 extern short Prospect_err;
 extern short ADC_Speed_left, ADC_Speed_right;
 

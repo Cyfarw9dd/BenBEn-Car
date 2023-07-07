@@ -76,7 +76,8 @@ List MyList[] =
     {2324, "go back", NULL, NULL},
     {233, "go back", NULL, NULL},
     {24, "show params", show_params, NULL},
-    {25, "go back", NULL, NULL},
+    {25, "debug mode", NULL, NULL},
+    {26, "go back", NULL, NULL},
     {3, "Departure", NULL, NULL},
 };
 
@@ -192,10 +193,11 @@ void List_Switch(void)
             highlight_col = 0;
             buzzer_flag = 1;
         }
-        else if (strcmp(current_list_item->ListName, "debug mode") == 0)
+        else if (strcmp(current_list_item->ListName, "debug") == 0)
         {
             highlight_col = 0;
-            track_mode = DEBUG;
+            Speed_pwm_all = 0;
+            ADC_Speed_pwm = 0;
         }
     }
     else if (Key4_flag)
@@ -307,7 +309,13 @@ void show_params(void)
         tft180_show_string(0, 120, "theta: ");          tft180_show_float(50, 120, theta, 5, 1);     
         if (theta > aim_theta) 
             tft180_show_string(0, 130, "ok");    
+        tft180_show_string(0, 140, "steer");            tft180_show_int(60, 140, Steer_pwm, 5);
 
+        // if (Key4_flag)
+        // {
+        //     theta = 0;
+        //     Key_flag_clear();
+        // }    
     }
     theta = 0;
     tft180_clear();

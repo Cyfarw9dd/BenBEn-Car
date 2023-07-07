@@ -78,4 +78,6 @@ void speeduppid_params(void);
 
 void stoppid_params(void);
 
+void anglepid_params(void);
+
 #endif /* CODE_PID_H_ */

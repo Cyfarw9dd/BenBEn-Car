@@ -45,15 +45,15 @@ static TASK_COMPONENTS TaskCollect[] =
 
 void PID_int(void)
 {
-    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
-    SpeedPID.Ki = 2;    // 0.7
+    SpeedPID.Kp = 10; 
+    SpeedPID.Ki = 2;    
     SpeedPID.Kd = 12;
 
-    L_SpeedPID.Kp = 0.5; // 左轮速度环PID参数（C车用，C车建议左右轮PID分开调,速度环20ms）
+    L_SpeedPID.Kp = 0.5; 
     L_SpeedPID.Ki = 0.8;
     L_SpeedPID.Kd = 0;
 
-    R_SpeedPID.Kp = 0.4; // 右速度环PID参数（C车用，C车建议左右轮PID分开调,速度环20ms）
+    R_SpeedPID.Kp = 0.4; 
     R_SpeedPID.Ki = 0.9;
     R_SpeedPID.Kd = 0;
 
@@ -117,10 +117,11 @@ void Motor_output_control()
         Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
         Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
 
-        All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
-        All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
+        All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+        All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
 
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
+        return;
     }
     if (track_mode == ADC)
     {
@@ -128,10 +129,11 @@ void Motor_output_control()
         ADC_Steer_pwm = LocP_DCalc(&ADC_TURNNeiPID, (short)GyroOffset.Z, ADC_PWM); // 转向内环PWM	 icm20602_gyro_z
         ADC_Steer_pwm = range_protect(ADC_Steer_pwm, -6000, 6000);          // 转向内环PWM限幅
 
-        ADC_Speed_left = ADC_Speed_pwm - ADC_Steer_pwm;  // 左电机所有PWM输出 ADC_Speed_pwm
-        ADC_Speed_right = ADC_Speed_pwm + ADC_Steer_pwm; // 右电机所有PWM输出
+        ADC_Speed_left = 0 - ADC_Steer_pwm;  // 左电机所有PWM输出 ADC_Speed_pwm
+        ADC_Speed_right = 0 + ADC_Steer_pwm; // 右电机所有PWM输出
 
         motor_ctrl(ADC_Speed_left, ADC_Speed_right); // 动力输出
+        return;
     }
     if (track_mode == GO_STRAIGHT)
     {
@@ -143,7 +145,9 @@ void Motor_output_control()
         All_PWM_right = Speed_pwm_all + 0; // 右电机所有PWM输出
 
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
+        return;
     }
+    // 角度环
     if (track_mode == TURN)
     {
         gyroOffsetInit();
@@ -151,16 +155,19 @@ void Motor_output_control()
         imu660ra_get_acc();
         imu660ra_get_gyro();
         theta += imu_data.gyro_z * 0.02f;
-        if (theta >= aim_theta + 20)
-            theta = 0;
+        if (theta > aim_theta)
+        {
+            aim_theta = 0;
+            return;
+        }
         // 角度环
-        Steer_pwm = LocP_DCalc(&Turn_NeiPID, theta, aim_theta); // 转向内环PWM	 Prospect_err
-        Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
+        Steer_pwm = LocP_DCalc(&Angle_PID, theta, aim_theta); // 转向内环PWM	 Prospect_err
+        Steer_pwm = range_protect(Steer_pwm, -7000, 7000);               // 转向内环PWM限幅
+        Steer_pwm *= 25;
+        All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+        All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
 
-        // All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
-        // All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
-
-        // motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
+        motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
         return;
     }
     if (track_mode == GARAGE_STOP)
@@ -173,6 +180,7 @@ void Motor_output_control()
         All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
 
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出   
+        return;
     }
     if (track_mode == OBSTACLE)
         return;
@@ -187,12 +195,14 @@ void Trailing_control()
         Centerline_Err = Cal_centerline(); 
         // track_decision();
         Prospect_err = LocP_DCalc(&TurnPID, (short)Centerline_Err, 0); // 位置式PD控制转向
+        return;
     }
     if (track_mode == ADC)
     {
         Get_deviation(); // 电磁采集并获取赛道偏差
         ADC_PWM = LocP_DCalc(&ADC_TurnPID, Current_Dir, 0); // 位置式PD控制转向
         // ADC_PWM = -ADC_PWM;
+        return;
     }
     if (track_mode == OBSTACLE)
         return;
@@ -210,6 +220,7 @@ void Speed_control()
         real_real_speed = speed1 * 0.0432f; // 0.0432f
         Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); // D车速度环（增量式）
         range_protect(Speed_pwm_all, -6000, 6000); 
+        return;
     }
     if (track_mode == ADC)
     {
@@ -218,6 +229,7 @@ void Speed_control()
         real_real_speed = speed1 * 0.0432f; // 0.0432f
         ADC_Speed_pwm += IncPIDCalc(&ADC_SpeedPID, aim_speed, real_speed); // D车速度环（增量式） 
         range_protect(ADC_Speed_pwm, -6000, 6000); 
+        return;
     }
 }
 
