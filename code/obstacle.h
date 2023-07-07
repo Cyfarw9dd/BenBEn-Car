@@ -11,6 +11,7 @@ extern int turn_err;
 enum obstacle_status{
     BARRIER_NONE = 10,
     BARRIER_IN,
+    BARRIER_FOUND,
     BARRIER_TURN,
 };
 

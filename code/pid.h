@@ -66,12 +66,16 @@ void PID_Parameter_Init(PID *sptr);
 
 short range_protect(short duty, short min, short max);
 
-void PID_Init(void);
+int16 LocP_DCalc(MyPID*sptr, int16 Setpoint, int16 Turepoint);
 
-int calculate_pid(float a);
+int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint);
 
-short LocP_DCalc(MyPID*sptr, short Setpoint, short Turepoint);
+void normalpid_params(void);
 
-short IncPIDCalc(MyPID *sptr,short Setpoint,short Turepoint);
+void adcpid_params(void);
+
+void speeduppid_params(void);
+
+void stoppid_params(void);
 
 #endif /* CODE_PID_H_ */

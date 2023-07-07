@@ -62,4 +62,6 @@ void show_inflectionpoint(void);
 
 void show_breakroad(void);
 
+void show_straight(void);
+
 #endif /* CODE_LIST_H_ */

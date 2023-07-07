@@ -41,8 +41,8 @@
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU1的RAM中
 
 // **************************** 代码区域 ****************************
-
-
+#define TEST  1
+#define BLOCK 0
 void core1_main(void)
 {
     disable_Watchdog();                     // 关闭看门狗
@@ -86,9 +86,6 @@ void core1_main(void)
     adc_init(ADC0_CH6_A6, ADC_8BIT);
     adc_init(ADC0_CH7_A7, ADC_8BIT);
 
-    
-
-    // 此处编写用户代码 例如外设初始化代码等
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
     tft180_set_font(TFT180_6X8_FONT);
     pit_ms_init(CCU60_CH0, 1);
@@ -98,7 +95,10 @@ void core1_main(void)
     // 默认情况下正常循迹
     track_mode = NORMAL;
 
-    int test_flag = 0;
+    int test_flag = 1;
+    left_distance = 0;
+    right_distance = 0;
+    aim_theta = 90;
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
 
     while (TRUE)
@@ -107,6 +107,17 @@ void core1_main(void)
         TaskProcess();	
         clip_imageprocess();
         Traits_process();
+        #if TEST
+        track_mode = TURN;
+        if (theta < aim_theta)
+        {
+            motor_ctrl(2000, -2000);
+            Buzzer();
+            if (theta > aim_theta)
+                ;  
+        }
+        #endif
+
 
         // 向上位机发送数据
         // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, image_thereshold, 35);     

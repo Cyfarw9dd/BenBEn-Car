@@ -92,9 +92,9 @@ void Buzzer(void)
 {
     // 蜂鸣器相应函数，计数在中断中执行
     pwm_set_duty(BUZZER, 7000);
-    system_delay_ms(1000);
-    pwm_set_duty(BUZZER, 0);
-    system_delay_ms(1000);
+    // system_delay_ms(1000);
+    // pwm_set_duty(BUZZER, 0);
+    // system_delay_ms(1000);
 }
 
 // 速度决策将运行在速度环中，计算结果串在转向内环中

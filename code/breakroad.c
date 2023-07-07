@@ -1,13 +1,13 @@
 #include "zf_common_headfile.h"
 
 #define BLACK_NUM   80
-#define ROADFOUND   10
+#define ROADFOUND   50
 int break_blackpoints;
 void BreakRoad_process(Trait_smachine *road_smh, unsigned char (*image)[188])
 {
     break_blackpoints = 0;
     // 对底边两行扫描黑点
-    for (int row = CLIP_IMAGE_H - 1; row > CLIP_IMAGE_H - 3; row--)
+    for (int row = CLIP_IMAGE_H - 3; row > CLIP_IMAGE_H - 5; row--)
     {
         for (int left_col = 93; left_col > 0; left_col -= 3)
         {

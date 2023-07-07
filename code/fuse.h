@@ -8,7 +8,10 @@ extern  MyPID SpeedPID,
         R_SpeedPID,
         TurnPID,
         ADC_TurnPID,
-        Turn_NeiPID;
+        Turn_NeiPID,
+        ADC_SpeedPID,
+        ADC_TURNNeiPID,
+        Angle_PID;
         
 extern short All_PWM_left, All_PWM_right;
 extern short Speed_pwm_all;
@@ -18,6 +21,10 @@ extern int Centerline_Err;
 extern int16 aim_speed;
 extern short Steer_pwm;
 extern short Prospect_err;
+extern short ADC_Speed_left, ADC_Speed_right;
+
+extern float theta;
+extern float aim_theta;
 
 // 时间片轮询任务结构体定义
 typedef struct

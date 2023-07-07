@@ -38,14 +38,15 @@ List MyList[] =
     {12, "binary Imange", show_binary_image, NULL},          // 显示二值化图像
     {13, "show boudaries", NULL, NULL},         // 显示图像边界
     {131, "show ori bound", show_boundaries, NULL},
-    {132, "show sample", show_sample_boundaries, NULL},
+    {132, "show sample", show_roadtraits, NULL},
     {133, "show chanpoint", show_inflectionpoint, NULL},
-    {134, "show breakroad", show_breakroad, NULL},
     {135, "go back", NULL, NULL},
-    {14, "show road traits", show_roadtraits, NULL},
+    {14, "show road traits", NULL, NULL},
+    {141, "show breakroad", show_breakroad, NULL},
+    {142, "show straight", show_straight, NULL},
+    {143, "show barrier", show_barrier_params, NULL},
     {15, "show corners", show_corners, NULL},
-    {16, "show barrier", show_barrier_params, NULL},
-    {17, "back to main", NULL, NULL},           // 返回主菜单
+    {16, "back to main", NULL, NULL},           // 返回主菜单
     {2, "Tuning", NULL, NULL},
     {21, "Speed Cycle", NULL, NULL},
     {211, "Camera", NULL, NULL},
@@ -194,8 +195,7 @@ void List_Switch(void)
         else if (strcmp(current_list_item->ListName, "debug mode") == 0)
         {
             highlight_col = 0;
-            aim_speed = 0;
-            Departure_PointFlag = 1;
+            track_mode = DEBUG;
         }
     }
     else if (Key4_flag)
@@ -221,11 +221,11 @@ void show_gray_image(void)
     {
         MyKeyScan();
         tft180_show_gray_image(0, 0, clip_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
-        tft180_show_string(0, 80, "StartLine_PFlag");       tft180_show_int(150, 80, Startline.pointflag, 3);
-        tft180_show_string(0, 110, "LRoundAbout_PFlag");     tft180_show_int(150, 110, rnum, 2);
-        tft180_show_string(0, 140, "RRoundAbout_PFlag");     tft180_show_int(150, 140, RoundAbout_PointFlag_R, 2);
-        tft180_show_string(0, 170, "BreakRoad_PFlag");      tft180_show_int(150, 170, BreakRoad.pointflag, 2);
-        tft180_show_string(0, 200, "Obstacle_PFlag");      tft180_show_int(150, 200, Barrier.pointflag, 2);
+        tft180_show_string(0, 80, "StartlinePF");       tft180_show_int(90, 80, Startline.pointflag, 3);
+        tft180_show_string(0, 90, "LRoundAbout_PFlag");     tft180_show_int(110, 90, rnum, 2);
+        tft180_show_string(0, 100, "RRoundAbout_PFlag");     tft180_show_int(110, 100, RoundAbout_PointFlag_R, 2);
+        tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad.pointflag, 2);
+        tft180_show_string(0, 120, "Obstacle_PFlag");      tft180_show_int(110, 120, Barrier.pointflag, 2);
     }
     tft180_clear();
 }
@@ -244,10 +244,10 @@ void show_binary_image(void)
         }
         tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
         tft180_show_string(0, 70, "centerline_k");      
-        tft180_show_float(0, 80, clip_ctline_k1, 5, 3);
-        tft180_show_float(0, 90, clip_ctline_k2, 5, 3);
-        // tft180_show_string(0, 65, "StartLine_PFlag");       tft180_show_int(110, 65, StartLine_PointFlag, 2);
-        // tft180_show_string(0, 80, "LRoundAbout_PFlag");     tft180_show_int(110, 80, RoundAbout_PointFlag_L, 2);
+        tft180_show_float(0, 80, clip_ctline_k2, 5, 3);
+        tft180_show_float(0, 90, clip_ctline_k1, 5, 3);
+        tft180_show_string(0, 100, "straightflag");       tft180_show_int(110, 100, straight_flag, 2);
+        tft180_show_string(0, 110, "kerr");     tft180_show_float(60, 110, kerr, 2, 3);
         // tft180_show_string(0, 95, "RRoundAbout_PFlag");     tft180_show_int(110, 95, RoundAbout_PointFlag_R, 2);
         // tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad_PointFlag, 2);
         // tft180_show_string(0, 125, "Obstacle_PFlag");      tft180_show_int(110, 125, Obstacle_PointFlag, 2);
@@ -294,13 +294,22 @@ void show_params(void)
         // tft180_show_string(0, 40, "l_distance");    tft180_show_int(80, 40, left_distance, 5);
         // tft180_show_string(0, 60, "r_distance");    tft180_show_int(80, 60, right_distance, 5);
         tft180_show_float(0, 0, GyroOffset.X, 5, 3);
-        tft180_show_float(0, 30, GyroOffset.Y, 5, 3);
-        tft180_show_float(0, 60, GyroOffset.Z, 5, 3);
-        tft180_show_float(0, 80, Left_Adc, 5, 5);   
-        tft180_show_float(0, 90, Left_Shu_Adc, 5, 5);  
-        tft180_show_float(0, 100, Right_Shu_Adc, 5, 5);     
-        tft180_show_float(0, 110, Right_Adc, 5, 5); 
+        tft180_show_float(0, 10, GyroOffset.Y, 5, 3);
+        tft180_show_float(0, 20, GyroOffset.Z, 5, 3);
+        tft180_show_float(0, 30, Left_Adc, 5, 5);   
+        tft180_show_float(0, 40, Left_Shu_Adc, 5, 5);  
+        tft180_show_float(0, 50, Right_Shu_Adc, 5, 5);     
+        tft180_show_float(0, 60, Right_Adc, 5, 5); 
+        tft180_show_string(0, 80, "adcerr");            tft180_show_float(60, 80, Current_Dir, 5, 3);
+        tft180_show_string(0, 90, "left");              tft180_show_int(60, 90, ADC_Speed_left, 5);
+        tft180_show_string(0, 100, "right");            tft180_show_int(60, 100, ADC_Speed_right, 5);
+
+        tft180_show_string(0, 120, "theta: ");          tft180_show_float(50, 120, theta, 5, 1);     
+        if (theta > aim_theta) 
+            tft180_show_string(0, 130, "ok");    
+
     }
+    theta = 0;
     tft180_clear();
 }
 
@@ -420,9 +429,9 @@ void show_inflectionpoint(void)
     while (!Key3_flag)
     {
         MyKeyScan();
-        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W, CLIP_IMAGE_H, 0);
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
 
-        tft180_show_int(0, 100, ldcptc[0], 3);    tft180_show_int(70, 100, clip_lfline[ldcptc[0]], 3);
+        tft180_show_int(0, 100, ldcptc[1], 3);    tft180_show_int(70, 100, clip_lfline[30], 3);
         tft180_show_int(0, 130, Rdown_id, 3);    tft180_show_int(70, 130, clip_lfline[Rdown_id], 3);
     }
     tft180_clear();
@@ -445,4 +454,30 @@ void show_breakroad(void)
         tft180_show_int(0, 90, break_blackpoints, 3);
     }
     tft180_clear();
+}
+
+void show_straight(void)
+{
+    tft180_clear();
+    Key_flag_clear();
+    while (!Key3_flag)
+    {
+        MyKeyScan();
+        for(int i = CLIP_IMAGE_H - 1; i > 0; i--){
+            clip_bin_image[i][clip_lfline[i] + 3] = 70;
+            clip_bin_image[i][clip_rtline[i] - 3] = 70;
+            clip_bin_image[i][clip_ctline[i]] = 70;
+        }
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
+
+        if (straight_flag)  
+            tft180_show_string(0, 70, "is straight   ");
+        else
+            tft180_show_string(0, 70, "isn't straight");
+        if (bend_flag)
+            tft180_show_string(0, 80, "is bend   ");
+        else  
+            tft180_show_string(0, 80, "isn't bend");
+        tft180_show_string(0, 100, "kerr");     tft180_show_float(60, 100, kerr, 2, 3);
+    }   
 }

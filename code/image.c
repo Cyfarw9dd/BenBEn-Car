@@ -630,7 +630,7 @@ void image_draw_rectan(unsigned char(*image)[image_w])
 void clip_imageprocess(void)
 {
     if (mt9v03x_finish_flag)
-    {
+    {      
         unsigned char hightest = 0;     // 定义循环结束的最高行，试试40
         my_get_image(&mt9v03x_image[0], &clip_image[0]);
         myturn_to_binary(&clip_image[0], &clip_bin_image[0]);
@@ -655,7 +655,15 @@ void clip_imageprocess(void)
         // 计算中线
         for (int i = CLIP_IMAGE_H - 1; i > 0; i--)
             clip_ctline[i] = (clip_lfline[i] + clip_rtline[i]) / 2;
+        // 寻找拐点    
         find_inflectionpoint();
+
+        // 图像帧标志位
+        straight_frame_flag++;
+        bend_frame_flag++;
+        // 道路判断，运行在帧图像处理中
+        // Straight_process(); 
+
         // 不对边线进行采样，原边界直接求取角度
         // 边线局部角度变化率
         // left_local_angle_points(data_stastics_l, 5);  // angle_dist / sample_dist
@@ -668,6 +676,7 @@ void clip_imageprocess(void)
         // rpts0an_num = rpts0a_num;
         // rnms_angle(rpts1a_num, (int) round(5) * 2 + 1);
         // rpts1an_num = rpts1a_num;
+        // mt9v03x_finish_flag = 0;
     }
 }
 
@@ -688,6 +697,10 @@ int Cal_centerline(void)
         10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
         15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
     };
+    unsigned char closeline_ratio[] = 
+    {
+        25, 25, 25, 25, 25, 18, 18, 18, 15, 15,
+    };
     if (track_mode == NORMAL)
     {
         for (int i = sizeof(centerline_ratio) / sizeof(centerline_ratio[0]); i > 0; i--)
@@ -701,8 +714,17 @@ int Cal_centerline(void)
     {
         for (int i = sizeof(farline_ratio) / sizeof(farline_ratio[0]); i > 0; i--)
         {
-            ratio_sum += centerline_ratio[i];
-            centerline_err_sum += (clip_ctline[(CLIP_IMAGE_H - 1 - 50) - i] - 93) * centerline_ratio[i]; ;
+            ratio_sum += farline_ratio[i];
+            centerline_err_sum += (clip_ctline[(CLIP_IMAGE_H - 1 - 50) - i] - 93) * farline_ratio[i]; ;
+        }
+        return centerline_err_sum / ratio_sum;
+    }
+    else if (track_mode == CLOSELINE)
+    {
+        for (int i = sizeof(closeline_ratio) / sizeof(closeline_ratio[0]); i > 0; i--)
+        {
+            ratio_sum += closeline_ratio[i];
+            centerline_err_sum += (clip_ctline[(CLIP_IMAGE_H - 1 - 50) - i] - 93) * closeline_ratio[i]; ;
         }
         return centerline_err_sum / ratio_sum;
     }

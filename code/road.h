@@ -57,21 +57,28 @@ extern bool Ldown_found, Rdown_found;
 
 extern float clip_ctline_k1;
 extern float clip_ctline_k2;
+extern bool straight_flag;
+extern float kerr;
+extern int straight_frame_flag;
+extern int bend_frame_flag;
 extern unsigned char lnum;
 extern unsigned char rnum;
-extern unsigned char bend_flag;
+extern bool bend_flag;
 extern int track_mode;
 
 enum track_mode{
     NORMAL = 20,
     FARLINE,
-    LEFT,
-    RIGHT,
+    CLOSELINE,
     OBSTACLE,
     ADC,
     GO_STRAIGHT,
     TURN,
-    STOP,
+    GARAGE_STOP,
+    SPEED_UP,
+    SLOW_DOWN,
+    DEBUG,
+    BEND,
 };
 
 typedef enum{
@@ -148,6 +155,6 @@ void minimum(int num, int kernel, int *input, int *output);
 
 float regression( int startline1, int endline1, int startline2, int endline2);
 
-void Straightroad_process(void);
+void Straight_process(void);
 
 #endif /* CODE_ROAD_H_ */

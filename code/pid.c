@@ -125,51 +125,6 @@ short range_protect(short duty, short min, short max)
 }
 
 
-void PID_Init(void){
-    pid.err=0;
-    pid.err_last=0;
-
-    pid.Kp=20;
-    pid.Ki=0;
-    pid.Kd=10;
-    pid.Kout=0;
-    pid.voltage=0;
-    pid.integral=0;
-}
-
-int calculate_pid(float a){
-    int t;
-
-    pid.Set      = 0;
-    pid.Actual   = a;
-    pid.err      = pid.Set - pid.Actual;
-
-
-    pid.integral = pid.integral + pid.err;
-
-    pid.voltage = pid.Kp*pid.err
-                + pid.Ki*pid.integral/1000
-                + pid.Kd*(pid.err-pid.err_last)
-                + pid.Kout;
-
-    pid.err_last = pid.err;
-
-    t = MOTOR_EXPECTATION + pid.voltage;
-
-    /*if(t<0)             t=-t;
-    if(t>9999)      t=9998;*/
-
-    return t;
-}
-
-
-
-/************************************************
-函数名：LocP_DCalc(PID *sptr,int16 Setpoint,int16 Turepoint)
-功  能：位置式PID控制
-参  数：PID *sptr,int16 Setpoint,int16 Turepoint
-返回值：float 
-************************************************/
 int16 LocP_DCalc(MyPID*sptr, int16 Setpoint, int16 Turepoint)
 {
     int16 iError, dError;
@@ -188,12 +143,7 @@ int16 LocP_DCalc(MyPID*sptr, int16 Setpoint, int16 Turepoint)
           +sptr->Kd * dError);        //微分项
     return(output);
 }
-/************************************************
-函数名：IncPIDCalc(PID *sptr,int16 Setpoint,int16 Turepoint)
-功  能：增量式PID控制
-参  数：PID *sptr,int16 Setpoint,int16 Turepoint
-返回值：int32 iIncpid
-************************************************/
+
 int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint)
 {
     int16 iError, iIncpid;
@@ -211,4 +161,85 @@ int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint)
     sptr->LastError = iError;
 
     return (iIncpid);
+}
+
+// 正常摄像头循迹用pid
+void normalpid_params(void)
+{
+    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
+    SpeedPID.Ki = 2;    // 0.7
+    SpeedPID.Kd = 12;
+
+    TurnPID.Kp = 135; 
+    TurnPID.Ki = 0;
+    TurnPID.Kd = 0;
+
+    Turn_NeiPID.Kp = 2.8; //  4.89
+    Turn_NeiPID.Ki = 0;
+    Turn_NeiPID.Kd = 0;
+}
+
+// 电磁专用pid
+void adcpid_params(void)
+{
+    ADC_SpeedPID.Kp = 10;
+    ADC_SpeedPID.Ki = 2;
+    ADC_SpeedPID.Kd = 12;
+
+    ADC_TurnPID.Kp = 120; // 电磁转向环PID参数
+    ADC_TurnPID.Ki = 0;
+    ADC_TurnPID.Kd = 0;
+
+    ADC_TURNNeiPID.Kp = 2.0;
+    ADC_TURNNeiPID.Ki = 0;
+    ADC_TURNNeiPID.Kd = 0;
+}
+
+// 加速bangbang pid
+void speeduppid_params(void)
+{
+    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
+    SpeedPID.Ki = 2;    // 0.7
+    SpeedPID.Kd = 12;
+
+    TurnPID.Kp = 135; 
+    TurnPID.Ki = 0;
+    TurnPID.Kd = 0;     
+
+    Turn_NeiPID.Kp = 3.6; // 转向内环
+    Turn_NeiPID.Ki = 0;
+    Turn_NeiPID.Kd = 0; 
+}
+
+// 停车pid
+void stoppid_params(void)
+{
+    // 快速停车， P超调
+    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
+    SpeedPID.Ki = 2;    // 0.7
+    SpeedPID.Kd = 12;
+
+    TurnPID.Kp = 135; 
+    TurnPID.Ki = 0;
+    TurnPID.Kd = 0;
+
+    Turn_NeiPID.Kp = 2.8; //  4.89
+    Turn_NeiPID.Ki = 0;
+    Turn_NeiPID.Kd = 0;
+}
+
+// 角度环pid参数
+void anglepid_params(void)
+{
+    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
+    SpeedPID.Ki = 2;    // 0.7
+    SpeedPID.Kd = 12;
+
+    TurnPID.Kp = 135; 
+    TurnPID.Ki = 0;
+    TurnPID.Kd = 0;
+
+    Angle_PID.Kp = 2.8; 
+    Angle_PID.Ki = 0;
+    Angle_PID.Kd = 0; 
 }

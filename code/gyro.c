@@ -67,9 +67,9 @@ void ICM_getValues(void)
     // imu_data.gyro_y = ((float) imu660ra_gyro_x - GyroOffset.Y) * M_PI / 180 / 16.4f;
     // imu_data.gyro_z = ((float) imu660ra_gyro_x - GyroOffset.Z) * M_PI / 180 / 16.4f;
 
-    imu_data.gyro_x = imu660ra_gyro_transition(imu660ra_gyro_x - GyroOffset.X);
-    imu_data.gyro_y = imu660ra_gyro_transition(imu660ra_gyro_y - GyroOffset.Y);
-    imu_data.gyro_z = imu660ra_gyro_transition(imu660ra_gyro_z - GyroOffset.Z);
+    imu_data.gyro_x = imu660ra_gyro_transition(GyroOffset.X);
+    imu_data.gyro_y = imu660ra_gyro_transition(GyroOffset.Y);
+    imu_data.gyro_z = imu660ra_gyro_transition(GyroOffset.Z);
 }
 
 //互补滤波

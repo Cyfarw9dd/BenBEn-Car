@@ -1,17 +1,17 @@
 #include "zf_common_headfile.h"
 
 // 1 4 6 8 电感采集路道
-unsigned char adc_value[4];                 //储存电感采集值原始值    4个电感 
+unsigned char adc_value[4];                 
 
-int16 AD_V[4];                      //储存电感采集值归一化值中间变量 （无需关心，请勿删除）
-unsigned char adc_max[4]={255,255,255,255}; //电感采值最大值 需要自己采集
-unsigned char adc_min[4]={1,1,1,1};        //电感采值最小值
-unsigned char Left_Adc,Right_Adc,Left_Shu_Adc,Right_Shu_Adc;//电感值
-int8 NM=4;                          //电感个数
+int16 AD_V[4];                      
+unsigned char adc_max[4]={255,255,255,255}; 
+unsigned char adc_min[4]={1,1,1,1};        
+unsigned char Left_Adc,Right_Adc,Left_Shu_Adc,Right_Shu_Adc;
+int8 NM=4;                          
 
 //环道参数
-unsigned short annulus_s     = 0;           //环岛积分距离
-unsigned short annulus_z     = 0;           //环岛第积分打角
+unsigned short annulus_s     = 0;           
+unsigned short annulus_z     = 0;           
 unsigned short annulus_t = 0;
 
 struct ROAD_TYPE road_type = {0};
@@ -23,7 +23,7 @@ int16 obstacle_Current_Dir[]={
 	                            -49,-48,-47,-46,-45,-44,-43,-42,-41,-40,
                               -39,-38,-37,-36,-35,-34,-33,-32,-31,-30,
                              };
-/***当前位置*************/
+
 float Current_Dir = 0;
 
 int16 ADC_PWM=0;
@@ -92,13 +92,13 @@ void Data_current_analyze()
         AD_V[i]=100;
     }
     }
-    Left_Adc = (unsigned char)AD_V[0];       //左电感最终值
-    Left_Shu_Adc = (unsigned char)AD_V[1];   //左竖电感最终值
-    Right_Shu_Adc = (unsigned char)AD_V[2];  //右竖电感最终值
-    Right_Adc = (unsigned char)AD_V[3];	    //右电感最终值	
+    Left_Adc = (unsigned char)AD_V[0];       
+    Left_Shu_Adc = (unsigned char)AD_V[1];   
+    Right_Shu_Adc = (unsigned char)AD_V[2];  
+    Right_Adc = (unsigned char)AD_V[3];	    
 }
 
-/*********************************差比和函数**********************************/
+
 float Cha_bi_he(int16 data1, int16 data2,int16 x)
 {
     int16 cha;
@@ -111,7 +111,7 @@ float Cha_bi_he(int16 data1, int16 data2,int16 x)
 
     return result;
 }
-/*****************************************出界保护函数************************************/
+
 void Out_protect(void)
 {
 	if(Left_Adc<2&&Right_Adc<2)
@@ -124,17 +124,7 @@ void Out_protect(void)
 		pit_enable(CCU60_CH1);
 	}
 }
-/*****************************************判断赛道类型*************************************
-函数：  void Road_type_judge(void)
-参数：  无
-说明：  赛道类型判断--环岛--弯道--直道--
 
-*注意： 环岛和弯道判断的阈值可能不准，需要自己测量！！！每辆车的运放电路，赛道电磁线，电感精度等等
-        都会影响到环岛处理，所以这里的阈值不能保证每一辆车都能进环，关于怎么调电感和处理圆环的方法
-        如果购买了视频讲解将会在视频讲中详细讲解！！！
-返回值：无  
-作者：  heqiu 
-******************************************************************************************/
 void Road_type_judge(void)
 {	 
 	  //环岛判断
@@ -159,15 +149,7 @@ void Road_type_judge(void)
 		  road_type.bend           = 0;	  
 		}
 }
-/*****************************************环岛处理***************************************
-函数：  void Annulus_handle(void)
-参数：  无
-说明：  环岛处理函数
 
-*注意：用两个竖电感引导进环
-返回值：无  
-作者：  heqiu 
-******************************************************************************************/
 void Annulus_handle(void)
 {
 	  //左环判断
@@ -248,15 +230,7 @@ void Annulus_handle(void)
 //         annulus_t=annulus_t+10;
 //    }
 // }
-// /*************************************避障检测函数*************************************
-// 函数：  void obstacle_avoidance(void)
-// 参数：  无
-// 说明：  TFO避障模块检测，使用软件模拟IIC通信，理论上任何引脚都可以使用，但是要注意不能引脚
-//         复用。
-// *注意： TOF模块离障碍物越远数值越大，越近数值越小
-// 返回值：无  
-// 作者：  heqiu 
-// ******************************************************************************************/
+
 // void obstacle_avoidance(void)
 // {
 // 	dl1a_get_distance();                                       //距离测量
@@ -266,14 +240,7 @@ void Annulus_handle(void)
 // 		flag_obstacle=1;
 // 	}
 // }
-/*************************根据赛道类型选择不同的方向偏差计算方法*************************
-函数：  int16 Direction_error(void)
-功能：  根据赛道类型选择不同的方向偏差
-参数：  无
-说明：  根据赛道类型选择不同的方向偏差--直道--弯道--环岛处理切换不同差比和
-返回值：error--返回赛道偏差
-作者：  heqiu 
-****************************************************************************************/
+
 int16 Direction_error(void)
 {
     int16 error = 0;
@@ -330,14 +297,6 @@ int16 Direction_error(void)
     return error;
 }
 
-/**********************************电磁所有总处理***************************************
-函数：  void Get_deviation(void)
-功能：  电磁所有总处理
-参数：  无
-说明：  放中断调用此函数即可
-返回值：无
-作者：  heqiu 
-****************************************************************************************/
 void Get_deviation(void)
 {
 	ADC_Collect();           //电感原始值采值

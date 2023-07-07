@@ -57,9 +57,12 @@ bool Ldown_found, Rdown_found;
 
 float clip_ctline_k1;
 float clip_ctline_k2;
-int frame_flag;
+int straight_frame_flag = 0;
+int bend_frame_flag = 0; 
+float cnt_flag = 0;
+float kerr = 0;
 bool straight_flag;
-unsigned char bend_flag;
+bool bend_flag;
 // 左右线丢线数目
 unsigned char lnum = 0;
 unsigned char rnum = 0;
@@ -77,19 +80,59 @@ Trackline checkline_r;
 
 unsigned char outflag = 0;      // 出库标志位
 
-#define STRAIGHTTHRESHOLD   0.3
+// 直道阈值
+#define STRAIGHTTHRESHOLD   0.2f
+// 弯道阈值
+#define BENDTHRESHOLD       0.3f
+
+#define NORMAL_SPEED        250
+#define ADC_NORMAL_SPEED    180
+#define ZERO                0
+
 #pragma section all restore
 
 
 #pragma section all "cpu1_psram"
 void Traits_process(void)
 {
-    if (track_mode == NORMAL)
-        aim_speed = 380;
-    if (track_mode == ADC)
-        aim_speed = 150;
-    if (track_mode == STOP)
-        aim_speed = 0;
+    if (Startline.status != ZEBRA_IN)
+    {
+        if (track_mode == SPEED_UP)
+        {
+            aim_speed = NORMAL_SPEED + 50;
+            // 增加转向内环P，使得路径更加稳定
+            speeduppid_params();       
+        }
+        if (track_mode != SPEED_UP)
+        {
+            if (track_mode == NORMAL || track_mode == BEND)
+            {
+                aim_speed = NORMAL_SPEED;
+                // 回调转向内环P
+                normalpid_params();     
+            } 
+            if (track_mode == ADC)
+            {
+                aim_speed = ADC_NORMAL_SPEED;
+                adcpid_params();
+            }  
+            if (track_mode == BARRIER_FOUND)
+            {
+                // 识别到障碍 减速
+                aim_speed = NORMAL_SPEED - 100;  
+            }       
+        }     
+    }
+
+    if (Startline.status == ZEBRA_IN)
+    {
+        if (track_mode == GARAGE_STOP)
+        {
+            aim_speed = ZERO;
+            // 车库停车 速度环超调打死
+            stoppid_params();
+        }
+    }
     // roll_out();  // 出库打死
     if (!Departure_PointFlag)
         Departure();
@@ -103,13 +146,14 @@ void Traits_status_init(void)
     BreakRoad.status = BREAKROAD_NONE;
     Crossing.status = CROSS_NONE;
     Barrier.status = BARRIER_NONE;
+    Startline.status = ZEBRA_NONE;
 }
 
 // 寻找拐点
 void find_inflectionpoint(void)
 {
     // 下拐点左线做非极大值抑制，右线做非极小值抑制
-    Downpoint_check(&clip_lfline[0], &clip_rtline[0], &ldcptc[0], &rdcptc[0]);
+    Downpoint_check(clip_lfline, clip_rtline, ldcptc, rdcptc);
     maximum(sizeof(ldcptc) / sizeof(ldcptc[0]), 5, ldcptc, ldown);
     minimum(sizeof(rdcptc) / sizeof(rdcptc[0]), 5, rdcptc, rdown);
 
@@ -118,7 +162,7 @@ void find_inflectionpoint(void)
     minimum(sizeof(lucptc) / sizeof(lucptc[0]), 5, lucptc, lupon);
     maximum(sizeof(rucptc) / sizeof(rucptc[0]), 5, rucptc, rupon);
 
-    // find_changepoint();
+    find_changepoint();
     // 取到的点的id即为对应拐点的行数，结合边线数组可得列坐标
 }
 
@@ -128,10 +172,10 @@ void Downpoint_check(short clip_lfline[], short clip_rtline[], int ldcptc[], int
     // 遍历左线
     int m = 0;
     int n = 0;
-    for (int i = CLIP_IMAGE_H - 1; i > TopRow; i--)
+    for (int i = CLIP_IMAGE_H - 6; i > TopRow; i--)
     {
-        m++;
         // 扫描拐点上下五行
+        // if (clip_lfline[i] < 3)     continue;;
         if (clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 4, TopRow, CLIP_IMAGE_H - 1)] > 0
          && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] > 0
          && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] > 0
@@ -140,15 +184,17 @@ void Downpoint_check(short clip_lfline[], short clip_rtline[], int ldcptc[], int
             ldcptc[m] = i;
         }
 
-        n++;
+        // if (clip_rtline[i] > 185)   continue;
         // 扫描拐点上下五行
-        if (clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i + 4, TopRow, CLIP_IMAGE_H - 1)] < -2
-         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] < -2
-         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] < -5
-         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i - 4, TopRow, CLIP_IMAGE_H - 1)] < -5)
+        if (clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i + 4, TopRow, CLIP_IMAGE_H - 1)] < 0
+         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] < 0
+         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] < 0
+         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i - 4, TopRow, CLIP_IMAGE_H - 1)] < 0)
         {
             rdcptc[n] = i;
         }
+        m++;
+        n++;
     }
 
 
@@ -161,18 +207,18 @@ void Uponpoint_check(short clip_lfline[], short clip_rtline[], int lucptc[], int
     for (int i = CLIP_IMAGE_H - 1; i > TopRow; i--)
     {
         m++;
-        if (clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] > 5
-         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] > 5
-         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] < -2
-         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] < -2)
+        if (clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] > 0
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] > 0
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] < 0
+         && clip_lfline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_lfline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] < 0)
         {
             lucptc[m] = i;
         }
         n++;
-        if (clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] < -5
-         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] < -5
-         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] > 2
-         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] > 2)
+        if (clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i + 2, TopRow, CLIP_IMAGE_H - 1)] < 0
+         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i + 3, TopRow, CLIP_IMAGE_H - 1)] < 0
+         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i - 2, TopRow, CLIP_IMAGE_H - 1)] > 0
+         && clip_rtline[clip(i, TopRow, CLIP_IMAGE_H - 1)] - clip_rtline[clip(i - 3, TopRow, CLIP_IMAGE_H - 1)] > 0)
         {
             rucptc[n] = i;
         }
@@ -687,16 +733,44 @@ float regression( int startline1, int endline1, int startline2, int endline2)
 
 // 直道判断
 // 需要运行在帧图像处理中
-void Straightroad_process(void)
+void Straight_process(void)
 {
-    clip_ctline_k1 = regression(CLIP_IMAGE_H - 20, CLIP_IMAGE_H - 10, CLIP_IMAGE_H - 10, CLIP_IMAGE_H - 3);     // 近处斜率
-    clip_ctline_k2 = regression(CLIP_IMAGE_H - 51, CLIP_IMAGE_H - 39, CLIP_IMAGE_H - 38, CLIP_IMAGE_H - 25);    // 远处斜率
+    // clip_ctline_k1 = regression(CLIP_IMAGE_H - 20, CLIP_IMAGE_H - 10, CLIP_IMAGE_H - 10, CLIP_IMAGE_H - 6);     // 近处斜率
+    // clip_ctline_k2 = regression(CLIP_IMAGE_H - 51, CLIP_IMAGE_H - 39, CLIP_IMAGE_H - 38, CLIP_IMAGE_H - 25);    // 远处斜率
 
-    int kerr = fabs((clip_ctline_k1 - clip_ctline_k2));
-    if (kerr <= STRAIGHTTHRESHOLD)    frame_flag++;
-    if (kerr > STRAIGHTTHRESHOLD)     frame_flag = 0;
+    // 近处斜率
+    clip_ctline_k1 = regression(CLIP_IMAGE_H - 18, CLIP_IMAGE_H - 12, CLIP_IMAGE_H - 10, CLIP_IMAGE_H - 3);
+    // 远处斜率     
+    clip_ctline_k2 = regression(CLIP_IMAGE_H - 45, CLIP_IMAGE_H - 32, CLIP_IMAGE_H - 28, CLIP_IMAGE_H - 20);    
 
-
+    kerr = fabs((clip_ctline_k1 - clip_ctline_k2));
+    // 连续两帧图像满足阈值条件
+    if (kerr <= STRAIGHTTHRESHOLD && straight_frame_flag >= 2) 
+    {
+        straight_flag = true;  
+    }      
+    if (kerr > STRAIGHTTHRESHOLD)
+    {
+        straight_flag = false;
+        straight_frame_flag = 0;
+    }    
+    if (kerr > BENDTHRESHOLD && bend_frame_flag >= 2)
+    {
+        bend_flag = true;
+    }
+    if (kerr <= BENDTHRESHOLD)
+    {
+        bend_flag = false;
+        bend_frame_flag = 0;
+    }
+    // 直道
+    if (straight_flag)      track_mode = SPEED_UP;
+    else                    track_mode = NORMAL;
+    // 弯道
+    if (bend_flag)          track_mode = BEND;
+    else                    track_mode = NORMAL;
+    if (kerr > STRAIGHTTHRESHOLD && kerr < BENDTHRESHOLD)
+        track_mode = NORMAL;
 }
 
-#pragma section all restore
+#pragma section all restore 
