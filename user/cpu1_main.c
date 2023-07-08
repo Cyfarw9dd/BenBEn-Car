@@ -48,7 +48,6 @@ void core1_main(void)
     disable_Watchdog();                     // 关闭看门狗
     interrupt_global_enable(0);             // 打开全局中断
     // 此处编写用户代码 例如外设初始化代码等
-    // outflag = 1;
     mt9v03x_init();
     tft180_init();
     // ips200_init(IPS200_TYPE_PARALLEL8);
@@ -89,16 +88,13 @@ void core1_main(void)
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
     tft180_set_font(TFT180_6X8_FONT);
     pit_ms_init(CCU60_CH0, 1);
-    pit_ms_init(CCU60_CH1, 1);
+    // pit_ms_init(CCU60_CH1, 1);
     pit_ms_init(CCU61_CH0, 20);
 
     // 默认情况下正常循迹
     track_mode = NORMAL;
-
+    // 测试用标志位
     int test_flag = 1;
-    left_distance = 0;
-    right_distance = 0;
-    // aim_theta = 70;
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
 
     while (TRUE)
@@ -107,9 +103,6 @@ void core1_main(void)
         TaskProcess();	
         clip_imageprocess();
         Traits_process();
-        #if BLOCK
-            track_mode = TURN;
-        #endif
 
 
         // 向上位机发送数据

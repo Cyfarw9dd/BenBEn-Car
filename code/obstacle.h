@@ -7,6 +7,7 @@ extern int barrier_turning_distance;
 extern int left_distance; 
 extern int right_distance;
 extern int turn_err;
+extern int turn_flag;
 
 enum obstacle_status{
     BARRIER_NONE = 10,

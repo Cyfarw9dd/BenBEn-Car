@@ -309,7 +309,7 @@ void show_params(void)
         tft180_show_string(0, 120, "theta: ");          tft180_show_float(50, 120, theta, 5, 1);     
         if (theta > aim_theta) 
             tft180_show_string(0, 130, "ok");    
-        tft180_show_string(0, 140, "steer");            tft180_show_int(60, 140, Steer_pwm, 5);
+        tft180_show_string(0, 140, "dl1a");            tft180_show_int(60, 140, dl1a_distance_mm, 5);
 
         // if (Key4_flag)
         // {
@@ -403,11 +403,29 @@ void show_barrier_params(void)
         MyKeyScan();
         barrier_turning_distance += (speed1 + speed2) / 2;
         tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
-        tft180_show_string(0, 80, "barrier ptflag");    tft180_show_int(100, 80, Barrier.pointflag, 3);
-        tft180_show_int(0, 100, dl1a_distance_mm, 5);
-        tft180_show_string(0, 110, "encoder");          tft180_show_int(70, 110, barrier_turning_distance, 5);
-        tft180_show_string(0, 120, "ldistance");        tft180_show_int(90, 120, left_distance, 5);
-        tft180_show_string(0, 130, "rdistance");        tft180_show_int(90, 130, right_distance, 5);
+        if (Barrier.status == BARRIER_NONE)
+            tft180_show_string(0, 60, "Barrier none ");
+        else if (Barrier.status == BARRIER_FOUND)
+            tft180_show_string(0, 60, "Barrier found");
+        else if (Barrier.status == BARRIER_IN)
+            tft180_show_string(0, 60, "Barrier turn ");
+        tft180_show_string(0, 70, "barrier ptflag");    tft180_show_int(100, 70, Barrier.pointflag, 3);
+        tft180_show_int(0, 80, dl1a_distance_mm, 5);
+        tft180_show_string(0, 90, "encoder");           tft180_show_int(70, 90, barrier_turning_distance, 5);
+        tft180_show_string(0, 100, "ldistance");        tft180_show_int(90, 100, left_distance, 5);
+        tft180_show_string(0, 110, "rdistance");        tft180_show_int(90, 110, right_distance, 5);
+        tft180_show_string(0, 120, "theta");            tft180_show_float(70, 120, theta, 3, 1);
+        tft180_show_string(0, 130, "aim_theta");        tft180_show_float(70, 130, aim_theta, 3, 1);
+        if (track_mode == NORMAL)
+            tft180_show_string(0, 140, "NORMAL  ");
+        else if (track_mode == TURN)
+            tft180_show_string(0, 140, "TURN    ");
+        else if (track_mode == GO_STRAIGHT)
+            tft180_show_string(0, 140, "STRAIGHT");
+        else if (track_mode == ADC)
+            tft180_show_string(0, 140, "ADC     ");
+        tft180_show_string(0, 150, "turn_flag");        tft180_show_int(70, 150, turn_flag, 3);
+
     }
     tft180_clear();
 }
@@ -458,9 +476,10 @@ void show_breakroad(void)
             tft180_show_string(0, 70, "BREAK_IN ");
         if (BreakRoad.status == BREAKROAD_NONE)
             tft180_show_string(0, 70, "BREAKNONE");
-        tft180_show_string(0, 80, "pointflag");     tft180_show_int(80, 80, BreakRoad.pointflag, 3);
+        tft180_show_string(0, 80, "pointflag");                     tft180_show_int(80, 80, BreakRoad.pointflag, 3);
         tft180_show_int(0, 90, break_blackpoints, 3);
-    }
+        tft180_show_string(0, 100, "barrier pointflag");            tft180_show_int(100, 100, Barrier.pointflag, 3);            
+    }   
     tft180_clear();
 }
 

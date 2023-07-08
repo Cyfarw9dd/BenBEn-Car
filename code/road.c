@@ -85,7 +85,7 @@ unsigned char outflag = 0;      // 出库标志位
 // 弯道阈值
 #define BENDTHRESHOLD       0.3f
 
-#define NORMAL_SPEED        250
+#define NORMAL_SPEED        150
 #define ADC_NORMAL_SPEED    180
 #define ZERO                0
 
@@ -120,6 +120,13 @@ void Traits_process(void)
             {
                 aim_speed = ZERO;
                 anglepid_params();
+            }
+            // 避障时直走，内环稳定路径
+            if (track_mode == GO_STRAIGHT)
+            {
+                aim_speed = NORMAL_SPEED;
+                gostraighpid_params();
+                
             }
             if (track_mode == BARRIER_FOUND)
             {

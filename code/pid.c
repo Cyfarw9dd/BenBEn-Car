@@ -243,3 +243,18 @@ void anglepid_params(void)
     Angle_PID.Ki = 0;
     Angle_PID.Kd = 1; 
 }
+
+void gostraighpid_params(void)
+{
+    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
+    SpeedPID.Ki = 2;    // 0.7
+    SpeedPID.Kd = 12;
+
+    TurnPID.Kp = 135; 
+    TurnPID.Ki = 0;
+    TurnPID.Kd = 0;
+
+    Turn_NeiPID.Kp = 3.8; //  4.89
+    Turn_NeiPID.Ki = 0;
+    Turn_NeiPID.Kd = 0;   
+}
