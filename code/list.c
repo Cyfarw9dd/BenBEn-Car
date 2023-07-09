@@ -311,11 +311,11 @@ void show_params(void)
             tft180_show_string(0, 130, "ok");    
         tft180_show_string(0, 140, "dl1a");            tft180_show_int(60, 140, dl1a_distance_mm, 5);
 
-        // if (Key4_flag)
-        // {
-        //     theta = 0;
-        //     Key_flag_clear();
-        // }    
+        if (Key4_flag)
+        {
+            theta = 0;
+            Key_flag_clear();
+        }    
     }
     theta = 0;
     tft180_clear();
@@ -420,11 +420,15 @@ void show_barrier_params(void)
             tft180_show_string(0, 140, "NORMAL  ");
         else if (track_mode == TURN)
             tft180_show_string(0, 140, "TURN    ");
-        else if (track_mode == GO_STRAIGHT)
-            tft180_show_string(0, 140, "STRAIGHT");
         else if (track_mode == ADC)
             tft180_show_string(0, 140, "ADC     ");
         tft180_show_string(0, 150, "turn_flag");        tft180_show_int(70, 150, turn_flag, 3);
+
+        if (Key4_flag)
+        {
+            theta = 0;
+            Key_flag_clear();
+        }
 
     }
     tft180_clear();

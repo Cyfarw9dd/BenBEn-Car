@@ -163,10 +163,14 @@ int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint)
     return (iIncpid);
 }
 
+
+//---------------------->PID参数<----------------------//
+
+
 // 正常摄像头循迹用pid
 void normalpid_params(void)
 {
-    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
+    SpeedPID.Kp = 8; // 1.0 //速度环PID参数（D车用，速度环2ms）
     SpeedPID.Ki = 2;    // 0.7
     SpeedPID.Kd = 12;
 
@@ -239,9 +243,9 @@ void anglepid_params(void)
     TurnPID.Ki = 0;
     TurnPID.Kd = 0;
 
-    Angle_PID.Kp = 2.8; 
+    Angle_PID.Kp = 1.95; 
     Angle_PID.Ki = 0;
-    Angle_PID.Kd = 1; 
+    Angle_PID.Kd = 2; 
 }
 
 void gostraighpid_params(void)

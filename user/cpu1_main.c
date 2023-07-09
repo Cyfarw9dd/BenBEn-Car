@@ -96,16 +96,21 @@ void core1_main(void)
     // 测试用标志位
     int test_flag = 1;
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
-
+    theta = 0;
+    aim_theta = 90;
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
+        track_mode = TURN;
+        
         TaskProcess();	
         clip_imageprocess();
         Traits_process();
 
 
         // 向上位机发送数据
+        put_float(0, theta);
+        // wireless_uart_send_buff(&theta, 64);
         // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, image_thereshold, 35);     
         // sendimg_A(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);  
         // wireless_uart_send_image(clip_image[0], MT9V03X_IMAGE_SIZE);

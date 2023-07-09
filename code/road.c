@@ -85,7 +85,8 @@ unsigned char outflag = 0;      // 出库标志位
 // 弯道阈值
 #define BENDTHRESHOLD       0.3f
 
-#define NORMAL_SPEED        150
+// 弯道390稳定
+#define NORMAL_SPEED        250
 #define ADC_NORMAL_SPEED    180
 #define ZERO                0
 
@@ -118,20 +119,14 @@ void Traits_process(void)
             }  
             if (track_mode == TURN)
             {
-                aim_speed = ZERO;
+                aim_speed = NORMAL_SPEED;
                 anglepid_params();
             }
-            // 避障时直走，内环稳定路径
-            if (track_mode == GO_STRAIGHT)
-            {
-                aim_speed = NORMAL_SPEED;
-                gostraighpid_params();
-                
-            }
-            if (track_mode == BARRIER_FOUND)
+            if (track_mode == SLOW_DOWN)
             {
                 // 识别到障碍 减速
                 aim_speed = NORMAL_SPEED - 100;  
+                normalpid_params();
             }       
         }     
     }
@@ -148,9 +143,9 @@ void Traits_process(void)
     // roll_out();  // 出库打死
     if (!Departure_PointFlag)
         Departure();
-    Barrier_process(&Barrier);
-    BreakRoad_process(&BreakRoad, &clip_bin_image[0]);
-    Startline_process(&Startline, &clip_bin_image[0]);
+    // Barrier_process(&Barrier);
+    // BreakRoad_process(&BreakRoad, &clip_bin_image[0]);
+    // Startline_process(&Startline, &clip_bin_image[0]);
 }
 
 void Traits_status_init(void)

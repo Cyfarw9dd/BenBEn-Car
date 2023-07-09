@@ -43,6 +43,7 @@ static TASK_COMPONENTS TaskCollect[] =
     {0, 10, 10, get_motor_speed},         // 编码器数据采集
 };
 
+// 部分PID参数初始化
 void PID_int(void)
 {
     SpeedPID.Kp = 10; 
@@ -115,7 +116,7 @@ void Motor_output_control()
     {
         gyroOffsetInit();
         Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
-        Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
+        Steer_pwm = range_protect(Steer_pwm, -7000, 7000);               // 转向内环PWM限幅
 
         All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
         All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
@@ -135,23 +136,6 @@ void Motor_output_control()
         motor_ctrl(ADC_Speed_left, ADC_Speed_right); // 动力输出
         return;
     }
-    if (track_mode == GO_STRAIGHT)
-    {
-        gyroOffsetInit();
-        ICM_getValues();
-        imu660ra_get_acc();
-        imu660ra_get_gyro();
-        theta += (imu_data.gyro_z - 1.5) * 0.02f;
-        // 内环输出稳定路径 直行
-        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, 0);
-        Steer_pwm = range_protect(Steer_pwm, -6000, 6000);              
-
-        All_PWM_left = Speed_pwm_all - 0;   // Speed_pwm_all
-        All_PWM_right = Speed_pwm_all + 0; 
-
-        motor_ctrl(All_PWM_left, All_PWM_right); 
-        return;
-    }
     // 角度环
     if (track_mode == TURN)
     {
@@ -159,7 +143,7 @@ void Motor_output_control()
         ICM_getValues();
         imu660ra_get_acc();
         imu660ra_get_gyro();
-        theta += (imu_data.gyro_z - 1.5) * 0.02f;
+        theta += imu_data.gyro_z * 0.02f;
         // 角度环
         Steer_pwm = LocP_DCalc(&Angle_PID, theta, aim_theta); // 转向内环PWM	 Prospect_err
         Steer_pwm = range_protect(Steer_pwm, -7000, 7000);               // 转向内环PWM限幅
@@ -182,14 +166,12 @@ void Motor_output_control()
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出   
         return;
     }
-    if (track_mode == OBSTACLE)
-        return;
 }
 
 
 void Trailing_control()
 {
-    if (track_mode == NORMAL || track_mode == DEBUG || track_mode == SLOW_DOWN)
+    if (track_mode == NORMAL || track_mode == SLOW_DOWN)
     {
         Get_deviation();
         Centerline_Err = Cal_centerline(); 
@@ -204,8 +186,6 @@ void Trailing_control()
         // ADC_PWM = -ADC_PWM;
         return;
     }
-    if (track_mode == OBSTACLE)
-        return;
     if (track_mode == TURN)
         return;
 }
@@ -214,7 +194,7 @@ void Trailing_control()
 void Speed_control()
 {
     // 直行模式下需采集编码器数据
-    if (track_mode == NORMAL || track_mode == GO_STRAIGHT || track_mode == GARAGE_STOP)
+    if (track_mode == NORMAL || track_mode == TURN || track_mode == SLOW_DOWN)
     {
         get_motor_speed(); 
         real_speed = (speed1 + speed2) / 2;
@@ -231,6 +211,15 @@ void Speed_control()
         ADC_Speed_pwm += IncPIDCalc(&ADC_SpeedPID, aim_speed, real_speed); 
         range_protect(ADC_Speed_pwm, -6000, 6000); 
         return;
+    }
+    if (track_mode == GARAGE_STOP)
+    {
+        get_motor_speed(); 
+        real_speed = (speed1 + speed2) / 2;
+        real_real_speed = speed1 * 0.0432f; 
+        Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); 
+        range_protect(Speed_pwm_all, -6000, 6000); 
+        return;        
     }
 }
 

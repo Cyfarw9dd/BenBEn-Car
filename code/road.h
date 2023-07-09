@@ -72,12 +72,10 @@ enum track_mode{
     CLOSELINE,
     OBSTACLE,
     ADC,
-    GO_STRAIGHT,
     TURN,
     GARAGE_STOP,
     SPEED_UP,
     SLOW_DOWN,
-    DEBUG,
     BEND,
 };
 

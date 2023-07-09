@@ -1,8 +1,10 @@
 #include "zf_common_headfile.h"
 
 #pragma section all "cpu1_dsram"
-#define DISTANCE0   10000
-#define DISTANCE1   8000
+#define DISTANCE0   12000
+#define DISTANCE1   9000
+#define ANGLE0      -45
+#define ANGLE1      90
 int barrier_turning_distance = 0;
 int left_distance = 0; 
 int right_distance = 0;
@@ -18,13 +20,14 @@ void Barrier_process(Trait_smachine *road_smh)
     // 获取tof测距信息
     dl1a_get_distance();
     // 没遇到障碍，且障碍转向时
-    if (dl1a_distance_mm > 1100 && road_smh->status != BARRIER_TURN)
+    if (dl1a_distance_mm > 1200 && road_smh->status != BARRIER_TURN)
     {
+        road_smh->status = BARRIER_NONE;
         track_mode = NORMAL;
         road_smh->pointflag= 0;
     }
     // 识别到障碍了
-    if (dl1a_distance_mm < 700 && road_smh->status == BARRIER_NONE && road_smh->pointflag == 0)
+    if (dl1a_distance_mm < 1100 && road_smh->status == BARRIER_NONE && road_smh->pointflag == 0)
     {
         for (int i = BottomRow; i > TopRow; i--)
         {
@@ -37,7 +40,7 @@ void Barrier_process(Trait_smachine *road_smh)
             }
         }
     }
-    if (road_smh->status == BARRIER_FOUND && road_smh->pointflag == 1 && dl1a_distance_mm < 600)
+    if (road_smh->status == BARRIER_FOUND && road_smh->pointflag == 1 && dl1a_distance_mm < 900)
     {
         road_smh->status = BARRIER_TURN;
         road_smh->pointflag = 2;
@@ -57,26 +60,26 @@ void Barrier_process(Trait_smachine *road_smh)
 }
 
 
+// 状态机反复直行runoff函数，标记标志位进入下一标志位
 void run_off(Trait_smachine *road_smh)
 {
+    // 初始化角度环模式
+    track_mode = TURN;
     // turnflag = 0
     // 初始化角度位置，以当前姿态为0°角
     if (turn_flag == 0)
     {
-        track_mode = TURN;
         theta = 0;
         turn_flag = 1;
     }
     if (turn_flag == 1)
     {
-        aim_theta = -26;
+        aim_theta = ANGLE0;
         if (theta <= aim_theta + 5 && turn_flag == 1)
             turn_flag = 2;
     }
     if (turn_flag == 2)
     {
-        // 切换为直行模式
-        track_mode = GO_STRAIGHT;
         // 清零距离及分量
         right_distance = 0;
         left_distance = 0;
@@ -88,23 +91,19 @@ void run_off(Trait_smachine *road_smh)
     }
     if (turn_flag == 4)
     {
-        // 重新切换角度环
         // 将当前姿态设置为0°
-        track_mode = TURN;
         theta = 0;
         turn_flag = 5;
     }
     if (turn_flag == 5)
     {
-        aim_theta = 26;
+        aim_theta = ANGLE1;
         if (theta >= aim_theta - 5)
             turn_flag = 6;
     }
     if (turn_flag == 6)
     {
-        // 重新切换为直行模式
         // 将距离积分量清理
-        track_mode = GO_STRAIGHT;
         left_distance = 0;
         right_distance = 0;
         turn_flag = 7;
@@ -117,8 +116,9 @@ void run_off(Trait_smachine *road_smh)
     // 清零标志位和状态位
     if (turn_flag == 8)
     {
-        track_mode = NORMAL;
         road_smh->pointflag = 0;
+        // turn_flag = 0;
+        track_mode = NORMAL;
         road_smh->status = BARRIER_NONE;
     }
 }
