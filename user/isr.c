@@ -37,6 +37,8 @@
 #include "isr_config.h"
 #include "isr.h"
 
+
+int cnt = 0;
 /**************************** PIT中断函数 ****************************/
 IFX_INTERRUPT(cc60_pit_ch0_isr, 0, CCU6_0_CH0_ISR_PRIORITY)
 {
@@ -53,7 +55,9 @@ IFX_INTERRUPT(cc60_pit_ch1_isr, 0, CCU6_0_CH1_ISR_PRIORITY)
     interrupt_global_enable(0);                     // 开启中断嵌套
     pit_clear_flag(CCU60_CH1);
 
-    // TaskCollectedRemarks();
+    // cnt++;
+    // if (cnt > 150)
+    //     pit_disable(CCU60_CH0);
 
 }
 

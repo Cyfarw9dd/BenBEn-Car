@@ -68,10 +68,12 @@ void motor_ctrl(short Lmotor, short Rmotor){
 void get_motor_speed(void){
     speed1 = -encoder_get_count(ENCODER_DIR_L);
     speed2 = encoder_get_count(ENCODER_DIR_R);
+    real_speed = (speed1 + speed2) / 2;
     left_distance += speed1;
     right_distance +=speed2;
     barrier_turning_distance = (left_distance + right_distance) / 2;
     // put_int32(0, right_distance);
+    // put_int32(0, real_speed);
     
     encoder_clear_count(ENCODER_DIR_L);
     encoder_clear_count(ENCODER_DIR_R);

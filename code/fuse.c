@@ -115,6 +115,11 @@ void Motor_output_control()
     if (track_mode == NORMAL || track_mode == SLOW_DOWN || track_mode == SPEED_UP)
     {
         gyroOffsetInit();
+        ICM_getValues();
+        imu660ra_get_acc();
+        imu660ra_get_gyro();
+        theta += imu_data.gyro_z * 0.02f;
+        gyroOffsetInit();
         Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
         Steer_pwm = range_protect(Steer_pwm, -7000, 7000);               // 转向内环PWM限幅
 
@@ -145,15 +150,32 @@ void Motor_output_control()
         imu660ra_get_gyro();
         theta += imu_data.gyro_z * 0.02f;
         // 角度环
-        Steer_pwm = LocP_DCalc(&Angle_PID, theta, aim_theta); // 转向内环PWM	 Prospect_err
-        Steer_pwm = range_protect(Steer_pwm, -7000, 7000);               // 转向内环PWM限幅
+        Steer_pwm = LocP_DCalc(&Angle_PID, theta, aim_theta);           // Prospect_err
+        Steer_pwm = range_protect(Steer_pwm, -7000, 7000);              // 转向内环PWM限幅
         Steer_pwm *= 25;
-        All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
-        All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
+        All_PWM_left = Speed_pwm_all - Steer_pwm;  //  Speed_pwm_all Steer_pwm
+        All_PWM_right = Speed_pwm_all + Steer_pwm; // 
 
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
         return;
     }
+    if (track_mode == GO_STRAIGHT)
+    {
+        gyroOffsetInit();
+        ICM_getValues();
+        imu660ra_get_acc();
+        imu660ra_get_gyro();
+        theta += imu_data.gyro_z * 0.02f;  
+        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, 0); // 转向内环PWM	 Prospect_err
+        Steer_pwm = range_protect(Steer_pwm, -7000, 7000);               // 转向内环PWM限幅   
+
+        All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+        All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
+
+        motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
+        return;  
+    }
+
     if (track_mode == GARAGE_STOP)
     {
         gyroOffsetInit();
@@ -166,12 +188,30 @@ void Motor_output_control()
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出   
         return;
     }
+
+    if (track_mode == GARAGE_TURN)
+    {
+        gyroOffsetInit();
+        ICM_getValues();
+        imu660ra_get_acc();
+        imu660ra_get_gyro();
+        theta += imu_data.gyro_z * 0.02f;
+        gyroOffsetInit();
+        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, turn_err); // 转向内环PWM	 Prospect_err
+        Steer_pwm = range_protect(Steer_pwm, -7000, 7000);               // 转向内环PWM限幅
+
+        All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+        All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
+
+        motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
+        return;        
+    }
 }
 
 
 void Trailing_control()
 {
-    if (track_mode == NORMAL || track_mode == SLOW_DOWN)
+    if (track_mode == NORMAL || track_mode == SLOW_DOWN || track_mode == BEND || track_mode == SPEED_UP)
     {
         Get_deviation();
         Centerline_Err = Cal_centerline(); 
@@ -194,10 +234,9 @@ void Trailing_control()
 void Speed_control()
 {
     // 直行模式下需采集编码器数据
-    if (track_mode == NORMAL || track_mode == TURN || track_mode == SLOW_DOWN)
+    if (track_mode == NORMAL || track_mode == TURN || track_mode == SLOW_DOWN || track_mode == GO_STRAIGHT || track_mode == SPEED_UP)
     {
         get_motor_speed(); 
-        real_speed = (speed1 + speed2) / 2;
         real_real_speed = speed1 * 0.0432f; 
         Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); 
         range_protect(Speed_pwm_all, -6000, 6000); 
@@ -206,7 +245,6 @@ void Speed_control()
     if (track_mode == ADC)
     {
         get_motor_speed();     
-        real_speed = (speed1 + speed2) / 2;
         real_real_speed = speed1 * 0.0432f; // 0.0432f
         ADC_Speed_pwm += IncPIDCalc(&ADC_SpeedPID, aim_speed, real_speed); 
         range_protect(ADC_Speed_pwm, -6000, 6000); 
@@ -215,7 +253,6 @@ void Speed_control()
     if (track_mode == GARAGE_STOP)
     {
         get_motor_speed(); 
-        real_speed = (speed1 + speed2) / 2;
         real_real_speed = speed1 * 0.0432f; 
         Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); 
         range_protect(Speed_pwm_all, -6000, 6000); 

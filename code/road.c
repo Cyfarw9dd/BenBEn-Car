@@ -81,13 +81,15 @@ Trackline checkline_r;
 unsigned char outflag = 0;      // 出库标志位
 
 // 直道阈值
-#define STRAIGHTTHRESHOLD   0.2f
+#define STRAIGHTTHRESHOLD   0.1f
 // 弯道阈值
-#define BENDTHRESHOLD       0.3f
+#define BENDTHRESHOLD       0.5f
 
 // 弯道390稳定
-#define NORMAL_SPEED        250
-#define ADC_NORMAL_SPEED    180
+#define NORMAL_SPEED        390
+#define BEND_SPEED          250
+#define BARRIER_SPEED       250
+#define ADC_NORMAL_SPEED    250
 #define ZERO                0
 
 #pragma section all restore
@@ -102,16 +104,20 @@ void Traits_process(void)
         {
             aim_speed = NORMAL_SPEED + 50;
             // 增加转向内环P，使得路径更加稳定
-            speeduppid_params();       
+            normalpid_params();       
         }
         if (track_mode != SPEED_UP)
         {
-            if (track_mode == NORMAL || track_mode == BEND)
+            if (track_mode == NORMAL)
             {
                 aim_speed = NORMAL_SPEED;
                 // 回调转向内环P
                 normalpid_params();     
             } 
+            if (track_mode == BEND)
+            {
+                aim_speed = NORMAL_SPEED;
+            }
             if (track_mode == ADC)
             {
                 aim_speed = ADC_NORMAL_SPEED;
@@ -119,13 +125,13 @@ void Traits_process(void)
             }  
             if (track_mode == TURN)
             {
-                aim_speed = NORMAL_SPEED;
+                aim_speed = BARRIER_SPEED;
                 anglepid_params();
             }
             if (track_mode == SLOW_DOWN)
             {
                 // 识别到障碍 减速
-                aim_speed = NORMAL_SPEED - 100;  
+                aim_speed = 300;  
                 normalpid_params();
             }       
         }     
@@ -137,15 +143,15 @@ void Traits_process(void)
         {
             aim_speed = ZERO;
             // 车库停车 速度环超调打死
-            stoppid_params();
+            normalpid_params();
         }
     }
     // roll_out();  // 出库打死
     if (!Departure_PointFlag)
         Departure();
     // Barrier_process(&Barrier);
-    // BreakRoad_process(&BreakRoad, &clip_bin_image[0]);
-    // Startline_process(&Startline, &clip_bin_image[0]);
+    BreakRoad_process(&BreakRoad, &clip_bin_image[0]);
+    Startline_process(&Startline, &clip_bin_image[0]);
 }
 
 void Traits_status_init(void)
@@ -746,9 +752,9 @@ void Straight_process(void)
     // clip_ctline_k2 = regression(CLIP_IMAGE_H - 51, CLIP_IMAGE_H - 39, CLIP_IMAGE_H - 38, CLIP_IMAGE_H - 25);    // 远处斜率
 
     // 近处斜率
-    clip_ctline_k1 = regression(CLIP_IMAGE_H - 18, CLIP_IMAGE_H - 12, CLIP_IMAGE_H - 10, CLIP_IMAGE_H - 3);
+    clip_ctline_k1 = regression(CLIP_IMAGE_H - 13, CLIP_IMAGE_H - 9, CLIP_IMAGE_H - 8, CLIP_IMAGE_H - 5);
     // 远处斜率     
-    clip_ctline_k2 = regression(CLIP_IMAGE_H - 45, CLIP_IMAGE_H - 32, CLIP_IMAGE_H - 28, CLIP_IMAGE_H - 20);    
+    clip_ctline_k2 = regression(CLIP_IMAGE_H - 30, CLIP_IMAGE_H - 25, CLIP_IMAGE_H - 19, CLIP_IMAGE_H - 14);    
 
     kerr = fabs((clip_ctline_k1 - clip_ctline_k2));
     // 连续两帧图像满足阈值条件
@@ -772,11 +778,10 @@ void Straight_process(void)
     }
     // 直道
     if (straight_flag)      track_mode = SPEED_UP;
-    else                    track_mode = NORMAL;
     // 弯道
     if (bend_flag)          track_mode = BEND;
-    else                    track_mode = NORMAL;
-    if (kerr > STRAIGHTTHRESHOLD && kerr < BENDTHRESHOLD)
+    // 不满足直道和弯道条件
+    if (!straight_flag && !bend_flag)
         track_mode = NORMAL;
 }
 

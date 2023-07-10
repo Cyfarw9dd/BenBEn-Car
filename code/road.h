@@ -74,9 +74,11 @@ enum track_mode{
     ADC,
     TURN,
     GARAGE_STOP,
+    GARAGE_TURN,
     SPEED_UP,
     SLOW_DOWN,
     BEND,
+    GO_STRAIGHT,
 };
 
 typedef enum{

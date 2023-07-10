@@ -3,6 +3,7 @@
 #define BLACK_NUM   80
 #define ROADFOUND   50
 int break_blackpoints;
+
 void BreakRoad_process(Trait_smachine *road_smh, unsigned char (*image)[188])
 {
     // 避障时屏蔽断路
@@ -43,6 +44,7 @@ void BreakRoad_process(Trait_smachine *road_smh, unsigned char (*image)[188])
             road_smh->pointflag = 0;
             road_smh->status = BREAKROAD_NONE;
             track_mode = NORMAL;
+            road_smh->trait_cnt += 1;
         }
     }
 }

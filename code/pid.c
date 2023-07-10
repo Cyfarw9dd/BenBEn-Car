@@ -170,15 +170,15 @@ int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint)
 // 正常摄像头循迹用pid
 void normalpid_params(void)
 {
-    SpeedPID.Kp = 8; // 1.0 //速度环PID参数（D车用，速度环2ms）
-    SpeedPID.Ki = 2;    // 0.7
-    SpeedPID.Kd = 12;
+    SpeedPID.Kp = 35; 
+    SpeedPID.Ki = 2;    
+    SpeedPID.Kd = 1;
 
     TurnPID.Kp = 135; 
     TurnPID.Ki = 0;
     TurnPID.Kd = 0;
 
-    Turn_NeiPID.Kp = 2.8; //  4.89
+    Turn_NeiPID.Kp = 2.8; 
     Turn_NeiPID.Ki = 0;
     Turn_NeiPID.Kd = 0;
 }
@@ -186,15 +186,15 @@ void normalpid_params(void)
 // 电磁专用pid
 void adcpid_params(void)
 {
-    ADC_SpeedPID.Kp = 10;
+    ADC_SpeedPID.Kp = 35;
     ADC_SpeedPID.Ki = 2;
-    ADC_SpeedPID.Kd = 12;
+    ADC_SpeedPID.Kd = 1;
 
-    ADC_TurnPID.Kp = 120; // 电磁转向环PID参数
+    ADC_TurnPID.Kp = 105; 
     ADC_TurnPID.Ki = 0;
-    ADC_TurnPID.Kd = 0;
+    ADC_TurnPID.Kd = 10;
 
-    ADC_TURNNeiPID.Kp = 2.0;
+    ADC_TURNNeiPID.Kp = 2.8;
     ADC_TURNNeiPID.Ki = 0;
     ADC_TURNNeiPID.Kd = 0;
 }
@@ -202,15 +202,15 @@ void adcpid_params(void)
 // 加速bangbang pid
 void speeduppid_params(void)
 {
-    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
-    SpeedPID.Ki = 2;    // 0.7
+    SpeedPID.Kp = 10; 
+    SpeedPID.Ki = 2;    
     SpeedPID.Kd = 12;
 
     TurnPID.Kp = 135; 
     TurnPID.Ki = 0;
     TurnPID.Kd = 0;     
 
-    Turn_NeiPID.Kp = 3.6; // 转向内环
+    Turn_NeiPID.Kp = 3.6; 
     Turn_NeiPID.Ki = 0;
     Turn_NeiPID.Kd = 0; 
 }
@@ -219,15 +219,15 @@ void speeduppid_params(void)
 void stoppid_params(void)
 {
     // 快速停车， P超调
-    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
-    SpeedPID.Ki = 2;    // 0.7
+    SpeedPID.Kp = 10; 
+    SpeedPID.Ki = 2;    
     SpeedPID.Kd = 12;
 
     TurnPID.Kp = 135; 
     TurnPID.Ki = 0;
     TurnPID.Kd = 0;
 
-    Turn_NeiPID.Kp = 2.8; //  4.89
+    Turn_NeiPID.Kp = 2.8; 
     Turn_NeiPID.Ki = 0;
     Turn_NeiPID.Kd = 0;
 }
@@ -235,8 +235,8 @@ void stoppid_params(void)
 // 角度环pid参数
 void anglepid_params(void)
 {
-    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
-    SpeedPID.Ki = 2;    // 0.7
+    SpeedPID.Kp = 10; 
+    SpeedPID.Ki = 2;    
     SpeedPID.Kd = 12;
 
     TurnPID.Kp = 135; 
@@ -250,15 +250,15 @@ void anglepid_params(void)
 
 void gostraighpid_params(void)
 {
-    SpeedPID.Kp = 10; // 1.0 //速度环PID参数（D车用，速度环2ms）
-    SpeedPID.Ki = 2;    // 0.7
+    SpeedPID.Kp = 10; 
+    SpeedPID.Ki = 2;    
     SpeedPID.Kd = 12;
 
     TurnPID.Kp = 135; 
     TurnPID.Ki = 0;
     TurnPID.Kd = 0;
 
-    Turn_NeiPID.Kp = 3.8; //  4.89
+    Turn_NeiPID.Kp = 3.8; 
     Turn_NeiPID.Ki = 0;
     Turn_NeiPID.Kd = 0;   
 }

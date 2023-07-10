@@ -223,11 +223,18 @@ void show_gray_image(void)
     {
         MyKeyScan();
         tft180_show_gray_image(0, 0, clip_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
-        tft180_show_string(0, 80, "StartlinePF");       tft180_show_int(90, 80, Startline.pointflag, 3);
-        tft180_show_string(0, 90, "LRoundAbout_PFlag");     tft180_show_int(110, 90, rnum, 2);
-        tft180_show_string(0, 100, "RRoundAbout_PFlag");     tft180_show_int(110, 100, RoundAbout_PointFlag_R, 2);
-        tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad.pointflag, 2);
-        tft180_show_string(0, 120, "Obstacle_PFlag");      tft180_show_int(110, 120, Barrier.pointflag, 2);
+        tft180_show_string(0, 80, "StartlinePF");               tft180_show_int(90, 80, Startline.pointflag, 3);
+    tft180_show_string(0, 90, "LRoundAbout_PFlag");             tft180_show_int(110, 90, rnum, 2);
+        tft180_show_string(0, 100, "RRoundAbout_PFlag");        tft180_show_int(110, 100, RoundAbout_PointFlag_R, 2);
+        tft180_show_string(0, 110, "BreakRoad_PFlag");          tft180_show_int(110, 110, BreakRoad.pointflag, 2);
+        tft180_show_string(0, 120, "Obstacle_PFlag");           tft180_show_int(110, 120, Barrier.pointflag, 2);
+        if (track_mode == NORMAL)
+            tft180_show_string(0, 130, "NORMAL     ");
+        else if (track_mode == ADC)
+            tft180_show_string(0, 130, "ADC        ");
+        else if (track_mode == GARAGE_STOP) 
+            tft180_show_string(0, 130, "GARAGE_STOP");
+        tft180_show_string(0, 140, "p err");                    tft180_show_int(70, 140, Prospect_err, 5);          
     }
     tft180_clear();
 }
@@ -245,11 +252,8 @@ void show_binary_image(void)
             clip_bin_image[i][clip_ctline[i]] = 70;
         }
         tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
-        tft180_show_string(0, 70, "centerline_k");      
-        tft180_show_float(0, 80, clip_ctline_k2, 5, 3);
-        tft180_show_float(0, 90, clip_ctline_k1, 5, 3);
-        tft180_show_string(0, 100, "straightflag");       tft180_show_int(110, 100, straight_flag, 2);
-        tft180_show_string(0, 110, "kerr");     tft180_show_float(60, 110, kerr, 2, 3);
+        tft180_show_string(0, 70, "Lduty");                     tft180_show_int(70, 70, All_PWM_left, 5);
+        tft180_show_string(0, 80, "Rduty");                     tft180_show_int(70, 80, All_PWM_right, 5);
         // tft180_show_string(0, 95, "RRoundAbout_PFlag");     tft180_show_int(110, 95, RoundAbout_PointFlag_R, 2);
         // tft180_show_string(0, 110, "BreakRoad_PFlag");      tft180_show_int(110, 110, BreakRoad_PointFlag, 2);
         // tft180_show_string(0, 125, "Obstacle_PFlag");      tft180_show_int(110, 125, Obstacle_PointFlag, 2);

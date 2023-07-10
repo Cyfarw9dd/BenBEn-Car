@@ -88,7 +88,7 @@ void core1_main(void)
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
     tft180_set_font(TFT180_6X8_FONT);
     pit_ms_init(CCU60_CH0, 1);
-    // pit_ms_init(CCU60_CH1, 1);
+    pit_ms_init(CCU60_CH1, 20);
     pit_ms_init(CCU61_CH0, 20);
 
     // 默认情况下正常循迹
@@ -96,12 +96,9 @@ void core1_main(void)
     // 测试用标志位
     int test_flag = 1;
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
-    theta = 0;
-    aim_theta = 90;
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        track_mode = TURN;
         
         TaskProcess();	
         clip_imageprocess();
@@ -109,12 +106,15 @@ void core1_main(void)
 
 
         // 向上位机发送数据
-        put_float(0, theta);
+        // put_float(0, theta);
+        // put_int32(0, Startline.pointflag);
+        // put_int32(1, BreakRoad.pointflag);
+        // put_int32(2, Barrier.pointflag);
+        // put_int32(3, turn_flag);
         // wireless_uart_send_buff(&theta, 64);
         // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, image_thereshold, 35);     
         // sendimg_A(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);  
-        // wireless_uart_send_image(clip_image[0], MT9V03X_IMAGE_SIZE);
-        // 此处编写需要循环执行的代码
+        // wireless_uart_send_image(clip_image[0], MT9V03X_IMAGE_SIZE);        // 此处编写需要循环执行的代码
     }
 }
 
