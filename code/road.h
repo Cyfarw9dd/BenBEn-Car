@@ -65,6 +65,7 @@ extern unsigned char lnum;
 extern unsigned char rnum;
 extern bool bend_flag;
 extern int track_mode;
+extern unsigned char outflag;
 
 enum track_mode{
     NORMAL = 20,

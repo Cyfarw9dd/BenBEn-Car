@@ -5,8 +5,8 @@ int goin_flag = 0;
 
 void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[188])
 {
-    // if (BreakRoad.trait_cnt >= 1)
-    // {
+    if (BreakRoad.trait_cnt >= 2)
+    {
         unsigned char times = 0;
         for (unsigned char i = (CLIP_IMAGE_H - 1) - 3; i >= (CLIP_IMAGE_H - 1) - 38; i--)
         {
@@ -70,5 +70,5 @@ void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[1
                 pit_disable(CCU60_CH0);
             }
         }
-    // }
+    }
 }

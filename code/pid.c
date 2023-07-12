@@ -186,13 +186,13 @@ void normalpid_params(void)
 // 电磁专用pid
 void adcpid_params(void)
 {
-    ADC_SpeedPID.Kp = 35;
+    ADC_SpeedPID.Kp = 20;
     ADC_SpeedPID.Ki = 2;
     ADC_SpeedPID.Kd = 1;
 
-    ADC_TurnPID.Kp = 105; 
+    ADC_TurnPID.Kp = 180; 
     ADC_TurnPID.Ki = 0;
-    ADC_TurnPID.Kd = 10;
+    ADC_TurnPID.Kd = 0;
 
     ADC_TURNNeiPID.Kp = 2.8;
     ADC_TURNNeiPID.Ki = 0;

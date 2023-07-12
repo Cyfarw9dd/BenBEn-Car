@@ -1,10 +1,10 @@
 #include "zf_common_headfile.h"
 
 #pragma section all "cpu1_dsram"
-#define DISTANCE0   8000
-#define DISTANCE1   4800
-#define ANGLE0      -35
-#define ANGLE1      60
+int DISTANCE0 =  8000;
+int DISTANCE1 =  4800;
+int ANGLE0    =   -30;
+int ANGLE1    =    60;
 int barrier_turning_distance = 0;
 int left_distance = 0; 
 int right_distance = 0;

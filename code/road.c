@@ -89,7 +89,7 @@ unsigned char outflag = 0;      // 出库标志位
 #define NORMAL_SPEED        390
 #define BEND_SPEED          250
 #define BARRIER_SPEED       250
-#define ADC_NORMAL_SPEED    250
+#define ADC_NORMAL_SPEED    180
 #define ZERO                0
 
 #pragma section all restore
@@ -152,8 +152,8 @@ void Traits_process(void)
         }
     }
     // roll_out();  // 出库打死
-    if (!Departure_PointFlag)
-        Departure();
+    // if (!Departure_PointFlag)
+    //     Departure();
     // Barrier_process(&Barrier);
     BreakRoad_process(&BreakRoad, &clip_bin_image[0]);
     Startline_process(&Startline, &clip_bin_image[0]);
@@ -668,7 +668,9 @@ void roll_out(void)
         while (outflag)
         {
             motor_ctrl(1800, 3500);
-            system_delay_ms(500);
+            system_delay_ms(2000);
+            motor_ctrl(0, 0);
+            system_delay_ms(200);
             outflag = 0;
         }
         #endif 

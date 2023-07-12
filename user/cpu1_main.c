@@ -96,12 +96,14 @@ void core1_main(void)
     // 测试用标志位
     int test_flag = 1;
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
-    // motor_ctrl(2000, 3000);
-    // system_delay_ms(200);
+    motor_ctrl(1800, 3500);
+    system_delay_ms(300);
+    motor_ctrl(0, 0);
+    system_delay_ms(200);
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        // roll_out();
+        
         TaskProcess();	
         clip_imageprocess();
         Traits_process();
