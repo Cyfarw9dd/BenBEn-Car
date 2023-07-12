@@ -7,7 +7,7 @@ int break_blackpoints;
 void BreakRoad_process(Trait_smachine *road_smh, unsigned char (*image)[188])
 {
     // 避障时屏蔽断路
-    if (Barrier.pointflag == 0)
+    if (Barrier.pointflag == 0 && Startline.status != ZEBRA_IN)
     {
         break_blackpoints = 0;
         // 对底边两行扫描黑点

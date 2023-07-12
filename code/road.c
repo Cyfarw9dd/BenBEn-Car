@@ -139,6 +139,11 @@ void Traits_process(void)
 
     if (Startline.status == ZEBRA_IN)
     {
+        if (track_mode == TURN)
+        {
+            aim_speed = BARRIER_SPEED;
+            anglepid_params();
+        }
         if (track_mode == GARAGE_STOP)
         {
             aim_speed = ZERO;

@@ -45,6 +45,7 @@ List MyList[] =
     {141, "show breakroad", show_breakroad, NULL},
     {142, "show straight", show_straight, NULL},
     {143, "show barrier", show_barrier_params, NULL},
+    {144, "show_zebra", show_zebra, NULL},
     {15, "show corners", show_corners, NULL},
     {16, "back to main", NULL, NULL},           // 返回主菜单
     {2, "Tuning", NULL, NULL},
@@ -515,4 +516,28 @@ void show_straight(void)
             tft180_show_string(0, 80, "isn't bend");
         tft180_show_string(0, 100, "kerr");     tft180_show_float(60, 100, kerr, 2, 3);
     }   
+}
+
+void show_zebra(void)
+{
+    tft180_clear();
+    Key_flag_clear();
+    while (!Key3_flag)
+    {
+        tft180_show_gray_image(0, 0, clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, MT9V03X_W / 1.5, CLIP_IMAGE_H / 1.5, 0);
+        tft180_show_string(0, 70, "garage flag");           tft180_show_int(80, 70, garage_flag, 3);
+        tft180_show_string(0, 80, "theta");                 tft180_show_float(80, 80, theta, 3, 1);
+        tft180_show_string(0, 90, "aim_theta");             tft180_show_float(80, 90, aim_theta, 3, 1);
+        if (track_mode == TURN)
+            tft180_show_string(0, 100, "TURN       ");
+        if (track_mode == NORMAL)
+            tft180_show_string(0, 100, "NORMAL     ");
+        if (track_mode == ADC)
+            tft180_show_string(0, 100, "ADC        ");
+        if (track_mode == GO_STRAIGHT)
+            tft180_show_string(0, 100, "GO STRAIGHT");
+        if (track_mode == GARAGE_STOP)
+            tft180_show_string(0, 100, "STOP       ");
+    }
+    tft180_clear();
 }

@@ -179,11 +179,11 @@ void Motor_output_control()
     if (track_mode == GARAGE_STOP)
     {
         gyroOffsetInit();
-        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, 0); // 转向内环PWM	 Prospect_err
+        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
         Steer_pwm = range_protect(Steer_pwm, -6000, 6000);               // 转向内环PWM限幅
-        Steer_pwm = Steer_pwm * 8;
-        All_PWM_left = 0 - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
-        All_PWM_right = 0 + Steer_pwm; // 右电机所有PWM输出
+        // Steer_pwm = Steer_pwm * 8;
+        All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
+        All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
 
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出   
         return;
@@ -206,6 +206,8 @@ void Motor_output_control()
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
         return;        
     }
+    if (track_mode == OBSTACLE)
+        return;
 }
 
 
@@ -227,6 +229,8 @@ void Trailing_control()
         return;
     }
     if (track_mode == TURN)
+        return;
+    if (track_mode == OBSTACLE)
         return;
 }
 
@@ -258,6 +262,8 @@ void Speed_control()
         range_protect(Speed_pwm_all, -6000, 6000); 
         return;        
     }
+    if (track_mode == OBSTACLE)
+        return;
 }
 
 

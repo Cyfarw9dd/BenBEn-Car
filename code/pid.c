@@ -170,7 +170,7 @@ int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint)
 // 正常摄像头循迹用pid
 void normalpid_params(void)
 {
-    SpeedPID.Kp = 35; 
+    SpeedPID.Kp = 20; 
     SpeedPID.Ki = 2;    
     SpeedPID.Kd = 1;
 

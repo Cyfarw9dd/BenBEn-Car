@@ -1,11 +1,12 @@
 #include "zf_common_headfile.h"
 
 int garage_flag = 0;
+int goin_flag = 0;
 
 void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[188])
 {
-    if (BreakRoad.trait_cnt >= 1)
-    {
+    // if (BreakRoad.trait_cnt >= 1)
+    // {
         unsigned char times = 0;
         for (unsigned char i = (CLIP_IMAGE_H - 1) - 3; i >= (CLIP_IMAGE_H - 1) - 38; i--)
         {
@@ -42,19 +43,32 @@ void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[1
         if(times >= 3 && road_smh->pointflag != 1)     /*&& times <= 5*/
         {
             road_smh->pointflag = 1;
-            garage_flag = 1;
             road_smh->status = ZEBRA_IN;
-            track_mode = GARAGE_STOP;
+            garage_flag = 1;    
         }
-        // if (garage_flag == 1)
-        // {
-        //     theta = 0;
-        //     turn_err = -1500;
-        // }
-        // // 固定偏差转向，角度积分
-        // if (theta < -60)
-        // {
-        //     track_mode = GARAGE_STOP;
-        // }
-    }
+        if (garage_flag == 1)
+        {
+            Departure_PointFlag = 0;
+            if (!goin_flag)
+            {
+                track_mode = OBSTACLE;
+                motor_ctrl(2000, 3000);
+                system_delay_ms(200);
+                motor_ctrl(0, 0);
+                system_delay_ms(200);
+                goin_flag = 1;
+            }
+            garage_flag = 2;
+        }
+        if (garage_flag == 2)
+        {
+            // Departure_PointFlag = 1;
+            // track_mode = GARAGE_STOP;
+            while (true)
+            {
+                Departure_PointFlag = 0;
+                pit_disable(CCU60_CH0);
+            }
+        }
+    // }
 }

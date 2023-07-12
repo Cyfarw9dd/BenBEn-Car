@@ -64,4 +64,6 @@ void show_breakroad(void);
 
 void show_straight(void);
 
+void show_zebra(void);
+
 #endif /* CODE_LIST_H_ */

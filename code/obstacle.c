@@ -2,8 +2,8 @@
 
 #pragma section all "cpu1_dsram"
 #define DISTANCE0   8000
-#define DISTANCE1   5500
-#define ANGLE0      -40
+#define DISTANCE1   4800
+#define ANGLE0      -35
 #define ANGLE1      60
 int barrier_turning_distance = 0;
 int left_distance = 0; 
