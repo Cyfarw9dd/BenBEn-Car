@@ -4,23 +4,18 @@
     elements -> 环岛 车库 断路 路障 十字 坡道
     移植代码 -> 去除三叉和回环
 */
-#include "elements.h"
-#include "image.h"
-#include "gyro.h"
-#include "cycle.h"
-#include "control.h"
-#include "pid.h"
+#include "zf_common_headfile.h"
                          
 changepoint Parking_L, Parking_R;                                                                   // 定义车库拐点结构体
 changepoint RoundAbout_LeftDown, RoundAbout_LeftAbove, RoundAbout_RightDown, RoundAbout_RightAbove; // 环岛拐点结构体
 
-short P_Crossing_LCounter = 0;  
-short P_Crossing_RCounter = 0;  
 short StartLine_Counter = 0;    // 斑马线识别计时器
 short Upslope_Counter = 0;      // 上坡识别计时器
 short Downslope_Counter = 0;    // 下坡识别计时器
 short Rounding_LCounter = 0;    // 左环岛识别计时器
 short Rounding_RCounter = 0;    // 右环岛识别计时器
+short Departure_cnt = 0;        // 发车计数器
+int blackpoints = 0;
 
 unsigned char Present_RoundAbout_PointFlagL = 1;    /*********************/
 unsigned char Present_RoundAbout_PointFlagR = 1;
@@ -33,6 +28,29 @@ unsigned char RoundAbout_PointFlag_R = 0;   // 右环岛标志位
 unsigned char Upslope_PointFlag = 0;        // 上坡标志位
 unsigned char Downslope_PointFlag = 0;      // 下坡标志位
 unsigned char Parking_PointFlag = 0;        // 停车标志位
+unsigned char BreakRoad_PointFlag = 0;      // 断路标志位
+unsigned char Obstacle_PointFlag = 0;       // 障碍标志位
+unsigned char Departure_PointFlag = 0;          // 发车标志位
+
+
+void Judging_Elements(void)
+{
+    Judging_Break_Road(&bin_image[0]);
+    Judging_StartLine(&bin_image[0]);
+    // Judging_RoundAbout(&bin_image[0]);
+    if (BreakRoad_PointFlag == 1)
+    {
+        buzzer_flag = 1;
+        pit_disable(CCU60_CH0);
+        pit_enable(CCU60_CH1);
+    }
+    else if (BreakRoad_PointFlag == 0)
+    {
+        buzzer_flag = 0;
+        pit_disable(CCU60_CH1);
+        pit_enable(CCU60_CH0);
+    }
+}
 
 
 /*
@@ -43,16 +61,6 @@ int absolute(int var){
         return -var;
     else
         return var;
-}
-
-/*
-    最小值计算函数
-*/
-int minimum(int var1, int var2){
-    if(var1 > var2)
-        return var1;
-    else
-        return var2;
 }
 
 /*
@@ -315,29 +323,6 @@ void Findchangepoint_R(changepoint *prt, unsigned char Start, unsigned char End,
 
 
 
-// 坐边线丢线数目
-unsigned char Leftline_Lost_Sum(unsigned char Start_Row, unsigned char End_row){
-    unsigned char leftline_lost_sum = 0;
-    for(int i = Start_Row; i > End_row; i--){
-        if(l_border[i] < 5){
-            leftline_lost_sum++;
-        }
-    }
-    return leftline_lost_sum;
-}
-
-// 右边线丢线数目
-unsigned char Rightline_Lost_Sum(unsigned char Start_Row, unsigned char End_row){
-    unsigned char rightline_lost_sum = 0;
-    for(int i = Start_Row; i > End_row; i--){
-        if(r_border[i] > 182){
-            rightline_lost_sum++;
-        }
-    }
-    return rightline_lost_sum;
-}
-
-
 
 // 判断起跑线
 void Judging_StartLine(unsigned char (*binary_array)[188]){
@@ -424,7 +409,7 @@ void Judging_RoundAbout(unsigned char (*binary_array)[188]){
     }
     // Judging right roundabout point flag 3rd
     for(unsigned char i = BottomRow - 10; i > 60; i--){
-        if(leftline[BottomRow] != StartCoL && rightline != EndCoL && Right_RoadWidth[i + 10] - Right_RoadWidth[i + 5] > 3 && Right_RoadWidth[i + 5] - Right_RoadWidth[i] > 2
+        if(leftline[BottomRow] != StartCoL && rightline[BottomRow] != EndCoL && Right_RoadWidth[i + 10] - Right_RoadWidth[i + 5] > 3 && Right_RoadWidth[i + 5] - Right_RoadWidth[i] > 2
         && Right_RoadWidth[i] - Right_RoadWidth[i + 10] < -5 && Right_RoadWidth[i] - Right_RoadWidth[i - 5] < -2 && Right_RoadWidth[i - 5] - Right_RoadWidth[i - 10] < -3
         && Right_RoadWidth[i - 10] - Right_RoadWidth[i] > 5 && RoundAbout_PointFlag_R >= 2 && RoundAbout_PointFlag_R <= 3 && Rounding_RCounter < 300)
         {
@@ -556,5 +541,48 @@ void Judging_Slope(void){
     }
 }
 
+//  --------------
+// -> start from here 
+// 2 * 188 = 376
 
+void Judging_Break_Road(unsigned char (*binary_array)[188])
+{
+    blackpoints = 0;
+    for (int row = 119; row > 117; row --)
+    {
+        for (int left_col = 93; left_col > 0; left_col -= 3)
+        {
+            if (mt9v03x_image[row][left_col + 3] < image_thereshold)
+            {
+                blackpoints++;
+            }
+        }
+        for (int right_col = 0; right_col < 187; right_col += 3)
+        {
+            if (mt9v03x_image[row][right_col - 3] < image_thereshold)
+            {
+                blackpoints++;
+            }
+        }
+    }
+    if (blackpoints > 70)  BreakRoad_PointFlag = 1;
+    else                    BreakRoad_PointFlag = 0;
+}
 
+void Departure(void)
+{
+    while (!Departure_PointFlag)
+    {
+        pit_disable(CCU60_CH0);
+    }
+    Departure_PointFlag = 1;
+    // if (outflag)
+    // {
+    //     motor_ctrl(3000, 2000);
+    //     system_delay_ms(1000);
+    //     motor_ctrl(0, 0);
+    //     system_delay_ms(1000);
+    //     outflag = 0;
+    // }
+    pit_enable(CCU60_CH0);
+}

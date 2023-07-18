@@ -314,8 +314,6 @@ d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h :
 d:/BenBen/BEN_ben ver1.01/code/control.h :
  control.o :	d:/BenBen/BEN_ben ver1.01/code/pid.h
 d:/BenBen/BEN_ben ver1.01/code/pid.h :
- control.o :	d:/BenBen/BEN_ben ver1.01/code/cycle.h
-d:/BenBen/BEN_ben ver1.01/code/cycle.h :
  control.o :	d:/BenBen/BEN_ben ver1.01/code/gyro.h
 d:/BenBen/BEN_ben ver1.01/code/gyro.h :
  control.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
@@ -326,3 +324,15 @@ d:/BenBen/BEN_ben ver1.01/code/elements.h :
 d:/BenBen/BEN_ben ver1.01/code/fuse.h :
  control.o :	d:/BenBen/BEN_ben ver1.01/code/adc.h
 d:/BenBen/BEN_ben ver1.01/code/adc.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/road.h
+d:/BenBen/BEN_ben ver1.01/code/road.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/cross.h
+d:/BenBen/BEN_ben ver1.01/code/cross.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/obstacle.h
+d:/BenBen/BEN_ben ver1.01/code/obstacle.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/ramp.h
+d:/BenBen/BEN_ben ver1.01/code/ramp.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/zebra.h
+d:/BenBen/BEN_ben ver1.01/code/zebra.h :
+ control.o :	d:/BenBen/BEN_ben ver1.01/code/breakroad.h
+d:/BenBen/BEN_ben ver1.01/code/breakroad.h :

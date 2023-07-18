@@ -16,7 +16,13 @@
         "zf_common_interrupt.h": "c",
         "zf_driver_dma.h": "c",
         "zf_driver_soft_spi.h": "c",
-        "adc.h": "c"
+        "adc.h": "c",
+        "math.h": "c",
+        "corecrt_math.h": "c",
+        "stdint.h": "c",
+        "stdbool.h": "c",
+        "string.h": "c",
+        "stdlib.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }

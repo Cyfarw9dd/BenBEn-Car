@@ -4,8 +4,6 @@
 
 code/gyro.o :	../code/gyro.c
 ../code/gyro.c :
-code/gyro.o :	../code/gyro.h
-../code/gyro.h :
 code/gyro.o :	d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h
 d:/BenBen/BEN_ben ver1.01/libraries/zf_common/zf_common_headfile.h :
 code/gyro.o :	d:/AURIX-Studio-1.8.0/plugins/com.infineon.aurix.tools_1.8.0/build_system/tools/Compilers/Tasking_1.1r8/ctc/include/math.h
@@ -316,8 +314,6 @@ code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/control.h
 d:/BenBen/BEN_ben ver1.01/code/control.h :
 code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/pid.h
 d:/BenBen/BEN_ben ver1.01/code/pid.h :
-code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/cycle.h
-d:/BenBen/BEN_ben ver1.01/code/cycle.h :
 code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/gyro.h
 d:/BenBen/BEN_ben ver1.01/code/gyro.h :
 code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
@@ -328,3 +324,15 @@ code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/fuse.h
 d:/BenBen/BEN_ben ver1.01/code/fuse.h :
 code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/adc.h
 d:/BenBen/BEN_ben ver1.01/code/adc.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/road.h
+d:/BenBen/BEN_ben ver1.01/code/road.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/cross.h
+d:/BenBen/BEN_ben ver1.01/code/cross.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/obstacle.h
+d:/BenBen/BEN_ben ver1.01/code/obstacle.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/ramp.h
+d:/BenBen/BEN_ben ver1.01/code/ramp.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/zebra.h
+d:/BenBen/BEN_ben ver1.01/code/zebra.h :
+code/gyro.o :	d:/BenBen/BEN_ben ver1.01/code/breakroad.h
+d:/BenBen/BEN_ben ver1.01/code/breakroad.h :

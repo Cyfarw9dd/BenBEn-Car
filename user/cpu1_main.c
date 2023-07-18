@@ -41,28 +41,29 @@
 // 将本语句与#pragma section all restore语句之间的全局变量都放在CPU1的RAM中
 
 // **************************** 代码区域 ****************************
-// buzzer p33.1
-#define PIT_CCU60_ms 5
-unsigned char outflag = 0;      // 出库标志位
-
-extern short speed1, speed2;
-extern S_FLOAT_XYZ GYRO_REAL, REAL_ACC;
+#define TEST  1
+#define BLOCK 0
 void core1_main(void)
 {
     disable_Watchdog();                     // 关闭看门狗
     interrupt_global_enable(0);             // 打开全局中断
     // 此处编写用户代码 例如外设初始化代码等
-    outflag = 1;
     mt9v03x_init();
     tft180_init();
+    // ips200_init(IPS200_TYPE_PARALLEL8);
     imu660ra_init();
     wireless_uart_init();
+    dl1a_init();
     PID_int();
-
+    gyroOffsetInit();
+    Traits_status_init();
+    // 初始化pwm
     pwm_init(ATOM0_CH0_P21_2, 17 * 1000, 0);
     pwm_init(ATOM0_CH1_P21_3, 17 * 1000, 0);
     pwm_init(ATOM0_CH2_P21_4, 17 * 1000, 0);
     pwm_init(ATOM0_CH3_P21_5, 17 * 1000, 0);
+    pwm_init(BUZZER, 3 * 1000, 0);
+
 
     encoder_dir_init(ENCODER_DIR_L, ENCODER_DIR_PULSE_L, ENCODER_DIR_DIR_L);
     encoder_dir_init(ENCODER_DIR_R, ENCODER_DIR_PULSE_R, ENCODER_DIR_DIR_R);
@@ -71,65 +72,56 @@ void core1_main(void)
     gpio_init(KEY2, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY2 输入 默认高电平 上拉输入
     gpio_init(KEY3, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY3 输入 默认高电平 上拉输入
     gpio_init(KEY4, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY4 输入 默认高电平 上拉输入
+    gpio_init(TOGGLE1, GPI, GPIO_HIGH, GPI_PULL_UP);        // 拨码开关1
+    gpio_init(TOGGLE2, GPI, GPIO_HIGH, GPI_PULL_UP);        // 拨码开关2
 
-    // 此处编写用户代码 例如外设初始化代码等
+    // 初始化8路运放
+    adc_init(ADC0_CH0_A0, ADC_8BIT);
+    adc_init(ADC0_CH1_A1, ADC_8BIT);
+    adc_init(ADC0_CH2_A2, ADC_8BIT);
+    adc_init(ADC0_CH3_A3, ADC_8BIT);
+    adc_init(ADC0_CH4_A4, ADC_8BIT);
+    adc_init(ADC0_CH5_A5, ADC_8BIT);
+    adc_init(ADC0_CH6_A6, ADC_8BIT);
+    adc_init(ADC0_CH7_A7, ADC_8BIT);
+
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
     tft180_set_font(TFT180_6X8_FONT);
     pit_ms_init(CCU60_CH0, 1);
-    
+    pit_ms_init(CCU60_CH1, 20);
+    pit_ms_init(CCU61_CH0, 20);
+
+    // 默认情况下正常循迹
+    track_mode = NORMAL;
+    // 测试用标志位
+    int test_flag = 1;
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
+    motor_ctrl(1800, 3500);
+    system_delay_ms(300);
+    motor_ctrl(0, 0);
+    system_delay_ms(200);
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        // while (outflag)
-        // {
-        //     motor_ctrl(3000, 2000);
-        //     system_delay_ms(500);
-        //     outflag = 0;
-        // }
-        // List_Switch();
-        // cal_curvature(&(MyRoad_Characteristics.Curve_Err));
-        // 以下为常用的测试代码
+        
+        // 左发车先经过断路后经过障碍
+        // 也可以在判断完障碍之后再判断斑马线
+        
+        TaskProcess();	
+        clip_imageprocess();
+        Traits_process();
 
-        // get_motor_speed();
-        // motor_ctrl(3000, 3000);   // (0, 3000)向右转，(3000, 0)向左转
-        // tft180_show_gray_image(0 ,0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        // tft180_show_int(0, 90, GYRO_REAL.Z, 5);
-        // tft180_show
 
-        gyroOffsetInit();
-        // Camera();
-		// sendimg_binary_CHK(&bin_image[0], MT9V03X_W, MT9V03X_H, image_thereshold, 25);
-        // tft180_show_gray_image(0, 0, mt9v03x_image[0], MT9V03X_W, MT9V03X_H, MT9V03X_W / 1.5, MT9V03X_H / 1.5, 0);
-        put_float(0, real_real_speed);
-        tft180_show_string(0, 30, "BlackPoints_Nums");         tft180_show_float(60, 30, real_real_speed, 5, 2);
-        // tft180_show_string(0, 50 , "TurnNei_I");        tft180_show_float(60, 50, Turn_NeiPID.Ki, 5, 2);
-        // tft180_show_string(0, 70, "TurnNei_D");        tft180_show_float(60, 70, Turn_NeiPID.Kd, 5, 2);
-        // tft180_show_string(0, 110, "Turn_P");         tft180_show_float(45, 110, TurnPID.Kp, 5, 2);
-        tft180_show_string(0, 110, "Turn_I");        tft180_show_float(45, 110, TurnPID.Ki, 5, 2);
-        tft180_show_string(0, 130, "Turn_d");        tft180_show_float(45, 130, TurnPID.Kd, 5, 2);
-        // tft180_show_float(0, 90, Centerline_Err, 5, 2);         tft180_show_float(60, 90, Prospect_Err, 5, 2);
-        TaskProcess();
-        image_process();
-        tft180_show_float(0, 90, speed1, 5, 2);         tft180_show_float(60, 90, speed2, 5, 2); 
-        Deal_Road_Characteristics(&bin_image[0], &MyRoad_Characteristics);
-        Hightlight_Lines(&bin_image[0]);                 
-        if(Key1 == onepress){
-			Key1 = nopress;
-			Turn_NeiPID.Kp += 0.1;
-			// system_delay_ms(300);
-		}
-		if(Key2 == onepress){
-            Key2 = nopress;
-			TurnPID.Kp += 10;
-			// system_delay_ms(300);
-		}
-		if(Key3 == onepress){
-            Key3 = nopress;
-			TurnPID.Kd += 1;
-			// system_delay_ms(300);
-		}
-        // 此处编写需要循环执行的代码
+        // 向上位机发送数据
+        // put_float(0, theta);
+        // put_int32(0, Startline.pointflag);
+        // put_int32(1, BreakRoad.pointflag);
+        // put_int32(2, Barrier.pointflag);
+        // put_int32(3, turn_flag);
+        // wireless_uart_send_buff(&theta, 64);
+        // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, image_thereshold, 35);     
+        // sendimg_A(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);  
+        // wireless_uart_send_image(clip_image[0], MT9V03X_IMAGE_SIZE);        // 此处编写需要循环执行的代码
     }
 }
 
@@ -140,6 +132,3 @@ void core1_main(void)
 
 // *************************** 例程常见问题说明 ***************************
 // 遇到问题时请按照以下问题检查列表检查
-// 问题1：LED 不闪烁
-//      查看程序是否正常烧录，是否下载报错，确认正常按下复位按键
-//      万用表测量对应 LED 引脚电压是否变化，如果不变化证明程序未运行，如果变化证明 LED 灯珠损坏

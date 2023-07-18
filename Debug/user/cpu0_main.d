@@ -314,8 +314,6 @@ user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/control.h
 d:/BenBen/BEN_ben ver1.01/code/control.h :
 user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/pid.h
 d:/BenBen/BEN_ben ver1.01/code/pid.h :
-user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/cycle.h
-d:/BenBen/BEN_ben ver1.01/code/cycle.h :
 user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/gyro.h
 d:/BenBen/BEN_ben ver1.01/code/gyro.h :
 user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/list.h
@@ -326,3 +324,15 @@ user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/fuse.h
 d:/BenBen/BEN_ben ver1.01/code/fuse.h :
 user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/adc.h
 d:/BenBen/BEN_ben ver1.01/code/adc.h :
+user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/road.h
+d:/BenBen/BEN_ben ver1.01/code/road.h :
+user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/cross.h
+d:/BenBen/BEN_ben ver1.01/code/cross.h :
+user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/obstacle.h
+d:/BenBen/BEN_ben ver1.01/code/obstacle.h :
+user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/ramp.h
+d:/BenBen/BEN_ben ver1.01/code/ramp.h :
+user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/zebra.h
+d:/BenBen/BEN_ben ver1.01/code/zebra.h :
+user/cpu0_main.o :	d:/BenBen/BEN_ben ver1.01/code/breakroad.h
+d:/BenBen/BEN_ben ver1.01/code/breakroad.h :

@@ -18,10 +18,14 @@
 #define PWM_CH3                            (ATOM0_CH3_P21_5)                     // PWM引脚3
 #define PWM_CH4                            (ATOM0_CH1_P21_3)                     // PWM引脚4   
 
-#define MOTOR_MAX 4000                                                           // 电机限幅最大值
+#define MOTOR_MAX 7000                                                           // 电机限幅最大值
 #define MOTOR_MIN 0                                                              // 电机限幅最小值
 #define MOTOR_EXPECTATION 3000                                                   // 电机理论输出期望
 
+#define BUZZER ATOM2_CH0_P33_10                                                  // 定义蜂鸣器引脚
+
+extern int buzzer_flag;
+extern int buzzer_cnt;
 // #define CURVE_ERR 50
 enum motor_mode
 {
@@ -31,11 +35,20 @@ enum motor_mode
 
 extern short speed1, speed2;
 
+// typedef enum{
+//     Soft = 100,
+//     Roll,
+// }Speed_mode;
+
+// Speed_mode My_Speed_mode;
+
 void motor_ctrl(short Lmotor, short Rmotor);
 
 void get_motor_speed(void);
 
 void Quick_Break(void);
+
+void Buzzer(void);
 
 #endif /* CODE_CONTROL_H_ */
 

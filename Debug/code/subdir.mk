@@ -6,50 +6,86 @@
 C_SRCS += \
 ../code/\ control.c \
 ../code/adc.c \
-../code/cycle.c \
+../code/breakroad.c \
+../code/cross.c \
 ../code/elements.c \
 ../code/fuse.c \
 ../code/gyro.c \
 ../code/image.c \
 ../code/list.c \
+<<<<<<< HEAD
 ../code/pid.c \
 ../code/road.c 
+=======
+../code/obstacle.c \
+../code/pid.c \
+../code/ramp.c \
+../code/road.c \
+../code/zebra.c 
+>>>>>>> dev
 
 OBJS += \
 ./code/\ control.o \
 ./code/adc.o \
-./code/cycle.o \
+./code/breakroad.o \
+./code/cross.o \
 ./code/elements.o \
 ./code/fuse.o \
 ./code/gyro.o \
 ./code/image.o \
 ./code/list.o \
+<<<<<<< HEAD
 ./code/pid.o \
 ./code/road.o 
+=======
+./code/obstacle.o \
+./code/pid.o \
+./code/ramp.o \
+./code/road.o \
+./code/zebra.o 
+>>>>>>> dev
 
 COMPILED_SRCS += \
 ./code/\ control.src \
 ./code/adc.src \
-./code/cycle.src \
+./code/breakroad.src \
+./code/cross.src \
 ./code/elements.src \
 ./code/fuse.src \
 ./code/gyro.src \
 ./code/image.src \
 ./code/list.src \
+<<<<<<< HEAD
 ./code/pid.src \
 ./code/road.src 
+=======
+./code/obstacle.src \
+./code/pid.src \
+./code/ramp.src \
+./code/road.src \
+./code/zebra.src 
+>>>>>>> dev
 
 C_DEPS += \
 ./code/\ control.d \
 ./code/adc.d \
-./code/cycle.d \
+./code/breakroad.d \
+./code/cross.d \
 ./code/elements.d \
 ./code/fuse.d \
 ./code/gyro.d \
 ./code/image.d \
 ./code/list.d \
+<<<<<<< HEAD
 ./code/pid.d \
 ./code/road.d 
+=======
+./code/obstacle.d \
+./code/pid.d \
+./code/ramp.d \
+./code/road.d \
+./code/zebra.d 
+>>>>>>> dev
 
 
 # Each subdirectory must supply rules for building sources it contributes

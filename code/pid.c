@@ -124,159 +124,7 @@ short range_protect(short duty, short min, short max)
         return duty;
 }
 
-short PID_Increase_for_ProspectErr(PID *sptr, float *PID){
-    int Error, Increase, NowData;
 
-    if(further < middle && middle < near){
-        Error = ((middle - further)  + (near - middle)) / 2;
-    }
-    else if(further < middle && middle >= near){
-        Error = near - middle;
-    }
-    else if(further >= middle && middle < near){
-        Error = near - middle;
-    }
-    else{
-        Error = ((middle - further) + (near - middle)) / 2;
-    }
-
-    Increase =  PID[KP] * (Error - sptr->LastError)
-              + PID[KI] * Error
-              + PID[KD] * (Error - 2 * sptr->LastError + sptr->PrevError);
-
-    sptr->PrevError = sptr->LastError;
-    sptr->LastError = Error;
-
-    if(further < middle && middle < near){
-        NowData = (further + middle) / 2;
-    }
-    else if(further < middle && middle >= near){
-        NowData = middle;
-    }
-    else if(further >= middle && middle < near){
-        NowData = middle;
-    }
-    else{
-        NowData = (further + middle) / 2;
-    }
-    sptr->LastData = NowData;
-
-    return Increase;
-}
-
-
-short PID_Increase_for_BottomErr(PID *sptr, float *PID){
-    int Error, Increase, NowData;
-    Error = Bottom_Err;
-
-    Increase =  PID[KP] * (Error - sptr->LastError)
-              + PID[KI] * Error
-              + PID[KD] * (Error - 2 * sptr->LastError + sptr->PrevError);
-
-    NowData = 94 + Bottom_Err;
-    sptr->PrevError = sptr->LastError;
-    sptr->LastError = Error;
-    sptr->LastData = NowData;
-
-    return Increase;
-}
-
-
-short PID_Realize_for_ProspectErr(PID *sptr, float *PID){
-    short Realize,
-          NowData = 94;
-    sptr->SumError += PID[KI] * Prospect_Err;
-    if (sptr->SumError >= PID[KT])
-    {
-        sptr->SumError = PID[KT];
-    }
-    else if (sptr->SumError <= -PID[KT])
-    {
-        sptr->SumError = -PID[KT];
-    }
-
-    Realize = PID[KP] * Prospect_Err
-            + sptr->SumError
-            + PID[KD] * (Prospect_Err - sptr->LastError);
-    sptr->PrevError = sptr->LastError;
-    sptr->LastError = Prospect_Err;
-    sptr->LastData  = NowData;
-
-    return Realize;
-}
-
-
-short PID_Realize_for_BottomErr(PID *sptr, float *PID){
-    short Realize,
-          NowData;
-
-    sptr->SumError += PID[KI] * Bottom_Err;
-    if (sptr->SumError >= PID[KT])
-    {
-        sptr->SumError = PID[KT];
-    }
-    else if (sptr->SumError <= -PID[KT])
-    {
-        sptr->SumError = -PID[KT];
-    }
-
-    Realize = PID[KP] * Bottom_Err
-            + sptr->SumError
-            + PID[KD] * (Bottom_Err - sptr->LastError);
-    sptr->PrevError = sptr->LastError;
-    sptr->LastError = Bottom_Err;
-    NowData = 94 + Bottom_Err;
-    sptr->LastData  = NowData;
-
-    return Realize;
-}
-
-
-void PID_Init(void){
-    pid.err=0;
-    pid.err_last=0;
-
-    pid.Kp=20;
-    pid.Ki=0;
-    pid.Kd=10;
-    pid.Kout=0;
-    pid.voltage=0;
-    pid.integral=0;
-}
-
-int calculate_pid(float a){
-    int t;
-
-    pid.Set      = 0;
-    pid.Actual   = a;
-    pid.err      = pid.Set - pid.Actual;
-
-
-    pid.integral = pid.integral + pid.err;
-
-    pid.voltage = pid.Kp*pid.err
-                + pid.Ki*pid.integral/1000
-                + pid.Kd*(pid.err-pid.err_last)
-                + pid.Kout;
-
-    pid.err_last = pid.err;
-
-    t = MOTOR_EXPECTATION + pid.voltage;
-
-    /*if(t<0)             t=-t;
-    if(t>9999)      t=9998;*/
-
-    return t;
-}
-
-
-
-/************************************************
-函数名：LocP_DCalc(PID *sptr,int16 Setpoint,int16 Turepoint)
-功  能：位置式PID控制
-参  数：PID *sptr,int16 Setpoint,int16 Turepoint
-返回值：float 
-************************************************/
 int16 LocP_DCalc(MyPID*sptr, int16 Setpoint, int16 Turepoint)
 {
     int16 iError, dError;
@@ -295,12 +143,7 @@ int16 LocP_DCalc(MyPID*sptr, int16 Setpoint, int16 Turepoint)
           +sptr->Kd * dError);        //微分项
     return(output);
 }
-/************************************************
-函数名：IncPIDCalc(PID *sptr,int16 Setpoint,int16 Turepoint)
-功  能：增量式PID控制
-参  数：PID *sptr,int16 Setpoint,int16 Turepoint
-返回值：int32 iIncpid
-************************************************/
+
 int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint)
 {
     int16 iError, iIncpid;
@@ -317,5 +160,105 @@ int16 IncPIDCalc(MyPID *sptr,int16 Setpoint,int16 Turepoint)
 
     sptr->LastError = iError;
 
-    return(iIncpid);
+    return (iIncpid);
+}
+
+
+//---------------------->PID参数<----------------------//
+
+
+// 正常摄像头循迹用pid
+void normalpid_params(void)
+{
+    SpeedPID.Kp = 20; 
+    SpeedPID.Ki = 2;    
+    SpeedPID.Kd = 1;
+
+    TurnPID.Kp = 135; 
+    TurnPID.Ki = 0;
+    TurnPID.Kd = 0;
+
+    Turn_NeiPID.Kp = 2.8; 
+    Turn_NeiPID.Ki = 0;
+    Turn_NeiPID.Kd = 0;
+}
+
+// 电磁专用pid
+void adcpid_params(void)
+{
+    ADC_SpeedPID.Kp = 20;
+    ADC_SpeedPID.Ki = 2;
+    ADC_SpeedPID.Kd = 1;
+
+    ADC_TurnPID.Kp = 180; 
+    ADC_TurnPID.Ki = 0;
+    ADC_TurnPID.Kd = 0;
+
+    ADC_TURNNeiPID.Kp = 2.8;
+    ADC_TURNNeiPID.Ki = 0;
+    ADC_TURNNeiPID.Kd = 0;
+}
+
+// 加速bangbang pid
+void speeduppid_params(void)
+{
+    SpeedPID.Kp = 10; 
+    SpeedPID.Ki = 2;    
+    SpeedPID.Kd = 12;
+
+    TurnPID.Kp = 135; 
+    TurnPID.Ki = 0;
+    TurnPID.Kd = 0;     
+
+    Turn_NeiPID.Kp = 3.6; 
+    Turn_NeiPID.Ki = 0;
+    Turn_NeiPID.Kd = 0; 
+}
+
+// 停车pid
+void stoppid_params(void)
+{
+    // 快速停车， P超调
+    SpeedPID.Kp = 10; 
+    SpeedPID.Ki = 2;    
+    SpeedPID.Kd = 12;
+
+    TurnPID.Kp = 135; 
+    TurnPID.Ki = 0;
+    TurnPID.Kd = 0;
+
+    Turn_NeiPID.Kp = 2.8; 
+    Turn_NeiPID.Ki = 0;
+    Turn_NeiPID.Kd = 0;
+}
+
+// 角度环pid参数
+void anglepid_params(void)
+{
+    SpeedPID.Kp = 10; 
+    SpeedPID.Ki = 2;    
+    SpeedPID.Kd = 12;
+
+    TurnPID.Kp = 135; 
+    TurnPID.Ki = 0;
+    TurnPID.Kd = 0;
+
+    Angle_PID.Kp = 1.95; 
+    Angle_PID.Ki = 0;
+    Angle_PID.Kd = 2; 
+}
+
+void gostraighpid_params(void)
+{
+    SpeedPID.Kp = 10; 
+    SpeedPID.Ki = 2;    
+    SpeedPID.Kd = 12;
+
+    TurnPID.Kp = 135; 
+    TurnPID.Ki = 0;
+    TurnPID.Kd = 0;
+
+    Turn_NeiPID.Kp = 3.8; 
+    Turn_NeiPID.Ki = 0;
+    Turn_NeiPID.Kd = 0;   
 }

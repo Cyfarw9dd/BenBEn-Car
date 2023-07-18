@@ -20,6 +20,7 @@
 #define RightLine 2
 #define StartCoL 0
 #define EndCoL 187
+#define THRESHOLD 50
 
 
 extern short StartLine_Counter;
@@ -29,6 +30,9 @@ extern short Rounding_LCounter;
 extern short Rounding_RCounter;
 extern short RoundAbout_LCounter;
 extern short RoundAbout_RCounter;
+extern short Departure_cnt;
+extern int blackpoints;
+
 extern unsigned char Present_RoundAbout_PointFlagL;
 extern unsigned char Present_RoundAbout_PointFlagR;
 
@@ -47,14 +51,15 @@ extern unsigned char RoundAbout_PointFlag_R;
 extern unsigned char Upslope_PointFlag;
 extern unsigned char Downslope_PointFlag;
 extern unsigned char Parking_PointFlag;
+extern unsigned char BreakRoad_PointFlag;
+extern unsigned char Obstacle_PointFlag;
+extern unsigned char Departure_PointFlag;
 
 extern changepoint Parking_L, Parking_R;
 extern changepoint RoundAbout_LeftDown, RoundAbout_LeftAbove, RoundAbout_RightDown, RoundAbout_RightAbove;
 
 
 int absolute(int var);
-
-int minimum(int var1, int var2);
 
 void Findchangepoint_L(changepoint *prt, unsigned char Start, unsigned char End, unsigned char (*binary_array)[188], unsigned char mode);
 
@@ -70,8 +75,8 @@ void Judging_RoundAbout(unsigned char (*binary_array)[188]);
 
 void Judging_Slope(void);
 
-void Pokemon_Go(void);
+void Judging_Break_Road(unsigned char (*binary_array)[188]);
 
-
+void Departure(void);
 
 #endif /* CODE_ELEMENTS_H_ */
