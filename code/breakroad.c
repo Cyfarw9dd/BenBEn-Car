@@ -7,6 +7,7 @@ int break_blackpoints;
 void BreakRoad_process(Trait_smachine *road_smh, unsigned char (*image)[188])
 {
     // 避障时屏蔽断路
+    // bug -> 只过一次障碍，但标志位没清零
     if (Barrier.pointflag == 0 && Startline.status != ZEBRA_IN)
     {
         break_blackpoints = 0;

@@ -6,6 +6,7 @@
 #define AT_CLIP(img, x, y)  AT_IMAGE((img), clip((x), 0, (img)->width-1), clip((y), 0, (img)->height-1));
 #define DEF_IMAGE(ptr, w, h)         {.data=ptr, .width=w, .height=h, .step=w}
 #define ROI_IMAGE(img, x1, y1, w, h) {.data=&AT_IMAGE(img, x1, y1), .width=w, .height=h, .step=img.width}
+#define STATIC_THRESHOLD    70
 
 unsigned short points_l[(unsigned short)USE_num][2] = { {  0 } };//左线
 unsigned short points_r[(unsigned short)USE_num][2] = { {  0 } };//右线
@@ -326,7 +327,8 @@ unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned s
 
 void myturn_to_binary(unsigned char (*clip_image)[188], unsigned char (*clip_bin_image)[188])
 {
-    clip_image_thereshold = OtsuThreshold(clip_image[0], CLIP_IMAGE_H, MT9V03X_W);
+    // 可以采用固定阈值
+    clip_image_thereshold = OtsuThreshold(clip_image[0], CLIP_IMAGE_H, MT9V03X_W);  // STATIC_THRESHOLD
     for (int i = 0; i < CLIP_IMAGE_H; i++)
     {
         for (int j = StartCoL; j < EndCoL; j++)

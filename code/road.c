@@ -86,10 +86,10 @@ unsigned char outflag = 0;      // 出库标志位
 #define BENDTHRESHOLD       0.5f
 
 // 弯道390稳定
-#define NORMAL_SPEED        390
+#define NORMAL_SPEED        410
 #define BEND_SPEED          250
 #define BARRIER_SPEED       250
-#define ADC_NORMAL_SPEED    180
+#define ADC_NORMAL_SPEED    200
 #define ZERO                0
 
 #pragma section all restore
@@ -154,7 +154,7 @@ void Traits_process(void)
     // roll_out();  // 出库打死
     // if (!Departure_PointFlag)
     //     Departure();
-    // Barrier_process(&Barrier);
+    Barrier_process(&Barrier);
     BreakRoad_process(&BreakRoad, &clip_bin_image[0]);
     Startline_process(&Startline, &clip_bin_image[0]);
 }

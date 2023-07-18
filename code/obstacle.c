@@ -1,10 +1,26 @@
 #include "zf_common_headfile.h"
 
 #pragma section all "cpu1_dsram"
-int DISTANCE0 =  8000;
-int DISTANCE1 =  4800;
-int ANGLE0    =   -30;
-int ANGLE1    =    60;
+
+// 第一套参数，正常避障
+#define DISTANCE0   8000
+#define DISTANCE1   5500
+#define ANGLE0       -45
+#define ANGLE1        60
+
+// 第二套参数，换方向避障
+// #define DISTANCE0   8000
+// #define DISTANCE1   4800
+// #define ANGLE0        45
+// #define ANGLE1       -50
+// #define ANGLE2        20  
+
+// 第三套参数，撞开障碍
+// #define DISTANCE0   8000
+// #define DISTANCE1   4800
+// #define ANGLE0       -30
+// #define ANGLE1        30
+
 int barrier_turning_distance = 0;
 int left_distance = 0; 
 int right_distance = 0;
@@ -17,8 +33,9 @@ int turn_err = 0;
 #pragma section all "cpu1_psram"
 void Barrier_process(Trait_smachine *road_smh)
 {
-    if (road_smh->trait_cnt < 1)
-        {
+    // 障碍只计一次，当跑完断路时再跑障碍
+    if (road_smh->trait_cnt < 1 && BreakRoad.trait_cnt >= 1)
+    {
         // 获取tof测距信息
         dl1a_get_distance();
         // // 没遇到障碍，且障碍转向时
@@ -128,9 +145,17 @@ void run_off(Trait_smachine *road_smh)
     }
     if (turn_flag == 9)
     {
+        // 回赛道矫正用
+
+
         aim_theta = -20;
         if (theta < aim_theta)
             turn_flag = 10;
+
+
+        // aim_theta = ANGLE2;
+        // if (theta > aim_theta)
+        //     turn_flag = 10;
     }
     if (turn_flag == 10)
     {

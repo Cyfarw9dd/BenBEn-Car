@@ -52,7 +52,7 @@ void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[1
             if (!goin_flag)
             {
                 track_mode = OBSTACLE;
-                motor_ctrl(2000, 3000);
+                motor_ctrl(2000, 2800);
                 system_delay_ms(200);
                 motor_ctrl(0, 0);
                 system_delay_ms(200);

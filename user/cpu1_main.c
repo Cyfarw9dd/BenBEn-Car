@@ -104,6 +104,9 @@ void core1_main(void)
     {
         // 此处编写需要循环执行的代码
         
+        // 左发车先经过断路后经过障碍
+        // 也可以在判断完障碍之后再判断斑马线
+        
         TaskProcess();	
         clip_imageprocess();
         Traits_process();
