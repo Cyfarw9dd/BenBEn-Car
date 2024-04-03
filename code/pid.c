@@ -31,7 +31,14 @@ float Turn[5][4]  = {{8000, 380 ,  20,  400},
 
 float Steer[3] = {-0.5, 0, 0};
 
+/*
 
+注意 Attention
+
+有部分PID函数是很久之前的，我在现在的代码中并没有调用。直接看现在调用的就好
+上方的一些参数设置也是，有部分是之前留下的，现在并没有用到
+
+*/
 int PlacePID_Control(PID *sprt, float *PID, int NowPiont, int SetPoint)
 {
 

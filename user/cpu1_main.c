@@ -48,15 +48,14 @@ void core1_main(void)
     disable_Watchdog();                     // 关闭看门狗
     interrupt_global_enable(0);             // 打开全局中断
     // 此处编写用户代码 例如外设初始化代码等
-    mt9v03x_init();
-    tft180_init();
-    // ips200_init(IPS200_TYPE_PARALLEL8);
-    imu660ra_init();
-    wireless_uart_init();
-    dl1a_init();
-    PID_int();
-    gyroOffsetInit();
-    Traits_status_init();
+    mt9v03x_init();         // 初始化摄像头
+    tft180_init();          // 初始化屏幕
+    imu660ra_init();        // 初始化陀螺仪
+    wireless_uart_init();   // 初始化无线串口
+    dl1a_init();            // 初始化激光模块
+    PID_int();              // 初始化PID参数
+    gyroOffsetInit();       // 陀螺仪数据采集初始化，滤除零漂
+    Traits_status_init();   // 初始化元素状态
     // 初始化pwm
     pwm_init(ATOM0_CH0_P21_2, 17 * 1000, 0);
     pwm_init(ATOM0_CH1_P21_3, 17 * 1000, 0);
@@ -65,8 +64,8 @@ void core1_main(void)
     pwm_init(BUZZER, 3 * 1000, 0);
 
 
-    encoder_dir_init(ENCODER_DIR_L, ENCODER_DIR_PULSE_L, ENCODER_DIR_DIR_L);
-    encoder_dir_init(ENCODER_DIR_R, ENCODER_DIR_PULSE_R, ENCODER_DIR_DIR_R);
+    encoder_dir_init(ENCODER_DIR_L, ENCODER_DIR_PULSE_L, ENCODER_DIR_DIR_L);        // 初始化左轮编码器
+    encoder_dir_init(ENCODER_DIR_R, ENCODER_DIR_PULSE_R, ENCODER_DIR_DIR_R);        // 初始化右轮编码器
 
     gpio_init(KEY1, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY1 输入 默认高电平 上拉输入
     gpio_init(KEY2, GPI, GPIO_HIGH, GPI_PULL_UP);           // 初始化 KEY2 输入 默认高电平 上拉输入
@@ -85,8 +84,11 @@ void core1_main(void)
     adc_init(ADC0_CH6_A6, ADC_8BIT);
     adc_init(ADC0_CH7_A7, ADC_8BIT);
 
+    
     // tft180_set_color(RGB565_WHITE, RGB565_BLACK);
+    // 设置屏幕字体大小
     tft180_set_font(TFT180_6X8_FONT);
+    // 定时器初始化
     pit_ms_init(CCU60_CH0, 1);
     pit_ms_init(CCU60_CH1, 20);
     pit_ms_init(CCU61_CH0, 20);
@@ -95,11 +97,15 @@ void core1_main(void)
     track_mode = NORMAL;
     // 测试用标志位
     int test_flag = 1;
+
     cpu_wait_event_ready();                 // 等待所有核心初始化完毕
+
+    // 写死循环出库
     motor_ctrl(1800, 3500);
     system_delay_ms(300);
     motor_ctrl(0, 0);
     system_delay_ms(200);
+
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
@@ -107,9 +113,9 @@ void core1_main(void)
         // 左发车先经过断路后经过障碍
         // 也可以在判断完障碍之后再判断斑马线
         
-        TaskProcess();	
-        clip_imageprocess();
-        Traits_process();
+        TaskProcess();	        // 时间片执行函数
+        clip_imageprocess();    // 图像处理
+        Traits_process();       // 元素处理
 
 
         // 向上位机发送数据

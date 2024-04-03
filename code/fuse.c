@@ -113,9 +113,10 @@ void TaskProcess(void)
 
 void Motor_output_control()
 {
+    // 当循迹模式为正常摄像头循迹，慢速或者加速模式时
     if (track_mode == NORMAL || track_mode == SLOW_DOWN || track_mode == SPEED_UP)
     {
-        gyroOffsetInit();
+        gyroOffsetInit();       // 获取陀螺仪数据                       
         // ICM_getValues();
         // imu660ra_get_acc();
         // imu660ra_get_gyro();
@@ -240,13 +241,13 @@ void Trailing_control()
 
 void Speed_control()
 {
-    // 直行模式下需采集编码器数据
+    // 确认循迹模式
     if (track_mode == NORMAL || track_mode == TURN || track_mode == SLOW_DOWN || track_mode == GO_STRAIGHT || track_mode == SPEED_UP)
     {
         get_motor_speed(); 
-        real_real_speed = speed1 * 0.0432f; 
-        Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed); 
-        range_protect(Speed_pwm_all, -6000, 6000); 
+        real_real_speed = speed1 * 0.0432f;     // 获取真实速度，此参数和车轮尺寸有关
+        Speed_pwm_all += IncPIDCalc(&SpeedPID, aim_speed, real_speed);  // 增量式PID
+        range_protect(Speed_pwm_all, -6000, 6000);  // 输出限幅
         return;
     }
     if (track_mode == ADC)
@@ -269,7 +270,7 @@ void Speed_control()
         return;
 }
 
-
+// 这里是之前用作采集陀螺仪数据写的时间片，useless
 void TaskCollectedRemarks(void)
 {
     unsigned char i;

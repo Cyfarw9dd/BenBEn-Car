@@ -38,6 +38,7 @@ void gyroOffsetInit(void){
         GyroOffset.Z += imu660ra_gyro_z;
         // system_delay_us(10);
     }
+    // 均值滤波
     GyroOffset.X /= 200;
     GyroOffset.Y /= 200;
     GyroOffset.Z /= 200;
