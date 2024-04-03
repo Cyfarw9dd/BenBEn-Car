@@ -46,7 +46,7 @@ static TASK_COMPONENTS TaskCollect[] =
 // 部分PID参数初始化
 void PID_int(void)
 {
-    SpeedPID.Kp = 10; 
+    SpeedPID.Kp = 10;       // 速度环参数
     SpeedPID.Ki = 2;    
     SpeedPID.Kd = 12;
 
@@ -65,20 +65,21 @@ void PID_int(void)
     ADC_TurnPID.Kp = 120; // 电磁转向环PID参数
     ADC_TurnPID.Ki = 0;
     ADC_TurnPID.Kd = 0;
-
-    Turn_NeiPID.Kp = 2.8; //  4.89
+    // 转向内环参数
+    Turn_NeiPID.Kp = 2.8; // 4.89
     Turn_NeiPID.Ki = 0;
     Turn_NeiPID.Kd = 0;
 
-    ADC_TURNNeiPID.Kp = 2.0;
+    ADC_TURNNeiPID.Kp = 2.0;    // 电磁转向内环参数
     ADC_TURNNeiPID.Ki = 0;
     ADC_TURNNeiPID.Kd = 0;
 
-    ADC_SpeedPID.Kp = 10;
+    ADC_SpeedPID.Kp = 10;       // 电磁速度环参数
     ADC_SpeedPID.Ki = 2;
     ADC_SpeedPID.Kd = 12;
 }
 
+// 时间片轮询查询函数，运行在中断中
 void TaskRemarks(void)
 {
     unsigned char i;
@@ -96,7 +97,7 @@ void TaskRemarks(void)
     }
 }
 
-
+// 时间片轮询执行函数，运行在while(1)中
 void TaskProcess(void)
 {
     unsigned char i;
@@ -115,16 +116,16 @@ void Motor_output_control()
     if (track_mode == NORMAL || track_mode == SLOW_DOWN || track_mode == SPEED_UP)
     {
         gyroOffsetInit();
-        ICM_getValues();
-        imu660ra_get_acc();
-        imu660ra_get_gyro();
-        theta += imu_data.gyro_z * 0.02f;
-        gyroOffsetInit();
-        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err); // 转向内环PWM	 Prospect_err
-        Steer_pwm = range_protect(Steer_pwm, -7000, 7000);               // 转向内环PWM限幅
+        // ICM_getValues();
+        // imu660ra_get_acc();
+        // imu660ra_get_gyro();
+        theta += imu_data.gyro_z * 0.02f;       // 角度累计，不用看    
+        // gyroOffsetInit();
+        Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err);    // 转向内环PWM	 Prospect_err
+        Steer_pwm = range_protect(Steer_pwm, -7000, 7000);                          // 转向内环PWM限幅
 
-        All_PWM_left = Speed_pwm_all - Steer_pwm;  // 左电机所有PWM输出 Speed_pwm_all Steer_pwm
-        All_PWM_right = Speed_pwm_all + Steer_pwm; // 右电机所有PWM输出
+        All_PWM_left = Speed_pwm_all - Steer_pwm;       // 左电机所有PWM输出 
+        All_PWM_right = Speed_pwm_all + Steer_pwm;      // 右电机所有PWM输出
 
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
         return;
@@ -213,10 +214,12 @@ void Motor_output_control()
 
 void Trailing_control()
 {
+    // 转向外环
+    // 确认循迹模式
     if (track_mode == NORMAL || track_mode == SLOW_DOWN || track_mode == BEND || track_mode == SPEED_UP)
     {
-        Get_deviation();
-        Centerline_Err = Cal_centerline(); 
+        Get_deviation();     // 获取电磁数据，无用
+        Centerline_Err = Cal_centerline();      // 获取摄像头前瞻偏差
         // track_decision();
         Prospect_err = LocP_DCalc(&TurnPID, (short)Centerline_Err, 0); // 位置式PD控制转向
         return;
@@ -225,7 +228,7 @@ void Trailing_control()
     {
         Get_deviation(); // 电磁采集并获取赛道偏差
         ADC_PWM = LocP_DCalc(&ADC_TurnPID, Current_Dir, 0); // 位置式PD控制转向
-        // ADC_PWM = -ADC_PWM;
+        // ADC_PWM = -ADC_PWM;  翻转，视情况而定
         return;
     }
     if (track_mode == TURN)
