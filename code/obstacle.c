@@ -2,24 +2,10 @@
 
 #pragma section all "cpu1_dsram"
 
-// 第一套参数，正常避障
 #define DISTANCE0   8000
 #define DISTANCE1   5500
 #define ANGLE0       -45
 #define ANGLE1        60
-
-// 第二套参数，换方向避障
-// #define DISTANCE0   8000
-// #define DISTANCE1   4800
-// #define ANGLE0        45
-// #define ANGLE1       -50
-// #define ANGLE2        20  
-
-// 第三套参数，撞开障碍
-// #define DISTANCE0   8000
-// #define DISTANCE1   4800
-// #define ANGLE0       -30
-// #define ANGLE1        30
 
 int barrier_turning_distance = 0;
 int left_distance = 0; 

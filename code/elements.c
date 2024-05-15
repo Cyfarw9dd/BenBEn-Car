@@ -576,13 +576,5 @@ void Departure(void)
         pit_disable(CCU60_CH0);
     }
     Departure_PointFlag = 1;
-    // if (outflag)
-    // {
-    //     motor_ctrl(3000, 2000);
-    //     system_delay_ms(1000);
-    //     motor_ctrl(0, 0);
-    //     system_delay_ms(1000);
-    //     outflag = 0;
-    // }
     pit_enable(CCU60_CH0);
 }

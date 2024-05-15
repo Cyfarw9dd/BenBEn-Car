@@ -58,16 +58,6 @@ float fast_sqrt(float x)
 
 void ICM_getValues(void) 
 {
-    // imu_data.acc_x = (((float) imu660ra_acc_x) * 0.3f) * 8 / 4096 + imu_data.acc_x * (1 - 0.3f);
-    // imu_data.acc_y = (((float) imu660ra_acc_y) * 0.3f) * 8 / 4096 + imu_data.acc_y * (1 - 0.3f);
-    // imu_data.acc_z = (((float) imu660ra_acc_z) * 0.3f) * 8 / 4096 + imu_data.acc_z * (1 - 0.3f);
-
-
-    // //陀螺仪角度转弧度
-    // imu_data.gyro_x = ((float) imu660ra_gyro_x - GyroOffset.X) * M_PI / 180 / 16.4f;
-    // imu_data.gyro_y = ((float) imu660ra_gyro_x - GyroOffset.Y) * M_PI / 180 / 16.4f;
-    // imu_data.gyro_z = ((float) imu660ra_gyro_x - GyroOffset.Z) * M_PI / 180 / 16.4f;
-
     imu_data.gyro_x = imu660ra_gyro_transition(GyroOffset.X);
     imu_data.gyro_y = imu660ra_gyro_transition(GyroOffset.Y);
     imu_data.gyro_z = imu660ra_gyro_transition(GyroOffset.Z);
@@ -76,8 +66,8 @@ void ICM_getValues(void)
 //互补滤波
 void ICM_AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az) {
     float halfT = 0.5 * delta_T;
-    float vx, vy, vz;    //当前的机体坐标系上的重力单位向量
-    float ex, ey, ez;    //四元数计算值与加速度计测量值的误差
+    float vx, vy, vz;       //当前的机体坐标系上的重力单位向量
+    float ex, ey, ez;       //四元数计算值与加速度计测量值的误差
     float q0 = Q_info.q0;
     float q1 = Q_info.q1;
     float q2 = Q_info.q2;
@@ -85,14 +75,11 @@ void ICM_AHRSupdate(float gx, float gy, float gz, float ax, float ay, float az) 
     float q0q0 = q0 * q0;
     float q0q1 = q0 * q1;
     float q0q2 = q0 * q2;
-    // float q0q3 = q0 * q3;
     float q1q1 = q1 * q1;
-    // float q1q2 = q1 * q2;
     float q1q3 = q1 * q3;
     float q2q2 = q2 * q2;
     float q2q3 = q2 * q3;
     float q3q3 = q3 * q3;
-    // float delta_2 = 0;
 
     //对加速度数据进行归一化 得到单位加速度
     float norm = fast_sqrt(ax * ax + ay * ay + az * az);

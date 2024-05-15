@@ -109,25 +109,9 @@ void core1_main(void)
     while (TRUE)
     {
         // 此处编写需要循环执行的代码
-        
-        // 左发车先经过断路后经过障碍
-        // 也可以在判断完障碍之后再判断斑马线
-        
         TaskProcess();	        // 时间片执行函数
         clip_imageprocess();    // 图像处理
         Traits_process();       // 元素处理
-
-
-        // 向上位机发送数据
-        // put_float(0, theta);
-        // put_int32(0, Startline.pointflag);
-        // put_int32(1, BreakRoad.pointflag);
-        // put_int32(2, Barrier.pointflag);
-        // put_int32(3, turn_flag);
-        // wireless_uart_send_buff(&theta, 64);
-        // sendimg_binary_CHK(clip_bin_image[0], MT9V03X_W, CLIP_IMAGE_H, image_thereshold, 35);     
-        // sendimg_A(mt9v03x_image[0], MT9V03X_W, MT9V03X_H);  
-        // wireless_uart_send_image(clip_image[0], MT9V03X_IMAGE_SIZE);        // 此处编写需要循环执行的代码
     }
 }
 

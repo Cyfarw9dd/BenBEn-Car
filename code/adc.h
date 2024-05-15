@@ -27,14 +27,14 @@
 struct ROAD_TYPE
 {
      int8 straight;               //直道
-	   int8 bend;                   //弯道
+     int8 bend;                   //弯道
      int8 annulus;                //环岛
      int8 in_annulus_left;        //入左环岛
-	   int8 in_annulus_right;       //入右环道
+     int8 in_annulus_right;       //入右环道
      int8 on_annulus_left;        //在左环岛
-	   int8 on_annulus_right;       //在右环岛
+     int8 on_annulus_right;       //在右环岛
      int8 out_annulus;            //出环岛
-	   int8 in_park;                //入库
+     int8 in_park;                //入库
 };
 extern struct ROAD_TYPE road_type;
 

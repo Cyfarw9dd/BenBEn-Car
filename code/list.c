@@ -33,10 +33,10 @@ int highlight_col = 0;
 //主菜单
 List MyList[] = 
 {
-    {1, "Image Mode", NULL, NULL},              // 图像模式
-    {11, "gray image", show_gray_image, NULL},             // 显示灰度图像
-    {12, "binary Imange", show_binary_image, NULL},          // 显示二值化图像
-    {13, "show boudaries", NULL, NULL},         // 显示图像边界
+    {1, "Image Mode", NULL, NULL},                          // 图像模式
+    {11, "gray image", show_gray_image, NULL},              // 显示灰度图像
+    {12, "binary Imange", show_binary_image, NULL},         // 显示二值化图像
+    {13, "show boudaries", NULL, NULL},                     // 显示图像边界
     {131, "show ori bound", show_boundaries, NULL},
     {132, "show sample", show_roadtraits, NULL},
     {133, "show chanpoint", show_inflectionpoint, NULL},
@@ -47,7 +47,7 @@ List MyList[] =
     {143, "show barrier", show_barrier_params, NULL},
     {144, "show_zebra", show_zebra, NULL},
     {15, "show corners", show_corners, NULL},
-    {16, "back to main", NULL, NULL},           // 返回主菜单
+    {16, "back to main", NULL, NULL},                       // 返回主菜单
     {2, "Tuning", NULL, NULL},
     {21, "Speed Cycle", NULL, NULL},
     {211, "Camera", NULL, NULL},

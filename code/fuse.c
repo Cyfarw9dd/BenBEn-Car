@@ -3,7 +3,7 @@
 extern icm_param_t imu_data;
 // extern euler_param_t eulerAngle;
 extern S_FLOAT_XYZ GyroOffset;
-int16 aim_speed;       // 目标速度
+int16 aim_speed;           // 目标速度
 int16 real_speed = 0;      // 左右轮平均速度
 float real_real_speed = 0; // 左右轮平均速度换算成实际速度
 int16 left_speed = 0;      // 左轮速度
@@ -117,11 +117,7 @@ void Motor_output_control()
     if (track_mode == NORMAL || track_mode == SLOW_DOWN || track_mode == SPEED_UP)
     {
         gyroOffsetInit();       // 获取陀螺仪数据                       
-        // ICM_getValues();
-        // imu660ra_get_acc();
-        // imu660ra_get_gyro();
         theta += imu_data.gyro_z * 0.02f;       // 角度累计，不用看    
-        // gyroOffsetInit();
         Steer_pwm = LocP_DCalc(&Turn_NeiPID, (short)GyroOffset.Z, Prospect_err);    // 转向内环PWM	 Prospect_err
         Steer_pwm = range_protect(Steer_pwm, -7000, 7000);                          // 转向内环PWM限幅
 
