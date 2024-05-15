@@ -1,2 +1,2 @@
 # BenBEn
-a dump-smart-car
+a dummy-smart-car
