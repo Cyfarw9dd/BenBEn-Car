@@ -10,36 +10,33 @@ float speed_array[2];
 void motor_ctrl(short Lmotor, short Rmotor){
     if(Lmotor >= 0){
         Lmotor = Lmotor <= MOTOR_MAX ? Lmotor : MOTOR_MAX;
-        // Lmotor = range_protect(Lmotor, MOTOR_MIN, MOTOR_MAX);
         pwm_set_duty(PWM_CH1, Lmotor); 
         pwm_set_duty(PWM_CH2, 0);
     }
     else{
         Lmotor = Lmotor >= -MOTOR_MAX ? (-Lmotor) : MOTOR_MAX;
-        // Lmotor = range_protect(-Lmotor, MOTOR_MIN, MOTOR_MAX);
         pwm_set_duty(PWM_CH1, 0);      
         pwm_set_duty(PWM_CH2, Lmotor);
     }
     if(Rmotor >= 0){
         Rmotor = Rmotor <= MOTOR_MAX ? Rmotor : MOTOR_MAX;
-        // Rmotor = range_protect(Rmotor, MOTOR_MIN, MOTOR_MAX);
         pwm_set_duty(PWM_CH3, Rmotor); 
         pwm_set_duty(PWM_CH4, 0);
     }
     else{
         Rmotor = Rmotor >= -MOTOR_MAX ? (-Rmotor) : MOTOR_MAX;
-        // Rmotor = range_protect(-Rmotor, MOTOR_MIN, MOTOR_MAX);
         pwm_set_duty(PWM_CH3, 0);      
         pwm_set_duty(PWM_CH4, Rmotor);
     }
 }
 
-// 获取编码器数据
+// 
 /*
-    编码器通道1 -> TIM5_ENCODER
-    编码器通道2 -> TIM6_ENCODER
-    编码器1引脚 -> TIM5_ENCODER_CH1_P10_3 || TIM5_ENCODER_CH2_P10_1
-    编码器2引脚 -> TIM6_ENCODER_CH1_P20_3 || TIM6_ENCODER_CH2_P20_0
+*   获取编码器数据
+*   编码器通道1 -> TIM5_ENCODER
+*   编码器通道2 -> TIM6_ENCODER
+*   编码器1引脚 -> TIM5_ENCODER_CH1_P10_3 || TIM5_ENCODER_CH2_P10_1
+*   编码器2引脚 -> TIM6_ENCODER_CH1_P20_3 || TIM6_ENCODER_CH2_P20_0
 */
 void get_motor_speed(void){
     speed1 = -encoder_get_count(ENCODER_DIR_L);

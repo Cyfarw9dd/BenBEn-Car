@@ -1,5 +1,6 @@
 #include "zf_common_headfile.h"
 
+#define CAMERA_ACTIVATED  		false
 // 1 4 6 8 电感采集路道
 unsigned char adc_value[4];                 
 
@@ -56,7 +57,8 @@ unsigned short adc_mid(adc_channel_enum adcn, adc_resolution_enum ch)
 	return(tmp);
 }
 
-/***************************均值滤波函数*****************************/
+
+// 均值滤波函数
 unsigned short adc_ave(adc_channel_enum adcn, adc_resolution_enum ch,unsigned char N)
 {
 	unsigned short tmp=0;
@@ -68,7 +70,8 @@ unsigned short adc_ave(adc_channel_enum adcn, adc_resolution_enum ch,unsigned ch
 	tmp=tmp/N;
 	return(tmp);
 }
-/***************************电感采值************************************/
+
+// 采集电感值，先进行一次均值滤波，然后放到数组中
 void ADC_Collect()
 {
 	adc_value[0] = (unsigned char)adc_ave(ADC0_CH7_A7, ADC_8BIT, 5);     
@@ -76,7 +79,8 @@ void ADC_Collect()
 	adc_value[2] = (unsigned char)adc_ave(ADC0_CH2_A2, ADC_8BIT, 5); 
     adc_value[3] = (unsigned char)adc_ave(ADC0_CH1_A1, ADC_8BIT, 5);    
 }
-/*********************************电感采值********************************/
+
+// 电感值归一化函数
 void Data_current_analyze()
 {
     unsigned char i;
@@ -92,7 +96,7 @@ void Data_current_analyze()
     Right_Adc 		= (unsigned char)AD_V[3];	    
 }
 
-
+// 差比和函数，拟合出循迹值
 float Cha_bi_he(int16 data1, int16 data2,int16 x)
 {
     int16 cha;
@@ -106,6 +110,8 @@ float Cha_bi_he(int16 data1, int16 data2,int16 x)
     return result;
 }
 
+#if CAMERA_ACTIVATED
+// 出界保护。因为避障的时候会出界，因此不启用该函数
 void Out_protect(void)
 {
 	if(Left_Adc<2&&Right_Adc<2)
@@ -118,6 +124,7 @@ void Out_protect(void)
 		pit_enable(CCU60_CH1);
 	}
 }
+
 
 void Road_type_judge(void)
 {	 
@@ -206,6 +213,8 @@ int16 Direction_error(void)
     }
     return error;
 }
+
+#endif
 
 void Get_deviation(void)
 {

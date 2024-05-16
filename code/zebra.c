@@ -3,6 +3,7 @@
 int garage_flag = 0;
 int goin_flag = 0;
 
+// 检查斑马线
 void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[188])
 {
     if (BreakRoad.trait_cnt >= 2)
@@ -67,7 +68,7 @@ void Startline_process(Trait_smachine *road_smh, unsigned char (*binary_array)[1
             while (true)
             {
                 Departure_PointFlag = 0;
-                pit_disable(CCU60_CH0);
+                pit_disable(CCU60_CH0);     // 关闭定时器中断，所有轮询任务停止执行
             }
         }
     }

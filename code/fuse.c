@@ -1,13 +1,15 @@
 #include "zf_common_headfile.h"
 
+#define INACTIVATED     false
+
 extern icm_param_t imu_data;
-// extern euler_param_t eulerAngle;
 extern S_FLOAT_XYZ GyroOffset;
 int16 aim_speed;           // 目标速度
 int16 real_speed = 0;      // 左右轮平均速度
 float real_real_speed = 0; // 左右轮平均速度换算成实际速度
 int16 left_speed = 0;      // 左轮速度
 int16 right_speed = 0;     // 右轮速度
+
 MyPID SpeedPID = {0};
 MyPID L_SpeedPID = {0};
 MyPID R_SpeedPID = {0};
@@ -30,6 +32,7 @@ int Centerline_Err;
 float theta;
 float aim_theta;
 
+// 需要执行的轮询任务
 static TASK_COMPONENTS TaskComps[] =
 {
     {0, 2, 2, Motor_output_control}, 
@@ -37,11 +40,14 @@ static TASK_COMPONENTS TaskComps[] =
     {0, 10, 10, Speed_control},        
 };
 
+
+#if INACTIVATED
 static TASK_COMPONENTS TaskCollect[] =
 {
     {0, 2, 2, gyroOffsetInit},          // 陀螺仪数据采集
     {0, 10, 10, get_motor_speed},         // 编码器数据采集
 };
+#endif
 
 // 部分PID参数初始化
 void PID_int(void)
@@ -111,6 +117,8 @@ void TaskProcess(void)
     }
 }
 
+// PID外环控制，也负责电机的输出，根据循迹模式的不同执行不同的决策
+// 循迹模式定义在road.h中
 void Motor_output_control()
 {
     // 当循迹模式为正常摄像头循迹，慢速或者加速模式时
@@ -127,6 +135,7 @@ void Motor_output_control()
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
         return;
     }
+    // 循迹模式为ADC
     if (track_mode == ADC)
     {
         gyroOffsetInit();
@@ -157,6 +166,7 @@ void Motor_output_control()
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
         return;
     }
+    // 直线加速
     if (track_mode == GO_STRAIGHT)
     {
         gyroOffsetInit();
@@ -173,7 +183,7 @@ void Motor_output_control()
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出
         return;  
     }
-
+    // 看见斑马线，预备停车
     if (track_mode == GARAGE_STOP)
     {
         gyroOffsetInit();
@@ -186,7 +196,7 @@ void Motor_output_control()
         motor_ctrl(All_PWM_left, All_PWM_right); // 动力输出   
         return;
     }
-
+    // 车库转向
     if (track_mode == GARAGE_TURN)
     {
         gyroOffsetInit();
@@ -208,10 +218,9 @@ void Motor_output_control()
         return;
 }
 
-
+// 转向内环
 void Trailing_control()
 {
-    // 转向外环
     // 确认循迹模式
     if (track_mode == NORMAL || track_mode == SLOW_DOWN || track_mode == BEND || track_mode == SPEED_UP)
     {
@@ -234,7 +243,7 @@ void Trailing_control()
         return;
 }
 
-
+// 电机速度环函数
 void Speed_control()
 {
     // 确认循迹模式
@@ -266,6 +275,7 @@ void Speed_control()
         return;
 }
 
+#if INACTIVATED
 // 这里是之前用作采集陀螺仪数据写的时间片，useless
 void TaskCollectedRemarks(void)
 {
@@ -296,3 +306,5 @@ void TaskCollectedProcess(void)
         }
     }
 }
+#endif
+

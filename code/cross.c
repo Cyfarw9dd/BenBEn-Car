@@ -24,23 +24,18 @@ void Crossing_process(Trait_smachine *road_smh)
         road_smh->cpt1_col = (unsigned char) points_r[Lpt1_rpts1s_id][0];
         limit_row = (road_smh->cpt0_row + road_smh->cpt1_row) / 2;
     }
-    // 
     if (X_found && road_smh->status == CROSS_NONE && limit_row > Dpt_minrow && limit_row < Dpt_maxrow)
     {
         road_smh->status = CROSS_IN;
         road_smh->pointflag = 1;
     }
-
-    // 
     if (X_found && road_smh->status == CROSS_IN && road_smh->pointflag == 1 && limit_row > Upt_minrow && limit_row < Upt_maxrow)
     {
         road_smh->pointflag = 2;
         road_smh->status = CROSS_IN;
-        // 
     }
     if (road_smh->status == CROSS_IN && road_smh->pointflag == 2)
     {
-        // 
         if (X_found && road_smh->pointflag == 3 && limit_row > Dpt_minrow && limit_row < Dpt_maxrow)
         {
             road_smh->pointflag = 4;
@@ -52,12 +47,10 @@ void Crossing_process(Trait_smachine *road_smh)
             road_smh->status = CROSS_IN;
         }
     }
-    // 
     if (X_found && road_smh->pointflag == 4 && road_smh->status == CROSS_IN && limit_row > Upt_minrow && limit_row < Upt_maxrow)
     {
         road_smh->pointflag = 5;
         road_smh->status = CROSS_IN;
-        // 
     }
     if (!X_found && road_smh->pointflag == 5)
     {

@@ -1,4 +1,5 @@
 #include "zf_common_headfile.h"
+// 将一下变量存储在数据ram中
 #pragma section all "cpu1_dsram"
 
 #define Eightboundary 1
@@ -249,6 +250,7 @@ void my_get_image(unsigned char (*mt9v03x_image)[188], unsigned char (*clip_imag
         height--;
     }
 }
+
 
 unsigned char OtsuThreshold(unsigned char *image, unsigned short col, unsigned short row)
 {
@@ -633,6 +635,7 @@ void clip_imageprocess(void)
 {
     if (mt9v03x_finish_flag)
     {      
+
         unsigned char hightest = 0;     // 定义循环结束的最高行，试试40
         my_get_image(&mt9v03x_image[0], &clip_image[0]);
         myturn_to_binary(&clip_image[0], &clip_bin_image[0]);
@@ -649,39 +652,21 @@ void clip_imageprocess(void)
             my_get_left(data_stastics_l);
             my_get_right(data_stastics_r);
         }
-    
-        // 只取需要的边界
-        // cut_borderline();
-        // cut_get_left(data_stastics_l);
-        // cut_get_right(data_stastics_r);
+
         // 计算中线
         for (int i = CLIP_IMAGE_H - 1; i > 0; i--)
             clip_ctline[i] = (clip_lfline[i] + clip_rtline[i]) / 2;
-        // 寻找拐点    
-        find_inflectionpoint();
+ 
+        find_inflectionpoint();        // 寻找拐点   
 
-        // 图像帧标志位
         straight_frame_flag++;
         bend_frame_flag++;
-        // 道路判断，运行在帧图像处理中
-        // Straight_process(); 
 
-        // 不对边线进行采样，原边界直接求取角度
-        // 边线局部角度变化率
-        // left_local_angle_points(data_stastics_l, 5);  // angle_dist / sample_dist
-        // rpts0a_num = data_stastics_l;
-        // right_local_angle_points(data_stastics_r, 5);
-        // rpts1a_num = data_stastics_r;
-
-        // // 角度变化率非极大抑制
-        // lnms_angle(rpts0a_num, (int) round(5) * 2 + 1);
-        // rpts0an_num = rpts0a_num;
-        // rnms_angle(rpts1a_num, (int) round(5) * 2 + 1);
-        // rpts1an_num = rpts1a_num;
-        // mt9v03x_finish_flag = 0;
     }
 }
 
+
+// 计算中线偏移量，并根据所选的循迹模式来执行不同的决策
 int Cal_centerline(void)
 {
     int ratio_sum = 0;

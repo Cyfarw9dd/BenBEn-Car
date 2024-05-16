@@ -1,3 +1,9 @@
+/*
+ * 文件名: gyro.c
+ * 描述: 这里的大多代码移植自上交AuTop战队的陀螺仪代码gyro.c中，代码中只启用了一小部分
+ *
+ */
+
 #include "zf_common_headfile.h"
 #include "math.h"
 
